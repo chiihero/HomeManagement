@@ -1,0 +1,110 @@
+package com.chii.homemanagement.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chii.homemanagement.entity.ResultCode;
+import com.chii.homemanagement.entity.User;
+import com.chii.homemanagement.exception.BusinessException;
+import com.chii.homemanagement.mapper.UserMapper;
+import com.chii.homemanagement.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * 用户服务实现类
+ */
+@Service
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserServiceImpl(@Lazy PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = getUserByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("用户名或密码错误");
+        }
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return getById(id);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, username);
+        return getOne(queryWrapper);
+    }
+
+    @Override
+    public User createUser(User user) {
+//        if (!user.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) {
+//            throw new BusinessException(String.valueOf(ResultCode.PARAM_NOT_VALID), "密码需8位以上且包含字母数字");
+//        }
+        // 加密密码
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        save(user);
+        return user;
+    }
+
+    @Override
+    public User updateUser(User user) {
+        // 如果提供了新密码，需要加密
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        updateById(user);
+        return user;
+    }
+
+    @Override
+    public boolean deleteUser(Long id) {
+        return removeById(id);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return list();
+    }
+
+    @Override
+    public boolean isUsernameExists(String username) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, username);
+        return count(queryWrapper) > 0;
+    }
+
+    @Override
+    public boolean validatePassword(String username, String password) {
+        User user = getUserByUsername(username);
+        if (user == null) {
+            return false;
+        }
+
+        return passwordEncoder.matches(password, user.getPassword());
+    }
+} 

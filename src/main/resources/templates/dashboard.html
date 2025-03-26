@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 - 家庭物品管理系统</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.15.4/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="common/header :: header"></div>
+    
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-2">
+                <div th:replace="common/sidebar :: sidebar"></div>
+            </div>
+            
+            <div class="col-md-10">
+                <div class="row">
+                    <!-- 欢迎消息 -->
+                    <div class="col-12 mb-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <h4 class="card-title">欢迎回来，<span th:text="${user.username}">用户</span>！</h4>
+                                <p class="card-text">今天是 <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy年MM月dd日')}">2023年1月1日</span>，您有 <span th:text="${todayRemindersCount}">0</span> 条今日提醒。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 快速统计卡片 -->
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-primary mb-2">
+                                    <span th:text="${totalItems}">0</span>
+                                </div>
+                                <h5 class="card-title">物品总数</h5>
+                                <p class="card-text text-muted">家庭物品总量</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-success mb-2">
+                                    <span th:text="${#numbers.formatDecimal(totalValue, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                </div>
+                                <h5 class="card-title">物品总价值</h5>
+                                <p class="card-text text-muted">所有物品价值总和</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-warning mb-2">
+                                    <span th:text="${lentItemsCount}">0</span>
+                                </div>
+                                <h5 class="card-title">借出物品</h5>
+                                <p class="card-text text-muted">当前已借出的物品数量</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <div class="display-4 text-danger mb-2">
+                                    <span th:text="${pendingRemindersCount}">0</span>
+                                </div>
+                                <h5 class="card-title">待处理提醒</h5>
+                                <p class="card-text text-muted">需要注意的提醒事项</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 图表区域 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">分类物品分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="categoryChart" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">空间物品分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="spaceChart" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 物品使用频率表 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">使用频率分析</h5>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">查看全部</a>
+                            </div>
+                            <div class="card-body">
+                                <div id="usageChart" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 最近物品活动 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">最近活动</h5>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">查看全部</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <div th:each="activity : ${recentActivities}" class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1" th:text="${activity.title}">活动标题</h6>
+                                            <small th:text="${#temporals.format(activity.time, 'MM-dd HH:mm')}">01-01 12:00</small>
+                                        </div>
+                                        <p class="mb-1" th:text="${activity.description}">活动描述内容</p>
+                                        <small th:text="${activity.user}">用户名</small>
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(recentActivities)}" class="list-group-item text-center text-muted">
+                                        暂无活动记录
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 待处理提醒 -->
+                    <div class="col-12 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">待处理提醒</h5>
+                                <a th:href="@{/reminders}" class="btn btn-sm btn-outline-primary">查看全部提醒</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>类型</th>
+                                                <th>标题</th>
+                                                <th>提醒日期</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="reminder : ${pendingReminders}" th:class="${reminder.remindDate.isBefore(T(java.time.LocalDate).now()) ? 'table-danger' : (reminder.remindDate.isEqual(T(java.time.LocalDate).now()) ? 'table-warning' : '')}">
+                                                <td>
+                                                    <span th:if="${reminder.type == 'warranty'}" class="badge bg-info">保修到期</span>
+                                                    <span th:if="${reminder.type == 'maintenance'}" class="badge bg-secondary">定期维护</span>
+                                                    <span th:if="${reminder.type == 'return'}" class="badge bg-primary">借用归还</span>
+                                                    <span th:if="${reminder.type == 'expiry'}" class="badge bg-danger">物品过期</span>
+                                                </td>
+                                                <td>
+                                                    <a th:href="@{/reminders/{id}(id=${reminder.id})}" th:text="${reminder.title}">提醒标题</a>
+                                                </td>
+                                                <td th:text="${#temporals.format(reminder.remindDate, 'yyyy-MM-dd')}">2023-01-01</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a th:href="@{/reminders/{id}(id=${reminder.id})}" class="btn btn-outline-info" title="查看">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a th:href="@{/reminders/{id}/process(id=${reminder.id})}" class="btn btn-outline-success" title="标记为已处理">
+                                                            <i class="fas fa-check"></i>
+                                                        </a>
+                                                        <a th:href="@{/items/{id}(id=${reminder.itemId})}" class="btn btn-outline-primary" title="查看物品">
+                                                            <i class="fas fa-box"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr th:if="${#lists.isEmpty(pendingReminders)}">
+                                                <td colspan="4" class="text-center">没有待处理的提醒</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="common/footer :: footer"></div>
+    
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/echarts/5.4.0/dist/echarts.min.js}"></script>
+    
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            // 分类物品分布图表
+            var categoryChart = echarts.init(document.getElementById('categoryChart'));
+            var categoryOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    data: /*[[${categoryNames}]]*/ []
+                },
+                series: [
+                    {
+                        name: '物品数量',
+                        type: 'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: /*[[${categoryData}]]*/ []
+                    }
+                ]
+            };
+            categoryChart.setOption(categoryOption);
+            
+            // 空间物品分布图表
+            var spaceChart = echarts.init(document.getElementById('spaceChart'));
+            var spaceOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    data: /*[[${spaceNames}]]*/ []
+                },
+                series: [
+                    {
+                        name: '物品数量',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: /*[[${spaceData}]]*/ [],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            spaceChart.setOption(spaceOption);
+            
+            // 使用频率图表
+            var usageChart = echarts.init(document.getElementById('usageChart'));
+            var usageOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['每天', '每周', '每月', '很少', '不使用'],
+                        axisTick: {
+                            alignWithLabel: true
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '物品数量',
+                        type: 'bar',
+                        barWidth: '60%',
+                        data: /*[[${usageData}]]*/ []
+                    }
+                ]
+            };
+            usageChart.setOption(usageOption);
+            
+            // 自适应窗口大小
+            window.addEventListener('resize', function() {
+                categoryChart.resize();
+                spaceChart.resize();
+                usageChart.resize();
+            });
+        });
+    </script>
+</body>
+</html> 

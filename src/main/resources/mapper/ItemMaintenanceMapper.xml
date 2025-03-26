@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chii.homemanagement.mapper.ItemMaintenanceMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.chii.homemanagement.entity.ItemMaintenance">
+        <id column="id" property="id"/>
+        <result column="item_id" property="itemId"/>
+        <result column="maintenance_date" property="maintenanceDate"/>
+        <result column="cost" property="cost"/>
+        <result column="description" property="description"/>
+        <result column="result" property="result"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    
+    <!-- 查询指定物品的维修记录 -->
+    <select id="findByItemId" resultMap="BaseResultMap">
+        SELECT * FROM item_maintenance 
+        WHERE item_id = #{itemId}
+        ORDER BY maintenance_date DESC, id DESC
+    </select>
+    
+    <!-- 查询指定日期范围内的维修记录 -->
+    <select id="findByDateRange" resultMap="BaseResultMap">
+        SELECT * FROM item_maintenance 
+        WHERE maintenance_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY maintenance_date DESC, id DESC
+    </select>
+    
+    <!-- 查询指定结果的维修记录 -->
+    <select id="findByResult" resultMap="BaseResultMap">
+        SELECT * FROM item_maintenance 
+        WHERE result = #{result}
+        ORDER BY maintenance_date DESC, id DESC
+    </select>
+    
+</mapper> 

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物品管理 - 家庭物品管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div id="sidebar" class="col-md-3 col-lg-2 sidebar">
+                <div class="d-flex justify-content-between align-items-center px-3 mb-4">
+                    <h5 class="m-0">家庭物品管理</h5>
+                    <button id="sidebar-toggle" class="btn btn-sm btn-outline-light d-md-none">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="bi bi-house"></i> 首页
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/items}">
+                            <i class="bi bi-box"></i> 物品管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/categories}">
+                            <i class="bi bi-tags"></i> 分类管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/spaces}">
+                            <i class="bi bi-grid"></i> 空间管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/statistics}">
+                            <i class="bi bi-bar-chart"></i> 统计报表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/settings}">
+                            <i class="bi bi-gear"></i> 系统设置
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mt-auto p-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <img th:if="${user.avatar}" th:src="${user.avatar}" class="rounded-circle me-2" width="32" height="32" alt="用户头像">
+                        <img th:unless="${user.avatar}" src="/img/default-avatar.png" class="rounded-circle me-2" width="32" height="32" alt="用户头像">
+                        <span th:text="${user.username}">用户名</span>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-light w-100">
+                            <i class="bi bi-box-arrow-right"></i> 退出登录
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- 主内容区 -->
+            <div id="content" class="col-md-9 col-lg-10 ms-sm-auto main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">物品管理</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button type="button" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                            <i class="bi bi-plus"></i> 添加物品
+                        </button>
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-filter"></i> 筛选
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="filterByStatus('normal')">正常</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByStatus('damaged')">损坏</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByStatus('discarded')">丢弃</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByStatus('lent')">借出</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByFrequency('daily')">每天使用</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByFrequency('weekly')">每周使用</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByFrequency('monthly')">每月使用</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterByFrequency('rarely')">很少使用</a></li>
+                            </ul>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="搜索物品...">
+                            <button class="btn btn-sm btn-outline-secondary" type="button" id="searchButton">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 物品列表 -->
+                <div class="row" id="items-container">
+                    <!-- 物品卡片将通过JavaScript动态加载 -->
+                </div>
+                
+                <!-- 分页 -->
+                <div class="d-flex justify-content-center mt-4" id="pagination-container">
+                    <!-- 分页将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加物品模态框 -->
+    <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addItemModalLabel">添加物品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addItemForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">物品名称</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="specification" class="form-label">规格</label>
+                                <input type="text" class="form-control" id="specification">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="quantity" class="form-label">数量</label>
+                                <input type="number" class="form-control" id="quantity" value="1" min="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">价格</label>
+                                <input type="number" class="form-control" id="price" value="0" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="purchaseDate" class="form-label">购买日期</label>
+                                <input type="date" class="form-control" id="purchaseDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="warrantyPeriod" class="form-label">保修期（月）</label>
+                                <input type="number" class="form-control" id="warrantyPeriod" min="0">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="usageFrequency" class="form-label">使用频率</label>
+                                <select class="form-select" id="usageFrequency">
+                                    <option value="daily">每天</option>
+                                    <option value="weekly">每周</option>
+                                    <option value="monthly">每月</option>
+                                    <option value="rarely">很少</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="usageYears" class="form-label">使用年限</label>
+                                <input type="number" class="form-control" id="usageYears" min="0">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">状态</label>
+                                <select class="form-select" id="status">
+                                    <option value="normal">正常</option>
+                                    <option value="damaged">损坏</option>
+                                    <option value="discarded">丢弃</option>
+                                    <option value="lent">借出</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="spaceId" class="form-label">存放空间</label>
+                                <select class="form-select" id="spaceId">
+                                    <!-- 空间选项将通过AJAX加载 -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remark" class="form-label">备注</label>
+                            <textarea class="form-control" id="remark" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="addItem()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 物品详情模态框将通过JavaScript动态创建 -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载物品列表
+            loadItems();
+            
+            // 加载空间选项
+            loadSpaceOptions();
+            
+            // 搜索按钮点击事件
+            document.getElementById('searchButton').addEventListener('click', function() {
+                const keyword = document.getElementById('searchInput').value.trim();
+                if (keyword) {
+                    searchItems(keyword);
+                } else {
+                    loadItems();
+                }
+            });
+            
+            // 搜索框回车事件
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const keyword = this.value.trim();
+                    if (keyword) {
+                        searchItems(keyword);
+                    } else {
+                        loadItems();
+                    }
+                }
+            });
+        });
+        
+        /**
+         * 搜索物品
+         */
+        function searchItems(keyword) {
+            // 获取家庭ID
+            const familyId = getFamilyId();
+            
+            // 构建API URL
+            const url = `/api/items/page?current=1&size=10&name=${encodeURIComponent(keyword)}&familyId=${familyId}`;
+            
+            // 发送请求搜索物品
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        renderItemList(data.data);
+                    } else {
+                        showMessage('error', '搜索物品失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('error', '搜索物品失败，请检查网络连接');
+                });
+        }
+        
+        /**
+         * 根据状态筛选物品
+         */
+        function filterByStatus(status) {
+            // 获取家庭ID
+            const familyId = getFamilyId();
+            
+            // 构建API URL
+            const url = `/api/items/page?current=1&size=10&status=${status}&familyId=${familyId}`;
+            
+            // 发送请求筛选物品
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        renderItemList(data.data);
+                    } else {
+                        showMessage('error', '筛选物品失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('error', '筛选物品失败，请检查网络连接');
+                });
+        }
+        
+        /**
+         * 根据使用频率筛选物品
+         */
+        function filterByFrequency(frequency) {
+            // 获取家庭ID
+            const familyId = getFamilyId();
+            
+            // 构建API URL
+            const url = `/api/items/page?current=1&size=10&usageFrequency=${frequency}&familyId=${familyId}`;
+            
+            // 发送请求筛选物品
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        renderItemList(data.data);
+                    } else {
+                        showMessage('error', '筛选物品失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('error', '筛选物品失败，请检查网络连接');
+                });
+        }
+        
+        /**
+         * 添加物品
+         */
+        function addItem() {
+            // 获取表单数据
+            const name = document.getElementById('name').value;
+            const specification = document.getElementById('specification').value;
+            const quantity = document.getElementById('quantity').value;
+            const price = document.getElementById('price').value;
+            const purchaseDate = document.getElementById('purchaseDate').value;
+            const warrantyPeriod = document.getElementById('warrantyPeriod').value;
+            const usageFrequency = document.getElementById('usageFrequency').value;
+            const usageYears = document.getElementById('usageYears').value;
+            const status = document.getElementById('status').value;
+            const spaceId = document.getElementById('spaceId').value;
+            const remark = document.getElementById('remark').value;
+            
+            // 表单验证
+            if (!name) {
+                showMessage('error', '物品名称不能为空');
+                return;
+            }
+            
+            if (!quantity || quantity < 1) {
+                showMessage('error', '数量必须大于0');
+                return;
+            }
+            
+            if (!price || price < 0) {
+                showMessage('error', '价格不能为负数');
+                return;
+            }
+            
+            // 构建请求数据
+            const itemData = {
+                name: name,
+                specification: specification,
+                quantity: parseInt(quantity),
+                price: parseFloat(price),
+                purchaseDate: purchaseDate || null,
+                warrantyPeriod: warrantyPeriod ? parseInt(warrantyPeriod) : null,
+                usageFrequency: usageFrequency,
+                usageYears: usageYears ? parseInt(usageYears) : null,
+                status: status,
+                spaceId: spaceId || null,
+                remark: remark,
+                familyId: getFamilyId()
+            };
+            
+            // 构建API URL
+            const url = '/api/items';
+            
+            // 发送请求添加物品
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(itemData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        showMessage('success', '添加成功');
+                        // 关闭模态框
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addItemModal'));
+                        modal.hide();
+                        // 重置表单
+                        document.getElementById('addItemForm').reset();
+                        // 刷新物品列表
+                        loadItems();
+                    } else {
+                        showMessage('error', '添加失败：' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage('error', '添加失败，请检查网络连接');
+                });
+        }
+        
+        /**
+         * 获取家庭ID
+         */
+        function getFamilyId() {
+            // 实际应用中可能从用户会话或本地存储中获取
+            // 这里暂时返回一个固定值，后续需要根据实际情况修改
+            return 1;
+        }
+        
+        /**
+         * 显示消息提示
+         */
+        function showMessage(type, message) {
+            // 创建提示元素
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            // 添加到页面
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.appendChild(toast);
+            document.body.appendChild(toastContainer);
+            
+            // 显示提示
+            const toastInstance = new bootstrap.Toast(toast);
+            toastInstance.show();
+            
+            // 提示消失后移除DOM
+            toast.addEventListener('hidden.bs.toast', function() {
+                document.body.removeChild(toastContainer);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭物品管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 移动端顶部导航 -->
+            <div class="d-md-none sticky-top bg-dark py-2 px-3 d-flex justify-content-between align-items-center">
+                <h5 class="text-white m-0">家庭物品管理</h5>
+                <button id="mobile-sidebar-toggle" class="btn btn-sm btn-outline-light" title="切换侧边栏">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+            
+            <!-- 侧边栏 -->
+            <div id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="d-flex justify-content-between align-items-center px-3 mb-4">
+                    <h5 class="m-0 d-none d-md-block">家庭物品管理</h5>
+                    <button id="sidebar-toggle" class="btn btn-sm btn-outline-light d-none d-md-block" title="折叠侧边栏">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="bi bi-house"></i> <span>首页</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/items}">
+                            <i class="bi bi-box"></i> <span>物品管理</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/categories}">
+                            <i class="bi bi-tags"></i> <span>分类管理</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/spaces}">
+                            <i class="bi bi-grid"></i> <span>空间管理</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/statistics}">
+                            <i class="bi bi-bar-chart"></i> <span>统计报表</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/settings}">
+                            <i class="bi bi-gear"></i> <span>系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mt-auto p-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <img th:if="${user.avatar}" th:src="${user.avatar}" class="rounded-circle me-2" width="32" height="32" alt="用户头像">
+                        <img th:unless="${user.avatar}" src="/img/default-avatar.png" class="rounded-circle me-2" width="32" height="32" alt="用户头像">
+                        <span th:text="${user.username}">用户名</span>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-light w-100">
+                            <i class="bi bi-box-arrow-right"></i> 退出登录
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- 移动端背景遮罩 -->
+            <div id="sidebar-backdrop" class="position-fixed top-0 left-0 w-100 h-100 bg-dark d-none d-md-none" style="opacity: 0.5; z-index: 1020;"></div>
+            
+            <!-- 主内容区 -->
+            <div id="content" class="col-md-9 col-lg-10 ms-sm-auto main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">欢迎使用家庭物品管理系统</h1>
+                </div>
+                
+                <!-- 概览卡片 -->
+                <div class="row mb-4">
+                    <div class="col-6 col-md-3 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">物品总数</h5>
+                                <h2 class="card-text text-primary" th:text="${itemCount}">0</h2>
+                                <p class="card-text text-muted">所有物品数量</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">物品总价值</h5>
+                                <h2 class="card-text text-success" th:text="${#numbers.formatDecimal(totalValue, 0, 'COMMA', 2, 'POINT')}">0.00</h2>
+                                <p class="card-text text-muted">所有物品价值总和</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">分类数量</h5>
+                                <h2 class="card-text text-info" th:text="${categoryCount}">0</h2>
+                                <p class="card-text text-muted">所有分类数量</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">空间数量</h5>
+                                <h2 class="card-text text-warning" th:text="${spaceCount}">0</h2>
+                                <p class="card-text text-muted">所有空间数量</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 最近添加的物品 -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">最近添加的物品</h5>
+                        <a th:href="@{/items}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th class="d-none d-md-table-cell">规格</th>
+                                        <th class="d-none d-md-table-cell">数量</th>
+                                        <th>价格</th>
+                                        <th>状态</th>
+                                        <th class="d-none d-lg-table-cell">购买日期</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${recentItems}">
+                                        <td th:text="${item.name}">物品名称</td>
+                                        <td class="d-none d-md-table-cell" th:text="${item.specification}">规格</td>
+                                        <td class="d-none d-md-table-cell" th:text="${item.quantity}">1</td>
+                                        <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                        <td>
+                                            <span th:class="${'badge ' + (item.status == 'normal' ? 'bg-success' : 
+                                                                item.status == 'damaged' ? 'bg-warning' : 
+                                                                item.status == 'discarded' ? 'bg-secondary' : 
+                                                                item.status == 'lent' ? 'bg-info' : 'bg-secondary')}" 
+                                                  th:text="${item.status == 'normal' ? '正常' : 
+                                                            item.status == 'damaged' ? '损坏' : 
+                                                            item.status == 'discarded' ? '丢弃' : 
+                                                            item.status == 'lent' ? '借出' : '未知'}">状态</span>
+                                        </td>
+                                        <td class="d-none d-lg-table-cell" th:text="${#temporals.format(item.purchaseDate, 'yyyy-MM-dd')}">2023-01-01</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{'/items/' + ${item.id}}" class="btn btn-outline-primary">
+                                                    <i class="bi bi-eye d-md-none"></i>
+                                                    <span class="d-none d-md-inline">详情</span>
+                                                </a>
+                                                <a th:href="@{'/items/edit/' + ${item.id}}" class="btn btn-outline-secondary">
+                                                    <i class="bi bi-pencil d-md-none"></i>
+                                                    <span class="d-none d-md-inline">编辑</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentItems)}">
+                                        <td colspan="7" class="text-center">暂无数据</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 即将过期的物品 -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">即将过期的物品</h5>
+                        <a th:href="@{/items/expiring}" class="btn btn-sm btn-outline-warning">查看全部</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th class="d-none d-md-table-cell">规格</th>
+                                        <th class="d-none d-lg-table-cell">保修期</th>
+                                        <th class="d-none d-md-table-cell">保修截止日期</th>
+                                        <th>剩余天数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${expiringItems}">
+                                        <td th:text="${item.name}">物品名称</td>
+                                        <td class="d-none d-md-table-cell" th:text="${item.specification}">规格</td>
+                                        <td class="d-none d-lg-table-cell" th:text="${item.warrantyPeriod + '个月'}">12个月</td>
+                                        <td class="d-none d-md-table-cell" th:text="${#temporals.format(item.warrantyEndDate, 'yyyy-MM-dd')}">2023-12-31</td>
+                                        <td th:text="${item.remainingDays + '天'}">30天</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{'/items/' + ${item.id}}" class="btn btn-outline-primary">
+                                                    <i class="bi bi-eye d-md-none"></i>
+                                                    <span class="d-none d-md-inline">详情</span>
+                                                </a>
+                                                <a th:href="@{'/items/edit/' + ${item.id}}" class="btn btn-outline-secondary">
+                                                    <i class="bi bi-pencil d-md-none"></i>
+                                                    <span class="d-none d-md-inline">编辑</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(expiringItems)}">
+                                        <td colspan="6" class="text-center">暂无数据</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 移动端底部导航栏 -->
+    <nav class="mobile-nav d-md-none">
+        <div class="nav-item">
+            <a class="nav-link active" th:href="@{/}">
+                <i class="bi bi-house"></i>
+                <span>首页</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" th:href="@{/items}">
+                <i class="bi bi-box"></i>
+                <span>物品</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" th:href="@{/categories}">
+                <i class="bi bi-tags"></i>
+                <span>分类</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" th:href="@{/spaces}">
+                <i class="bi bi-grid"></i>
+                <span>空间</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" th:href="@{/settings}">
+                <i class="bi bi-gear"></i>
+                <span>设置</span>
+            </a>
+        </div>
+    </nav>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

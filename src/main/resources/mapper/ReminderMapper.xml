@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chii.homemanagement.mapper.ReminderMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.chii.homemanagement.entity.Reminder">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="item_id" property="itemId"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="remind_date" property="remindDate"/>
+        <result column="status" property="status"/>
+        <result column="family_id" property="familyId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    
+    <!-- 查询指定日期的提醒 -->
+    <select id="findRemindersByDate" resultMap="BaseResultMap">
+        SELECT * FROM reminder 
+        WHERE family_id = #{familyId} 
+        AND remind_date = #{date}
+        ORDER BY id DESC
+    </select>
+    
+    <!-- 查询某个状态的提醒 -->
+    <select id="findRemindersByStatus" resultMap="BaseResultMap">
+        SELECT * FROM reminder 
+        WHERE family_id = #{familyId} 
+        AND status = #{status}
+        ORDER BY remind_date ASC, id DESC
+    </select>
+    
+    <!-- 查询物品相关的所有提醒 -->
+    <select id="findRemindersByItemId" resultMap="BaseResultMap">
+        SELECT * FROM reminder 
+        WHERE item_id = #{itemId}
+        ORDER BY remind_date ASC, id DESC
+    </select>
+    
+</mapper> 

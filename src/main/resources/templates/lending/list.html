@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>借用管理 - 家庭物品管理系统</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.1.3/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.15.4/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="common/header :: header"></div>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div th:replace="common/sidebar :: sidebar"></div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">借用管理</h5>
+                        <div>
+                            <a th:href="@{/lendings/create}" class="btn btn-sm btn-success me-2">
+                                <i class="fas fa-plus"></i> 新增借出
+                            </a>
+                            <a th:href="@{/lendings/unreturned}" class="btn btn-sm btn-warning me-2">
+                                <i class="fas fa-exclamation-triangle"></i> 未归还
+                            </a>
+                            <a th:href="@{/lendings/all}" class="btn btn-sm btn-info">
+                                <i class="fas fa-list"></i> 所有记录
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- 筛选器 -->
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <form id="filterForm" method="get" th:action="@{/lendings/search}">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label for="statusFilter" class="form-label visually-hidden">状态</label>
+                                        <select id="statusFilter" class="form-select" name="status" aria-label="借用状态筛选">
+                                            <option value="">所有状态</option>
+                                            <option value="lending">借出中</option>
+                                            <option value="returned">已归还</option>
+                                            <option value="overdue">逾期未还</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="input-group">
+                                            <span class="visually-hidden">借出日期范围</span>
+                                            <input type="date" class="form-control" name="dateFrom" placeholder="借出日期从" aria-label="借出日期开始">
+                                            <span class="input-group-text">至</span>
+                                            <input type="date" class="form-control" name="dateTo" placeholder="借出日期至" aria-label="借出日期结束">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="borrowerNameFilter" class="form-label visually-hidden">借用人</label>
+                                        <input id="borrowerNameFilter" type="text" class="form-control" name="borrowerName" placeholder="借用人" aria-label="借用人筛选">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-primary w-100">筛选</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- 借用列表 -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>物品名称</th>
+                                        <th>借用人</th>
+                                        <th>借出日期</th>
+                                        <th>预计归还</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="lending : ${lendings}" th:class="${lending.status == 'overdue' ? 'table-danger' : (lending.status == 'lending' && #temporals.createToday().isAfter(lending.expectedReturnDate) ? 'table-warning' : '')}">
+                                        <td>
+                                            <a th:href="@{/items/{id}(id=${lending.itemId})}" th:text="${lending.itemName}"></a>
+                                        </td>
+                                        <td>
+                                            <span th:text="${lending.borrowerName}"></span>
+                                            <small th:if="${lending.borrowerContact}" class="text-muted d-block" th:text="${lending.borrowerContact}"></small>
+                                        </td>
+                                        <td th:text="${#temporals.format(lending.lendDate, 'yyyy-MM-dd')}"></td>
+                                        <td th:text="${lending.expectedReturnDate != null ? #temporals.format(lending.expectedReturnDate, 'yyyy-MM-dd') : '-'}"></td>
+                                        <td>
+                                            <span th:if="${lending.status == 'lending'}" class="badge bg-primary">借出中</span>
+                                            <span th:if="${lending.status == 'returned'}" class="badge bg-success">已归还</span>
+                                            <span th:if="${lending.status == 'overdue'}" class="badge bg-danger">逾期未还</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a th:href="@{/lendings/{id}(id=${lending.id})}" class="btn btn-outline-info" title="查看详情">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a th:if="${lending.status != 'returned'}" th:href="@{/lendings/{id}/return(id=${lending.id})}" class="btn btn-outline-success" title="归还">
+                                                    <i class="fas fa-undo"></i>
+                                                </a>
+                                                <a th:if="${lending.status != 'returned'}" th:href="@{/lendings/{id}/edit(id=${lending.id})}" class="btn btn-outline-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a th:href="@{/lendings/{id}/delete(id=${lending.id})}" class="btn btn-outline-danger btn-delete" title="删除" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-id="${lending.id}">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(lendings)}">
+                                        <td colspan="6" class="text-center">没有找到借用记录</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 分页 -->
+                        <nav th:if="${totalPages > 1}" aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{${'/lendings' + urlParamsWithoutPage + '&page=1'}}">首页</a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{${'/lendings' + urlParamsWithoutPage + '&page=' + (currentPage - 1)}}">上一页</a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage} ? 'active'">
+                                    <a class="page-link" th:href="@{${'/lendings' + urlParamsWithoutPage + '&page=' + i}}" th:text="${i}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                    <a class="page-link" th:href="@{${'/lendings' + urlParamsWithoutPage + '&page=' + (currentPage + 1)}}">下一页</a>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                                    <a class="page-link" th:href="@{${'/lendings' + urlParamsWithoutPage + '&page=' + totalPages}}">末页</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除确认模态框 -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">确认删除</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    确定要删除这条借用记录吗？此操作不可撤销。
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteForm" th:action="@{/lendings/{id}/delete}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-danger">确认删除</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="common/footer :: footer"></div>
+    
+    <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.1.3/js/bootstrap.bundle.min.js}"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            // 处理删除模态框
+            $('.btn-delete').click(function() {
+                let id = $(this).data('id');
+                $('#deleteForm').attr('action', '/lendings/' + id + '/delete');
+            });
+        });
+    </script>
+</body>
+</html> 

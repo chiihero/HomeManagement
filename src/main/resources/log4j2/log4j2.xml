@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status=debug 可以查看log4j的装配过程 -->
+<Configuration status="debug">
+    <!-- 定义下面的引用名 -->
+    <!--
+        自定义格式：
+            %t：线程名称
+            %p：日志级别
+            %c：日志消息所在类名
+            %m：消息内容
+            %M：输出执行方法
+            %d：发生时间，%d{yyyy-MM-dd HH:mm:ss,SSS}，输出类似：2018-10-18 22:10:28,921
+            %x: 输出和当前线程相关联的NDC(嵌套诊断环境),尤其用到像java servlets这样的多客户多线程的应用中。
+            %L：代码中的行数
+            %n：换行
+        -->
+    <!-- 文件路径 -->
+
+    <Properties>
+        <!--        设置日志在硬盘上输出的目录${log4j:configParentLocation}使用此查找将日志文件放在相对于log4j配置文件的目录中-->
+        <!--        <Property name="log_home">D:\\log\\irobot</Property>-->
+        <Property name="log_home">log</Property>
+
+        <!-- 日志文件最小切割单位 -->
+        <Property name="every_file_size">100MB</Property>
+
+        <!-- *必须并强制遵守 日志格式说明-->
+        <Property name="log_pattern">[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%p] [%t] [%C] - %m%n</Property>
+
+    </Properties>
+
+    <!--先定义所有的appender-->
+    <Appenders>
+        <!--输出控制台的配置-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--输出日志的格式
+            %L:：输出代码中的行号。
+            %M：输出产生日志信息的方法名。-->
+            <!--"%highlight{%d{HH:mm:ss.SSS} %-5level %Logger{36}.%M() @%L - %msg%n}{FATAL=Bright Red, ERROR=Bright Magenta, WARN=Bright Yellow, INFO=Bright Green, DEBUG=Bright Cyan, TRACE=Bright White}"-->
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36}.%M @%L :-> %msg%xEx%n"/>
+        </Console>
+
+        <!--这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
+        <RollingFile name="RollingFileInfo" fileName="${log_home}/info.log"
+                     filePattern="${log_home}/info-%d{yyyy-MM-dd}-%i.log">
+            <!--            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36}.%M @%L :-> %msg%xEx%n"/>-->
+            <PatternLayout pattern="${log_pattern}"/>
+
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+        <RollingFile name="RollingFileError" fileName="${log_home}/error.log"
+                     filePattern="${log_home}/error-%d{yyyy-MM-dd}-%i.log">
+            <!--            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36}.%M @%L :-> %msg%xEx%n"/>-->
+            <PatternLayout pattern="${log_pattern}"/>
+
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="${every_file_size}"/>
+            </Policies>
+        </RollingFile>
+
+    </Appenders>
+    <!--trace<debug<info<warn<error<fatal-->
+    <!--然后定义Logger，只有定义了Logger并引入的appender，appender才会生效-->
+    <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+    <!--log4j的additivity属性： additivity它是 子Logger 是否继承 父Logger 的 输出源（appender） 的标志位。
+    具体说，默认情况下子Logger会继承父Logger的appender，也就是说子Logger会在父Logger的appender里输出。
+    若是additivity设为false，则子Logger只会在自己的appender里输出，而不会在父Logger的appender里输出。！-->
+    <!--<Logger name="org" level="INFO" additivity="false" ></Logger>-->
+    <!--<Logger name="org.springframework" level="INFO" additivity="false"></Logger>-->
+    <!--<Logger name="org.mybatis" level="INFO" additivity="false"></Logger>-->
+    <Loggers>
+        <Logger name="org.springframework.core" level="info">
+        </Logger>
+        <Logger name="org.springframework.beans" level="info">
+        </Logger>
+        <Logger name="org.springframework.context" level="info">
+        </Logger>
+        <Logger name="org.springframework.web" level="info">
+        </Logger>
+        <root level="info" includeLocation="true">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+
+    </Loggers>
+</Configuration>
