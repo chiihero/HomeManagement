@@ -25,14 +25,14 @@ public class Reminder {
     private Long id;
 
     /**
-     * 提醒类型: warranty-保修到期，maintenance-定期维护，return-借用归还，expiry-物品过期
+     * 提醒类型: warranty-保修到期，maintenance-定期维护，lending-借用归还，expiry-物品过期，other-其他
      */
     private String type;
 
     /**
-     * 关联物品ID
+     * 关联实体ID
      */
-    private Long itemId;
+    private Long entityId;
 
     /**
      * 提醒标题
@@ -50,14 +50,19 @@ public class Reminder {
     private LocalDate remindDate;
 
     /**
-     * 状态: pending-待提醒，sent-已提醒，processed-已处理
+     * 状态: pending-待提醒，sent-已提醒，processed-已处理，ignored-已忽略
      */
     private String status;
 
     /**
-     * 所属家庭ID
+     * 所属所有者ID
      */
-    private Long familyId;
+    private Long ownerId;
+    
+    /**
+     * 创建用户ID
+     */
+    private Long createUserId;
 
     /**
      * 创建时间

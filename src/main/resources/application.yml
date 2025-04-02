@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 26000
 spring:
   profiles:
     active: my

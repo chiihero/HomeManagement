@@ -100,11 +100,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean validatePassword(String username, String password) {
+        // 根据用户名获取用户
         User user = getUserByUsername(username);
         if (user == null) {
             return false;
         }
 
+        // 使用passwordEncoder验证密码
         return passwordEncoder.matches(password, user.getPassword());
     }
 } 

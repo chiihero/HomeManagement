@@ -1,11 +1,12 @@
 package com.chii.homemanagement.controller;
 
-import com.chii.homemanagement.entity.Item;
+import com.chii.homemanagement.entity.Entity;
 import com.chii.homemanagement.entity.Reminder;
+import com.chii.homemanagement.entity.Tag;
 import com.chii.homemanagement.entity.User;
-import com.chii.homemanagement.service.ItemLendingService;
-import com.chii.homemanagement.service.ItemService;
+import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.ReminderService;
+import com.chii.homemanagement.service.TagService;
 import com.chii.homemanagement.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,110 +32,125 @@ import java.util.stream.Collectors;
 public class DashboardController {
 
     @Autowired
-    private ItemService itemService;
+    private EntityService entityService;
 
     @Autowired
     private ReminderService reminderService;
 
-    @Autowired
-    private ItemLendingService itemLendingService;
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private TagService tagService;
 
     /**
      * 仪表盘页面
      */
     @GetMapping
-    public String dashboard(Model model, HttpSession session) {
+    public String dashboard(@ModelAttribute("model") Model model, HttpSession session) {
         // 获取当前用户
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/auth/login";
         }
 
-        // 获取当前家庭ID
-        Long familyId = (Long) session.getAttribute("currentFamilyId");
-        if (familyId == null) {
-            // 如果未选择家庭，重定向到首页
+        // 获取当前所有者ID
+        Long ownerId = (Long) session.getAttribute("currentownerId");
+        if (ownerId == null) {
+            // 如果未选择所有者，重定向到首页
             return "redirect:/";
         }
 
         model.addAttribute("user", user);
 
-        // 物品总数
-        List<Item> allItems = itemService.getItemsByFamilyId(familyId);
-        model.addAttribute("totalItems", allItems.size());
+        // 实体总数（物品类型）
+        List<Entity> allEntities = entityService.getEntitiesByType(ownerId, "item");
+        model.addAttribute("totalItems", allEntities.size());
 
-        // 计算物品总价值
-        BigDecimal totalValue = allItems.stream()
-                .map(item -> item.getPrice() != null ? item.getPrice().multiply(new BigDecimal(item.getQuantity())) : BigDecimal.ZERO)
+        // 计算实体总价值
+        BigDecimal totalValue = allEntities.stream()
+                .map(entity -> entity.getPrice() != null && entity.getQuantity() != null ? 
+                     entity.getPrice().multiply(new BigDecimal(entity.getQuantity())) : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         model.addAttribute("totalValue", totalValue);
 
-        // 借出物品数量
-        long lentItemsCount = allItems.stream()
-                .filter(item -> "lent".equals(item.getStatus()))
+        // 借出实体数量
+        long lentEntitiesCount = allEntities.stream()
+                .filter(entity -> "lent".equals(entity.getStatus()))
                 .count();
-        model.addAttribute("lentItemsCount", lentItemsCount);
+        model.addAttribute("lentItemsCount", lentEntitiesCount);
 
         // 待处理提醒
-        List<Reminder> pendingReminders = reminderService.getRemindersByStatus(familyId, "pending");
+        List<Reminder> pendingReminders = reminderService.getRemindersByStatus(ownerId, "pending");
         model.addAttribute("pendingRemindersCount", pendingReminders.size());
         model.addAttribute("pendingReminders", pendingReminders.stream().limit(5).collect(Collectors.toList()));
 
         // 今日提醒
-        List<Reminder> todayReminders = reminderService.getTodayReminders(familyId);
+        List<Reminder> todayReminders = reminderService.getTodayReminders(ownerId);
         model.addAttribute("todayRemindersCount", todayReminders.size());
 
-        // 分类物品分布数据
-        prepareCategoryChartData(allItems, model);
+        // 标签实体分布数据
+        prepareTagChartData(ownerId, model);
 
-        // 空间物品分布数据
-        prepareSpaceChartData(allItems, model);
+        // 实体层级分布数据
+        prepareEntityChartData(allEntities, model);
 
         // 使用频率分析数据
-        prepareUsageChartData(allItems, model);
+        prepareUsageChartData(allEntities, model);
 
         // 最近活动
-        prepareRecentActivities(familyId, model);
+        prepareRecentActivities(ownerId, model);
 
         return "dashboard";
     }
 
     /**
-     * 准备分类物品分布数据
+     * 准备标签物品分布数据
      */
-    private void prepareCategoryChartData(List<Item> items, Model model) {
-        // 此处实际应该从分类关联表中聚合数据
-        // 这里使用模拟数据
-        List<Map<String, Object>> categoryData = new ArrayList<>();
-        List<String> categoryNames = new ArrayList<>();
+    private void prepareTagChartData(Long ownerId, Model model) {
+        // 从标签服务中获取所有标签
+        List<Tag> tags = tagService.getTagsByOwnerId(ownerId);
+        List<Map<String, Object>> tagData = new ArrayList<>();
+        List<String> tagNames = new ArrayList<>();
 
-        Map<String, Integer> categoryCountMap = new HashMap<>();
-        categoryCountMap.put("电子产品", 15);
-        categoryCountMap.put("家具", 10);
-        categoryCountMap.put("厨房用品", 8);
-        categoryCountMap.put("书籍", 12);
-        categoryCountMap.put("其他", 5);
+        // 如果没有可用的标签数据，创建模拟数据
+        if (tags.isEmpty()) {
+            Map<String, Integer> tagCountMap = new HashMap<>();
+            tagCountMap.put("电子", 15);
+            tagCountMap.put("家具", 10);
+            tagCountMap.put("厨房", 8);
+            tagCountMap.put("书籍", 12);
+            tagCountMap.put("其他", 5);
 
-        for (Map.Entry<String, Integer> entry : categoryCountMap.entrySet()) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("name", entry.getKey());
-            data.put("value", entry.getValue());
-            categoryData.add(data);
-            categoryNames.add(entry.getKey());
+            for (Map.Entry<String, Integer> entry : tagCountMap.entrySet()) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", entry.getKey());
+                data.put("value", entry.getValue());
+                tagData.add(data);
+                tagNames.add(entry.getKey());
+            }
+        } else {
+            // 实际应用中，应该有一个方法来统计每个标签关联的物品数量
+            // 这里简单模拟随机数量
+            for (Tag tag : tags) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", tag.getName());
+                data.put("value", (int) (Math.random() * 20) + 1); // 随机1-20个物品
+                tagData.add(data);
+                tagNames.add(tag.getName());
+            }
         }
 
-        model.addAttribute("categoryData", categoryData);
-        model.addAttribute("categoryNames", categoryNames);
+        model.addAttribute("tagData", tagData);
+        model.addAttribute("tagNames", tagNames);
     }
 
     /**
-     * 准备空间物品分布数据
+     * 准备实体分布数据
      */
-    private void prepareSpaceChartData(List<Item> items, Model model) {
-        // 此处实际应该从空间表中聚合数据
+    private void prepareEntityChartData(List<Entity> entities, Model model) {
+        // 此处应该统计父实体内的子实体数量
         // 这里使用模拟数据
         List<Map<String, Object>> spaceData = new ArrayList<>();
         List<String> spaceNames = new ArrayList<>();
@@ -161,11 +178,11 @@ public class DashboardController {
     /**
      * 准备使用频率分析数据
      */
-    private void prepareUsageChartData(List<Item> items, Model model) {
+    private void prepareUsageChartData(List<Entity> entities, Model model) {
         // 统计使用频率分布
-        Map<String, Long> usageFrequencyMap = items.stream()
+        Map<String, Long> usageFrequencyMap = entities.stream()
                 .collect(Collectors.groupingBy(
-                        item -> item.getUsageFrequency() != null ? item.getUsageFrequency() : "unknown",
+                        entity -> entity.getUsageFrequency() != null ? entity.getUsageFrequency() : "unknown",
                         Collectors.counting()
                 ));
 
@@ -182,45 +199,38 @@ public class DashboardController {
     /**
      * 准备最近活动数据
      */
-    private void prepareRecentActivities(Long familyId, Model model) {
+    private void prepareRecentActivities(Long ownerId, Model model) {
         // 实际应用中，这里应该有一个活动日志表
         // 这里使用模拟数据
         List<Map<String, Object>> activities = new ArrayList<>();
 
         Map<String, Object> activity1 = new HashMap<>();
-        activity1.put("title", "新增物品");
-        activity1.put("description", "张三添加了新物品：小米手机");
+        activity1.put("title", "新增实体");
+        activity1.put("description", "张三添加了新实体：小米手机");
         activity1.put("time", LocalDate.now().atTime(9, 30));
         activity1.put("user", "张三");
         activities.add(activity1);
 
         Map<String, Object> activity2 = new HashMap<>();
-        activity2.put("title", "物品借出");
-        activity2.put("description", "李四借出了物品：电动工具");
+        activity2.put("title", "实体借出");
+        activity2.put("description", "李四借出了实体：电动工具");
         activity2.put("time", LocalDate.now().atTime(11, 15));
         activity2.put("user", "李四");
         activities.add(activity2);
 
         Map<String, Object> activity3 = new HashMap<>();
-        activity3.put("title", "物品归还");
-        activity3.put("description", "王五归还了物品：小型投影仪");
-        activity3.put("time", LocalDate.now().minusDays(1).atTime(16, 45));
+        activity3.put("title", "新增标签");
+        activity3.put("description", "王五创建了新标签：电子设备");
+        activity3.put("time", LocalDate.now().minusDays(1).atTime(15, 45));
         activity3.put("user", "王五");
         activities.add(activity3);
 
         Map<String, Object> activity4 = new HashMap<>();
-        activity4.put("title", "处理提醒");
-        activity4.put("description", "张三处理了保修到期提醒：笔记本电脑");
-        activity4.put("time", LocalDate.now().minusDays(1).atTime(10, 20));
-        activity4.put("user", "张三");
+        activity4.put("title", "添加新实体");
+        activity4.put("description", "赵六添加了新实体：储物箱");
+        activity4.put("time", LocalDate.now().minusDays(1).atTime(16, 30));
+        activity4.put("user", "赵六");
         activities.add(activity4);
-
-        Map<String, Object> activity5 = new HashMap<>();
-        activity5.put("title", "更新物品");
-        activity5.put("description", "李四更新了物品信息：洗衣机");
-        activity5.put("time", LocalDate.now().minusDays(2).atTime(14, 30));
-        activity5.put("user", "李四");
-        activities.add(activity5);
 
         model.addAttribute("recentActivities", activities);
     }

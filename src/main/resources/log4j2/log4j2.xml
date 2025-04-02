@@ -89,6 +89,8 @@
         </Logger>
         <Logger name="org.springframework.web" level="info">
         </Logger>
+        <Logger name="com.chii.homemanagement" level="debug">
+        </Logger>
         <root level="info" includeLocation="true">
             <appender-ref ref="Console"/>
             <appender-ref ref="RollingFileInfo"/>

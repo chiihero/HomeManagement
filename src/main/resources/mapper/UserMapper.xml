@@ -21,5 +21,9 @@
         id, username, password, email, phone, nickname, avatar, status, create_time, update_time
     </sql>
     
+    <!-- 根据用户ID获取用户名 -->
+    <select id="getUserName" resultType="java.lang.String">
+        SELECT username FROM user WHERE id = #{user_id}
+    </select>
 
 </mapper> 

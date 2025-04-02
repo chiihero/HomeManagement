@@ -17,26 +17,26 @@ public interface ReminderMapper extends BaseMapper<Reminder> {
     /**
      * 查询指定日期的提醒
      *
-     * @param familyId 家庭ID
+     * @param ownerId 所有者ID
      * @param date     日期
      * @return 提醒列表
      */
-    List<Reminder> findRemindersByDate(@Param("familyId") Long familyId, @Param("date") LocalDate date);
+    List<Reminder> findRemindersByDate(@Param("ownerId") Long ownerId, @Param("date") LocalDate date);
 
     /**
      * 查询某个状态的提醒
      *
-     * @param familyId 家庭ID
+     * @param ownerId 所有者ID
      * @param status   状态
      * @return 提醒列表
      */
-    List<Reminder> findRemindersByStatus(@Param("familyId") Long familyId, @Param("status") String status);
+    List<Reminder> findRemindersByStatus(@Param("ownerId") Long ownerId, @Param("status") String status);
 
     /**
-     * 查询物品相关的所有提醒
+     * 查询实体相关的所有提醒
      *
-     * @param itemId 物品ID
+     * @param entityId 实体ID
      * @return 提醒列表
      */
-    List<Reminder> findRemindersByItemId(@Param("itemId") Long itemId);
+    List<Reminder> findRemindersByEntityId(@Param("entityId") Long entityId);
 } 

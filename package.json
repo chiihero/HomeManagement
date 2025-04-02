@@ -1,0 +1,23 @@
+{
+  "name": "home-management-system",
+  "version": "1.0.0",
+  "description": "家庭物品管理系统",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cd vue-new && npm run dev",
+    "build": "cd vue-new && npm run build",
+    "preview": "cd vue-new && npm run preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "home",
+    "management",
+    "system"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+} 

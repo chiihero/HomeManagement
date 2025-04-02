@@ -6,12 +6,12 @@
     <resultMap id="BaseResultMap" type="com.chii.homemanagement.entity.Reminder">
         <id column="id" property="id"/>
         <result column="type" property="type"/>
-        <result column="item_id" property="itemId"/>
+        <result column="entity_id" property="entityId"/>
         <result column="title" property="title"/>
         <result column="content" property="content"/>
         <result column="remind_date" property="remindDate"/>
         <result column="status" property="status"/>
-        <result column="family_id" property="familyId"/>
+        <result column="owner_id" property="ownerId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -19,7 +19,7 @@
     <!-- 查询指定日期的提醒 -->
     <select id="findRemindersByDate" resultMap="BaseResultMap">
         SELECT * FROM reminder 
-        WHERE family_id = #{familyId} 
+        WHERE owner_id = #{ownerId}
         AND remind_date = #{date}
         ORDER BY id DESC
     </select>
@@ -27,7 +27,7 @@
     <!-- 查询某个状态的提醒 -->
     <select id="findRemindersByStatus" resultMap="BaseResultMap">
         SELECT * FROM reminder 
-        WHERE family_id = #{familyId} 
+        WHERE owner_id = #{ownerId}
         AND status = #{status}
         ORDER BY remind_date ASC, id DESC
     </select>
@@ -35,7 +35,7 @@
     <!-- 查询物品相关的所有提醒 -->
     <select id="findRemindersByItemId" resultMap="BaseResultMap">
         SELECT * FROM reminder 
-        WHERE item_id = #{itemId}
+        WHERE entity_id = #{entityId}
         ORDER BY remind_date ASC, id DESC
     </select>
     

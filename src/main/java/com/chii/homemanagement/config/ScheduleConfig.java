@@ -1,6 +1,5 @@
 package com.chii.homemanagement.config;
 
-import com.chii.homemanagement.service.ItemLendingService;
 import com.chii.homemanagement.service.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +16,6 @@ public class ScheduleConfig {
     @Autowired
     private ReminderService reminderService;
 
-    @Autowired
-    private ItemLendingService itemLendingService;
-
     /**
      * 每天凌晨1点处理提醒状态
      * 将到期提醒的状态从pending更新为sent
@@ -35,6 +31,5 @@ public class ScheduleConfig {
      */
     @Scheduled(cron = "0 0 2 * * ?")
     public void updateLendingStatus() {
-        itemLendingService.checkAndUpdateLendingStatus();
     }
 } 

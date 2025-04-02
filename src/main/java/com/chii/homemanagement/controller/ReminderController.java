@@ -57,8 +57,8 @@ public class ReminderController {
      * 获取当天提醒
      */
     @GetMapping("/today")
-    public ResponseInfo<List<Reminder>> getTodayReminders(@RequestParam Long familyId) {
-        return ResponseInfo.successResponse(reminderService.getTodayReminders(familyId));
+    public ResponseInfo<List<Reminder>> getTodayReminders(@RequestParam Long ownerId) {
+        return ResponseInfo.successResponse(reminderService.getTodayReminders(ownerId));
     }
 
     /**
@@ -66,18 +66,18 @@ public class ReminderController {
      */
     @GetMapping("/date-range")
     public ResponseInfo<List<Reminder>> getRemindersByDateRange(
-            @RequestParam Long familyId,
+            @RequestParam Long ownerId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByDateRange(familyId, startDate, endDate));
+        return ResponseInfo.successResponse(reminderService.getRemindersByDateRange(ownerId, startDate, endDate));
     }
 
     /**
      * 获取物品相关的提醒
      */
-    @GetMapping("/item/{itemId}")
-    public ResponseInfo<List<Reminder>> getRemindersByItemId(@PathVariable Long itemId) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByItemId(itemId));
+    @GetMapping("/entity/{entityId}")
+    public ResponseInfo<List<Reminder>> getRemindersByItemId(@PathVariable Long entityId) {
+        return ResponseInfo.successResponse(reminderService.getRemindersByEntityId(entityId));
     }
 
     /**
@@ -94,9 +94,9 @@ public class ReminderController {
      */
     @GetMapping("/status")
     public ResponseInfo<List<Reminder>> getRemindersByStatus(
-            @RequestParam Long familyId,
+            @RequestParam Long ownerId,
             @RequestParam String status) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByStatus(familyId, status));
+        return ResponseInfo.successResponse(reminderService.getRemindersByStatus(ownerId, status));
     }
 
     /**

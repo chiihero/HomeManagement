@@ -4,16 +4,18 @@ import com.chii.homemanagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +23,11 @@ public class SecurityConfig {
 
     @Autowired
     private UserService userService;
-    @Autowired  // 注入 PasswordEncoder
+    
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Bean
@@ -29,36 +35,30 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**", "/css/**", "/js/**", "/img/**", "/static/**", "/webjars/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/**", "/api/auth/**", "/css/**", "/js/**", "/img/**", "/static/**", "/webjars/**", "/uploads/**").permitAll()
                                 .anyRequest().authenticated()
                 )
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/auth/login")      // 登录页面
-                                .loginProcessingUrl("/auth/login")  // 添加登录处理路径
-                                .successHandler(authenticationSuccessHandler()) // 自定义登录成功处理器
-                                .failureUrl("/auth/login?error=true") // 登录失败跳转
-                                .permitAll()
-                )
+                // 禁用Spring Security表单登录，我们使用自定义的REST API登录
+                .formLogin(formLogin -> formLogin.disable())
                 .logout(logout ->
                         logout
-                                .logoutUrl("/logout")
+                                .logoutUrl("/api/auth/logout")  // 修改登出URL与前端一致
                                 .logoutSuccessUrl("/auth/login?logout=true")
                                 .permitAll()
                 )
                 .csrf(csrf ->
                         csrf.disable()  // 暂时禁用 CSRF 便于调试
-                );
+                )
+                // 支持 X-Forwarded-* 头信息
+                .requiresChannel(channel -> 
+                        channel.anyRequest().requiresInsecure()
+                )
+                // 设置为无状态会话，因为我们使用token方式认证
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 添加JWT过滤器
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
-        successHandler.setDefaultTargetUrl("/");
-        successHandler.setAlwaysUseDefaultTargetUrl(true);
-        return successHandler;
     }
 
     @Bean
@@ -68,5 +68,4 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(authProvider);
     }
-
 } 

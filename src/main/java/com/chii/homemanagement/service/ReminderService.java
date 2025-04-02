@@ -45,28 +45,29 @@ public interface ReminderService {
     /**
      * 获取当天提醒
      *
-     * @param familyId 家庭ID
+     * @param ownerId 所有者ID
      * @return 提醒列表
      */
-    List<Reminder> getTodayReminders(Long familyId);
+    List<Reminder> getTodayReminders(Long ownerId);
 
     /**
      * 获取指定日期范围的提醒
      *
-     * @param familyId  家庭ID
+     * @param ownerId  所有者ID
      * @param startDate 开始日期
      * @param endDate   结束日期
      * @return 提醒列表
      */
-    List<Reminder> getRemindersByDateRange(Long familyId, LocalDate startDate, LocalDate endDate);
+    List<Reminder> getRemindersByDateRange(Long ownerId, LocalDate startDate, LocalDate endDate);
+
 
     /**
-     * 获取物品相关的所有提醒
+     * 获取实体相关的所有提醒
      *
-     * @param itemId 物品ID
+     * @param entityId 实体ID
      * @return 提醒列表
      */
-    List<Reminder> getRemindersByItemId(Long itemId);
+    List<Reminder> getRemindersByEntityId(Long entityId);
 
     /**
      * 根据物品信息自动生成提醒
@@ -76,6 +77,13 @@ public interface ReminderService {
     void generateRemindersForItem(Long itemId);
 
     /**
+     * 根据实体信息自动生成提醒
+     *
+     * @param entityId 实体ID
+     */
+    void generateRemindersForEntity(Long entityId);
+
+    /**
      * 检查并更新过期提醒状态
      */
     void processExpiredReminders();
@@ -83,9 +91,9 @@ public interface ReminderService {
     /**
      * 按状态查询提醒
      *
-     * @param familyId 家庭ID
+     * @param ownerId 所有者ID
      * @param status   状态
      * @return 提醒列表
      */
-    List<Reminder> getRemindersByStatus(Long familyId, String status);
+    List<Reminder> getRemindersByStatus(Long ownerId, String status);
 } 

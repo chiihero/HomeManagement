@@ -29,16 +29,16 @@ public class StatisticsViewController {
             return "redirect:/auth/login";
         }
 
-        // 获取当前家庭ID
-        Long familyId = (Long) session.getAttribute("currentFamilyId");
-        if (familyId == null) {
-            // 如果未选择家庭，重定向到家庭选择页面
+        // 获取当前所有者ID
+        Long ownerId = (Long) session.getAttribute("currentownerId");
+        if (ownerId == null) {
+            // 如果未选择所有者，重定向到所有者选择页面
             return "redirect:/";
         }
 
         // 添加模型属性
         model.addAttribute("user", user);
-        model.addAttribute("familyId", familyId);
+        model.addAttribute("ownerId", ownerId);
 
         return "statistics/index";
     }

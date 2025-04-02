@@ -43,6 +43,11 @@ public class User {
     private String avatar;
 
     /**
+     * 角色：ADMIN-管理员，USER-普通用户
+     */
+    private String role;
+
+    /**
      * 状态：0-禁用，1-启用
      */
     private String status;

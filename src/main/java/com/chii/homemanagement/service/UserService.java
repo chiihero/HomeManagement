@@ -58,19 +58,17 @@ public interface UserService extends UserDetailsService {
     List<User> getAllUsers();
 
     /**
-     * 检查用户名是否已存在
-     *
+     * 验证用户名是否存在
      * @param username 用户名
      * @return 是否存在
      */
     boolean isUsernameExists(String username);
-
+    
     /**
-     * 验证用户密码
-     *
+     * 验证密码是否正确
      * @param username 用户名
      * @param password 密码
-     * @return 是否验证成功
+     * @return 是否正确
      */
     boolean validatePassword(String username, String password);
 } 
