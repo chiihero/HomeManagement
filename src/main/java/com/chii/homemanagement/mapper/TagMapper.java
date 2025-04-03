@@ -27,10 +27,10 @@ public interface TagMapper extends BaseMapper<Tag> {
     
     /**
      * 查询所有者的所有标签
-     * 
-     * @param ownerId 所有者ID
+     *
+     * @param userId 用户ID
      * @return 标签列表
      */
-    @Select("SELECT * FROM tag WHERE owner_id = #{ownerId}")
-    List<Tag> getTagsByOwnerId(@Param("ownerId") Long ownerId);
+    @Select("SELECT * FROM tag WHERE user_id = #{userId}")
+    List<Tag> getTagsByUserId(@Param("userId") Long userId);
 } 

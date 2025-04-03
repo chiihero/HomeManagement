@@ -55,9 +55,9 @@ public class Reminder {
     private String status;
 
     /**
-     * 所属所有者ID
+     * 所属用户ID
      */
-    private Long ownerId;
+    private Long userId;
     
     /**
      * 创建用户ID

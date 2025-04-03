@@ -78,6 +78,9 @@ public class AuthController {
             // 生成JWT令牌
             String token = jwtUtil.generateToken(userDetails.getUsername());
             
+            // 生成刷新令牌
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+            
             // 准备返回数据
             Map<String, Object> responseData = new HashMap<>();
             
@@ -93,6 +96,8 @@ public class AuthController {
             
             // 返回数据包括token和用户信息
             responseData.put("token", token);
+            responseData.put("refreshToken", refreshToken);
+            responseData.put("expiresIn", jwtUtil.getTokenExpiresIn());
             responseData.put("user", userInfo);
             responseData.put("loginTime", LocalDateTime.now());
             
@@ -170,6 +175,52 @@ public class AuthController {
             return ResponseInfo.successResponse();
         } catch (Exception e) {
             return ResponseInfo.errorResponse("登出失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 刷新Token
+     *
+     * @param refreshRequest 包含刷新令牌的请求
+     * @return 新的访问令牌和刷新令牌
+     */
+    @PostMapping("/refresh-token")
+    @Operation(summary = "刷新令牌", description = "使用刷新令牌获取新的访问令牌和刷新令牌")
+    public ResponseInfo<Map<String, Object>> refreshToken(@RequestBody Map<String, String> refreshRequest) {
+        String refreshTokenValue = refreshRequest.get("refreshToken");
+        
+        if (refreshTokenValue == null || refreshTokenValue.isEmpty()) {
+            return ResponseInfo.response(ResultCode.PARAM_NOT_COMPLETE);
+        }
+        
+        try {
+            // 验证刷新令牌
+            if (!jwtUtil.validateRefreshToken(refreshTokenValue)) {
+                return ResponseInfo.response(ResultCode.REFRESH_TOKEN_INVALID);
+            }
+            
+            // 获取用户名
+            String username = jwtUtil.getUsernameFromToken(refreshTokenValue);
+            
+            // 检查用户是否存在
+            User user = userService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseInfo.response(ResultCode.USER_ACCOUNT_NOT_EXIST);
+            }
+            
+            // 生成新的访问令牌和刷新令牌
+            String newToken = jwtUtil.generateToken(username);
+            String newRefreshToken = jwtUtil.generateRefreshToken(username);
+            
+            // 准备返回数据
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("token", newToken);
+            responseData.put("refreshToken", newRefreshToken);
+            responseData.put("expiresIn", jwtUtil.getTokenExpiresIn());
+            
+            return ResponseInfo.successResponse(responseData);
+        } catch (Exception e) {
+            return ResponseInfo.errorResponse("刷新令牌失败: " + e.getMessage());
         }
     }
 } 

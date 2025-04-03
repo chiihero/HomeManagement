@@ -6,9 +6,9 @@ import type { Reminder, ReminderQueryParams } from '@/types/reminder'
  * 获取提醒列表（根据状态或其他条件查询）
  * @param params 查询参数
  */
-export const getReminders = (params: { ownerId: number, status?: string, type?: string }): Promise<ResponseResult<Reminder[]>> => {
-  return http.get('/reminders', { params })
-}
+// export const getReminders = (params: { userId: number, status?: string, type?: string }): Promise<ResponseResult<Reminder[]>> => {
+//   return http.get('/reminders', { params })
+// }
 
 /**
  * 获取提醒详情
@@ -52,20 +52,20 @@ export const completeReminder = (id: string): Promise<ResponseResult<Reminder>> 
 
 /**
  * 获取今日提醒
- * @param ownerId 所有者ID
+ * @param userId 用户ID
  */
-export const getTodayReminders = (ownerId: number): Promise<ResponseResult<Reminder[]>> => {
-  return http.get(`/reminders/today`, { params: { ownerId } })
+export const getTodayReminders = (userId: number): Promise<ResponseResult<Reminder[]>> => {
+  return http.get(`/reminders/today`, { params: { userId } })
 }
 
 /**
  * 获取日期范围内提醒
- * @param ownerId 所有者ID
+ * @param userId 用户ID
  * @param startDate 开始日期
  * @param endDate 结束日期
  */
-export const getRemindersByDateRange = (ownerId: number, startDate: string, endDate: string): Promise<ResponseResult<Reminder[]>> => {
-  return http.get(`/reminders/date-range`, { params: { ownerId, startDate, endDate } })
+export const getRemindersByDateRange = (userId: number, startDate: string, endDate: string): Promise<ResponseResult<Reminder[]>> => {
+  return http.get(`/reminders/date-range`, { params: { userId, startDate, endDate } })
 }
 
 /**
@@ -78,11 +78,11 @@ export const getRemindersByEntityId = (entityId: string): Promise<ResponseResult
 
 /**
  * 获取特定状态的提醒
- * @param ownerId 所有者ID
+ * @param userId 用户ID
  * @param status 状态
  */
-export const getRemindersByStatus = (ownerId: number, status: string): Promise<ResponseResult<Reminder[]>> => {
-  return http.get(`/reminders/status`, { params: { ownerId, status } })
+export const getRemindersByStatus = (userId: number, status: string): Promise<ResponseResult<Reminder[]>> => {
+  return http.get(`/reminders/status`, { params: { userId, status } })
 }
 
 /**

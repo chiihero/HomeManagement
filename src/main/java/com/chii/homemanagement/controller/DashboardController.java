@@ -55,9 +55,9 @@ public class DashboardController {
             return "redirect:/auth/login";
         }
 
-        // 获取当前所有者ID
-        Long ownerId = (Long) session.getAttribute("currentownerId");
-        if (ownerId == null) {
+        // 获取当前用户ID
+        Long userId = (Long) session.getAttribute("currentuserId");
+        if (userId == null) {
             // 如果未选择所有者，重定向到首页
             return "redirect:/";
         }
@@ -65,7 +65,7 @@ public class DashboardController {
         model.addAttribute("user", user);
 
         // 实体总数（物品类型）
-        List<Entity> allEntities = entityService.getEntitiesByType(ownerId, "item");
+        List<Entity> allEntities = entityService.getEntitiesByType(userId, "item");
         model.addAttribute("totalItems", allEntities.size());
 
         // 计算实体总价值
@@ -82,16 +82,16 @@ public class DashboardController {
         model.addAttribute("lentItemsCount", lentEntitiesCount);
 
         // 待处理提醒
-        List<Reminder> pendingReminders = reminderService.getRemindersByStatus(ownerId, "pending");
+        List<Reminder> pendingReminders = reminderService.getRemindersByStatus(userId, "pending");
         model.addAttribute("pendingRemindersCount", pendingReminders.size());
         model.addAttribute("pendingReminders", pendingReminders.stream().limit(5).collect(Collectors.toList()));
 
         // 今日提醒
-        List<Reminder> todayReminders = reminderService.getTodayReminders(ownerId);
+        List<Reminder> todayReminders = reminderService.getTodayReminders(userId);
         model.addAttribute("todayRemindersCount", todayReminders.size());
 
         // 标签实体分布数据
-        prepareTagChartData(ownerId, model);
+        prepareTagChartData(userId, model);
 
         // 实体层级分布数据
         prepareEntityChartData(allEntities, model);
@@ -100,7 +100,7 @@ public class DashboardController {
         prepareUsageChartData(allEntities, model);
 
         // 最近活动
-        prepareRecentActivities(ownerId, model);
+        prepareRecentActivities(userId, model);
 
         return "dashboard";
     }
@@ -108,9 +108,9 @@ public class DashboardController {
     /**
      * 准备标签物品分布数据
      */
-    private void prepareTagChartData(Long ownerId, Model model) {
+    private void prepareTagChartData(Long userId, Model model) {
         // 从标签服务中获取所有标签
-        List<Tag> tags = tagService.getTagsByOwnerId(ownerId);
+        List<Tag> tags = tagService.getTagsByUserId(userId);
         List<Map<String, Object>> tagData = new ArrayList<>();
         List<String> tagNames = new ArrayList<>();
 
@@ -199,7 +199,7 @@ public class DashboardController {
     /**
      * 准备最近活动数据
      */
-    private void prepareRecentActivities(Long ownerId, Model model) {
+    private void prepareRecentActivities(Long userId, Model model) {
         // 实际应用中，这里应该有一个活动日志表
         // 这里使用模拟数据
         List<Map<String, Object>> activities = new ArrayList<>();

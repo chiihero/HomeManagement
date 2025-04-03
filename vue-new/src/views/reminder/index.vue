@@ -196,7 +196,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import moment from 'moment'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getReminderDetail, addReminder, updateReminder, deleteReminder, completeReminder, getRemindersByDateRange, getReminders } from '@/api/reminder'
+import { getReminderDetail, addReminder, updateReminder, deleteReminder, completeReminder, getRemindersByDateRange } from '@/api/reminder'
 import { searchEntities } from '@/api/entity'
 import type { Entity } from '@/types/entity'
 import type { Reminder, ReminderQueryParams } from '@/types/reminder'
@@ -261,7 +261,7 @@ onMounted(() => {
 const fetchReminderList = async () => {
   loading.value = true
   try {
-    const ownerId = authStore.currentUser?.id || 1 // 从store中获取当前用户ID
+    const userId = authStore.currentUser?.id || 1 // 从store中获取当前用户ID
     
     let reminders: Reminder[] = []
     
@@ -270,17 +270,16 @@ const fetchReminderList = async () => {
       const startDate = searchForm.dateRange[0]
       const endDate = searchForm.dateRange[1]
       
-      const { data } = await getRemindersByDateRange(ownerId, startDate, endDate)
+      const { data } = await getRemindersByDateRange(userId, startDate, endDate)
       reminders = data || []
     } else {
       // 无日期范围时，默认查询状态
-      const params = {
-        ownerId,
-        status: searchForm.status || undefined,
-        type: searchForm.type || undefined
-      }
-      const { data } = await getReminders(params)
-      reminders = data || []
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setMonth(startDate.getMonth() + 1);
+      const data = await getRemindersByDateRange(userId,startDate.toISOString().split('T')[0] ,endDate.toISOString().split('T')[0])
+      reminders = data.data || []
     }
     
     // 过滤处理其他查询条件
@@ -318,7 +317,7 @@ const searchItems = async (query: string) => {
     try {
       const { data } = await searchEntities({ 
         keyword: query, 
-        ownerId: authStore.currentUser?.id || 1 // 添加ownerId参数
+        userId: authStore.currentUser?.id || 1 // 添加userId参数
       })
       entityOptions.value = data
     } catch (error) {
@@ -530,7 +529,7 @@ const getReminderStatusColor = (status: string) => {
 
 <style scoped>
 .reminder-manage {
-  padding: 16px;
+  padding: 0;
 }
 
 .header {
@@ -552,5 +551,18 @@ const getReminderStatusColor = (status: string) => {
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* 添加响应式支持 */
+@media screen and (max-width: 767px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .pagination {
+    justify-content: center;
+  }
 }
 </style> 

@@ -1,16 +1,16 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container page-container">
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-        <div class="welcome-panel">
+        <div class="welcome-panel custom-card">
           <h2>欢迎回来，{{ userInfo.nickname || userInfo.username }}</h2>
           <p>今天是 {{ currentDate }}，{{ welcomeMessage }}</p>
         </div>
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" class="data-overview">
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+    <div class="row data-overview">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4">
         <el-card class="overview-card" shadow="hover">
           <div class="card-content">
             <div class="card-icon" style="background-color: #409EFF">
@@ -23,8 +23,8 @@
             </div>
           </div>
         </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4">
         <el-card class="overview-card" shadow="hover">
           <div class="card-content">
             <div class="card-icon" style="background-color: #F56C6C">
@@ -37,8 +37,8 @@
             </div>
           </div>
         </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4">
         <el-card class="overview-card" shadow="hover">
           <div class="card-content">
             <div class="card-icon" style="background-color: #67C23A">
@@ -51,99 +51,101 @@
             </div>
           </div>
         </el-card>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
 
-    <el-row :gutter="20" class="main-content">
-      <el-col :xs="24" :sm="24" :md="12" :lg="16" :xl="16">
-        <el-card class="chart-card" shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>物品分类统计</span>
-              <el-radio-group v-model="chartViewType" size="small">
-                <el-radio-button label="category">物品分类</el-radio-button>
-                <el-radio-button label="status">状态分布</el-radio-button>
-              </el-radio-group>
-            </div>
-          </template>
-          <div class="chart-container">
-            <component :is="currentChartComponent" 
-              :chart-data="currentChartData" 
-              :height="300"
-            />
+    <div class="row main-content">
+      <div class="col-12 col-md-12 col-lg-8">
+        <div class="custom-card chart-card">
+          <div class="custom-card-header">
+            <span>物品分类统计</span>
+            <el-radio-group v-model="chartViewType" size="small">
+              <el-radio-button label="category">物品分类</el-radio-button>
+              <el-radio-button label="status">状态分布</el-radio-button>
+            </el-radio-group>
           </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
-        <el-card class="reminder-card" shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>最近提醒</span>
-              <el-button type="primary" link @click="navigateToReminders">查看全部</el-button>
+          <div class="custom-card-body">
+            <div class="chart-container">
+              <component :is="currentChartComponent" 
+                :chart-data="currentChartData" 
+                :height="300"
+              />
             </div>
-          </template>
-          <el-skeleton :rows="3" animated v-if="loading.reminders" />
-          <div v-else>
-            <el-empty description="暂无提醒" v-if="recentReminders.length === 0" />
-            <ul class="reminder-list" v-else>
-              <li v-for="(reminder, index) in recentReminders" :key="reminder.id" class="reminder-item">
-                <el-tag size="small" :type="getReminderTypeColor(reminder.type)">
-                  {{ getReminderTypeText(reminder.type) }}
-                </el-tag>
-                <div class="reminder-info">
-                  <div class="reminder-title">{{ reminder.itemName }}</div>
-                  <div class="reminder-time">
-                    提醒日期: {{ formatDate(reminder.reminderDate) }}
-                    <el-tag size="small" :type="getReminderStatusColor(reminder.status)" style="margin-left: 5px">
-                      {{ getReminderStatusText(reminder.status) }}
-                    </el-tag>
-                  </div>
-                  <div class="reminder-content">{{ reminder.content }}</div>
-                </div>
-              </li>
-            </ul>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <el-row :gutter="20" class="main-content">
-      <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
-        <el-card class="recent-card" shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>最近添加的物品</span>
-              <el-button type="primary" link @click="navigateToEntities">查看全部</el-button>
-            </div>
-          </template>
-          <el-skeleton :rows="5" animated v-if="loading.recentItems" />
-          <div v-else>
-            <el-empty description="暂无物品记录" v-if="recentItems.length === 0" />
-            <el-table :data="recentItems" style="width: 100%" v-else>
-              <el-table-column prop="name" label="物品名称" min-width="120" />
-              <el-table-column prop="type" label="类型" width="120" />
-              <el-table-column prop="price" label="价格" width="100">
-                <template #default="scope">
-                  ¥{{ formatNumber(scope.row.price) }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="status" label="状态" width="100">
-                <template #default="scope">
-                  <el-tag :type="getStatusType(scope.row.status)">
-                    {{ getStatusText(scope.row.status) }}
+        </div>
+      </div>
+      <div class="col-12 col-md-12 col-lg-4">
+        <div class="custom-card reminder-card">
+          <div class="custom-card-header">
+            <span>最近提醒</span>
+            <el-button type="primary" link @click="navigateToReminders">查看全部</el-button>
+          </div>
+          <div class="custom-card-body">
+            <el-skeleton :rows="3" animated v-if="loading.reminders" />
+            <div v-else>
+              <el-empty description="暂无提醒" v-if="recentReminders.length === 0" />
+              <ul class="reminder-list" v-else>
+                <li v-for="(reminder, index) in recentReminders" :key="reminder.id" class="reminder-item">
+                  <el-tag size="small" :type="getReminderTypeColor(reminder.type)">
+                    {{ getReminderTypeText(reminder.type) }}
                   </el-tag>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="120" fixed="right">
-                <template #default="scope">
-                  <el-button type="primary" link @click="viewEntityDetail(scope.row)">查看</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
+                  <div class="reminder-info">
+                    <div class="reminder-title">{{ reminder.itemName }}</div>
+                    <div class="reminder-time">
+                      提醒日期: {{ formatDate(reminder.reminderDate) }}
+                      <el-tag size="small" :type="getReminderStatusColor(reminder.status)" style="margin-left: 5px">
+                        {{ getReminderStatusText(reminder.status) }}
+                      </el-tag>
+                    </div>
+                    <div class="reminder-content">{{ reminder.content }}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        </div>
+      </div>
+    </div>
+
+    <div class="row main-content">
+      <div class="col-12 col-lg-12">
+        <div class="custom-card recent-card">
+          <div class="custom-card-header">
+            <span>最近添加的物品</span>
+            <el-button type="primary" link @click="navigateToEntities">查看全部</el-button>
+          </div>
+          <div class="custom-card-body">
+            <el-skeleton :rows="5" animated v-if="loading.recentItems" />
+            <div v-else>
+              <el-empty description="暂无物品记录" v-if="recentItems.length === 0" />
+              <div class="table-responsive" v-else>
+                <el-table :data="recentItems" style="width: 100%">
+                  <el-table-column prop="name" label="物品名称" min-width="120" />
+                  <el-table-column prop="type" label="类型" width="120" />
+                  <el-table-column prop="price" label="价格" width="100">
+                    <template #default="scope">
+                      ¥{{ formatNumber(scope.row.price) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="status" label="状态" width="100">
+                    <template #default="scope">
+                      <el-tag :type="getStatusType(scope.row.status)">
+                        {{ getStatusText(scope.row.status) }}
+                      </el-tag>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="120" fixed="right">
+                    <template #default="scope">
+                      <el-button type="primary" link @click="viewEntityDetail(scope.row)">查看</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -157,7 +159,7 @@ import Bar from '@/components/charts/Bar.vue'
 import { 
   getDashboardStatistics 
 } from '@/api/dashboard'
-import { getReminders } from '@/api/reminder'
+import { getRemindersByDateRange } from '@/api/reminder'
 import { getRecentEntities } from '@/api/entity'
 import { useAuthStore } from '@/store/modules/auth'
 import type { PageResult } from '@/types/common'
@@ -283,9 +285,13 @@ const fetchRecentReminders = async () => {
   loading.reminders = true
   try {
     const authStore = useAuthStore()
-    const ownerId = authStore.currentUser?.id || 1
+    const userId = authStore.currentUser?.id || 1
     // 正确调用getReminders API
-    const response = await getReminders({ ownerId })
+    // 获取当前日期
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(startDate.getMonth() + 1);
+    const response = await getRemindersByDateRange(userId,startDate.toISOString().split('T')[0] ,endDate.toISOString().split('T')[0])
     // 直接使用返回的数据数组，并限制显示5条
     recentReminders.value = (response.data || []).slice(0, 5)
   } catch (error) {
@@ -298,8 +304,9 @@ const fetchRecentReminders = async () => {
 // 获取最近添加的物品
 const fetchRecentItems = async () => {
   loading.recentItems = true
+  const userId = authStore.currentUser?.id || 1
   try {
-    const response = await getRecentEntities(5)
+    const response = await getRecentEntities({ days: 5, userId: userId })
     recentItems.value = response.data
   } catch (error) {
     console.error('获取最近添加的物品失败', error)
@@ -421,15 +428,14 @@ const generateColors = (count: number) => {
 
 <style scoped>
 .dashboard-container {
-  padding: 16px;
+  width: 100%;
 }
 
 .welcome-panel {
-  background: linear-gradient(to right, #24C6DC, #514A9D);
-  color: white;
   padding: 20px;
-  border-radius: 8px;
   margin-bottom: 20px;
+  background-color: var(--bg-color-light);
+  border-radius: 4px;
 }
 
 .welcome-panel h2 {
@@ -449,7 +455,8 @@ const generateColors = (count: number) => {
 
 .overview-card {
   margin-bottom: 20px;
-  height: 100%;
+  background-color: var(--bg-color-light);
+  transition: all 0.3s;
 }
 
 .card-content {
@@ -458,15 +465,18 @@ const generateColors = (count: number) => {
 }
 
 .card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  margin-right: 16px;
+  margin-right: 15px;
+}
+
+.card-icon .el-icon {
+  font-size: 30px;
   color: white;
-  font-size: 24px;
 }
 
 .card-data {
@@ -475,20 +485,18 @@ const generateColors = (count: number) => {
 
 .data-title {
   font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
+  color: var(--text-color-secondary);
 }
 
 .data-value {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
+  margin: 5px 0;
 }
 
 .data-info {
   font-size: 12px;
-  color: #999;
+  color: var(--text-color-secondary);
 }
 
 .main-content {
@@ -498,12 +506,6 @@ const generateColors = (count: number) => {
 .chart-card, .recent-card, .reminder-card {
   margin-bottom: 20px;
   height: 100%;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .chart-container {
@@ -550,5 +552,32 @@ const generateColors = (count: number) => {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+/* 添加表格响应式支持 */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+@media screen and (max-width: 767px) {
+  .card-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .card-icon {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+  
+  .welcome-panel {
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .welcome-panel h2 {
+    font-size: 18px;
+  }
 }
 </style> 

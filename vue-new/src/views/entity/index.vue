@@ -1,7 +1,7 @@
 <template>
   <div class="entity-container">
     <div class="entity-header">
-      <h1 class="page-title">物品管理</h1>
+      <h1 class="page-title">物品结构</h1>
       <div class="action-buttons">
         <el-button type="primary" @click="openAddEntityDialog">
           <el-icon><Plus /></el-icon>添加物品
@@ -34,11 +34,10 @@
             @node-click="handleNodeClick"
             default-expand-all
           >
-            <template #default="{ node, data }">
+            <template #default="{ node }">
               <div class="custom-tree-node">
                 <span>
-                  <el-icon v-if="data.type === 'space'"><Folder /></el-icon>
-                  <el-icon v-else><Goods /></el-icon>
+                  <el-icon><Goods /></el-icon>
                   {{ node.label }}
                 </span>
               </div>
@@ -150,14 +149,27 @@
                   </el-row>
                   
                   <el-form-item label="所属位置" prop="parentId">
-                    <el-cascader
-                      v-model="entityForm.parentId"
-                      :options="locationOptions"
-                      :props="{ checkStrictly: true, label: 'name', value: 'id' }"
-                      placeholder="选择所属位置"
-                      clearable
-                      style="width: 100%"
-                    />
+                    <el-tree
+                      v-model:current-node-key="entityForm.parentId"
+                      :data="locationOptions"
+                      :props="{ label: 'name', children: 'children' }"
+                      node-key="id"
+                      highlight-current
+                      @current-change="handleLocationSelect"
+                      default-expand-all
+                      :expand-on-click-node="false"
+                      class="location-tree"
+                    >
+                      <template #default="{ node, data }">
+                        <div class="custom-tree-node">
+                          <span>
+                            <el-icon v-if="data.type === 'space'"><Folder /></el-icon>
+                            <el-icon v-else><Goods /></el-icon>
+                            {{ node.label }}
+                          </span>
+                        </div>
+                      </template>
+                    </el-tree>
                   </el-form-item>
                   
                   <el-form-item label="标签" prop="tags">
@@ -307,200 +319,23 @@
         <el-empty v-else description="请选择左侧物品查看详情" />
       </div>
     </div>
-    
-    <!-- 搜索条件 -->
-    <el-card class="search-card">
-      <el-form :model="searchForm" label-width="100px" class="search-form" @submit.prevent>
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="名称">
-              <el-input v-model="searchForm.name" placeholder="请输入名称" clearable @keyup.enter="handleSearch"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="类型">
-              <el-select v-model="searchForm.type" placeholder="请选择类型" clearable style="width: 100%;">
-                <el-option label="物品" value="item"></el-option>
-                <el-option label="空间" value="space"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="状态">
-              <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 100%;">
-                <el-option label="正常" value="normal"></el-option>
-                <el-option label="损坏" value="damaged"></el-option>
-                <el-option label="丢弃" value="discarded"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="使用频率">
-              <el-select v-model="searchForm.usageFrequency" placeholder="请选择使用频率" clearable style="width: 100%;">
-                <el-option label="高" value="high"></el-option>
-                <el-option label="中" value="medium"></el-option>
-                <el-option label="低" value="low"></el-option>
-                <el-option label="很少" value="rare"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="所在空间">
-              <el-select v-model="searchForm.parentId" placeholder="请选择所在空间" clearable style="width: 100%;">
-                <el-option
-                  v-for="space in spaceList"
-                  :key="space.id"
-                  :label="space.name"
-                  :value="space.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item class="action-buttons">
-          <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>搜索
-          </el-button>
-          <el-button @click="resetSearch">
-            <el-icon><Refresh /></el-icon>重置
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-    
-    <!-- 表格 -->
-    <el-card class="table-card">
-      <el-table
-        v-loading="loading"
-        :data="entityList"
-        border
-        stripe
-        style="width: 100%"
-        @row-click="handleRowClick"
-      >
-        <el-table-column type="index" width="50" />
-        <el-table-column prop="name" label="名称" min-width="150" show-overflow-tooltip>
-          <template #default="{ row }">
-            <div class="entity-name">
-              <el-image 
-                v-if="row.images && row.images[0]" 
-                :src="row.images[0].imagePath" 
-                fit="cover"
-                class="entity-image"
-              >
-                <template #error>
-                  <div class="image-placeholder">
-                    <el-icon><Picture /></el-icon>
-                  </div>
-                </template>
-              </el-image>
-              <div class="entity-image-placeholder" v-else>
-                <el-icon><Document /></el-icon>
-              </div>
-              <span>{{ row.name }}</span>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="type" label="类型" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.type === 'item' ? 'success' : 'primary'">
-              {{ row.type === 'item' ? '物品' : '空间' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="specification" label="规格" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="price" label="价格" width="120">
-          <template #default="{ row }">
-            {{ row.price ? '¥' + row.price.toFixed(2) : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">
-              {{ getStatusText(row.status) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="usageFrequency" label="使用频率" width="100">
-          <template #default="{ row }">
-            {{ getUsageFrequencyText(row.usageFrequency) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="tags" label="标签" min-width="160" show-overflow-tooltip>
-          <template #default="{ row }">
-            <el-tag 
-              v-for="tag in row.tags" 
-              :key="tag.id" 
-              :style="{ backgroundColor: tag.color, color: getContrastColor(tag.color) }"
-              size="small"
-              class="tag-item"
-            >
-              {{ tag.name }}
-            </el-tag>
-            <span v-if="!row.tags || row.tags.length === 0">-</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="expirationDate" label="过保日期" width="120">
-          <template #default="{ row }">
-            {{ row.expirationDate ? formatDate(row.expirationDate) : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200">
-          <template #default="{ row }">
-            <el-button type="primary" link @click.stop="handleView(row)">
-              <el-icon><View /></el-icon>查看
-            </el-button>
-            <el-button type="primary" link @click.stop="handleEdit(row)">
-              <el-icon><Edit /></el-icon>编辑
-            </el-button>
-            <el-popconfirm 
-              title="确定删除此实体吗？" 
-              @confirm="handleDelete(row)"
-              confirm-button-text="确定"
-              cancel-button-text="取消"
-            >
-              <template #reference>
-                <el-button type="danger" link @click.stop>
-                  <el-icon><Delete /></el-icon>删除
-                </el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50, 100]"
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
-    </el-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted, watch } from 'vue';
+import { defineComponent, ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useAuthStore } from '@/store/modules/auth';
 import { 
-  pageEntities, 
-  deleteEntity, 
+  deleteEntity,
   addEntity as createEntity, 
-  listEntitiesByType,
+  getEntitiesByUser,
   getEntityTree,
   updateEntity
 } from '@/api/entity';
 import { getAllTags as listTags } from '@/api/tag';
-import { Entity, ResponseResult, Tag } from '@/types/entity';
+import { Entity, Tag } from '@/types/entity';
 import { 
   Plus, 
   Search, 
@@ -530,11 +365,11 @@ interface EntityForm {
   expirationDate: string;
   status: string;
   usageFrequency: string;
-  parentId?: number;
+  parentId: string;
   tags: number[];
   description: string;
   images: {file: File, url: string}[];
-  ownerId?: number;
+  userId?: number;
 }
 
 export default defineComponent({
@@ -555,13 +390,10 @@ export default defineComponent({
     Close
   },
   setup() {
-    const router = useRouter();
     const authStore = useAuthStore();
     
     const loading = ref(false);
     const saving = ref(false);
-    const entityList = ref<Entity[]>([]);
-    const spaceList = ref<Entity[]>([]);
     const tagOptions = ref<Tag[]>([]);
     const locationOptions = ref<any[]>([]);
     const addEntityDialogVisible = ref(false);
@@ -583,25 +415,25 @@ export default defineComponent({
       specification: '',
       status: '',
       usageFrequency: '',
-      parentId: undefined as undefined | number
+      parentId: '' as string | undefined
     });
     
     // 新增物品表单
     const entityForm = reactive<EntityForm>({
       name: '',
       type: '',
-      entityClassification: 'item', // 固定为物品类型
+      entityClassification: 'item',
       specification: '',
       price: undefined,
       purchaseDate: '',
       expirationDate: '',
       status: 'normal',
-      usageFrequency: 'medium', // 默认中等使用频率
-      parentId: undefined,
+      usageFrequency: 'medium',
+      parentId: '0',
       tags: [],
       description: '',
       images: [],
-      ownerId: authStore.currentUser?.id
+      userId: authStore.currentUser?.id
     });
     
     // 表单验证规则
@@ -628,76 +460,8 @@ export default defineComponent({
     const isEditing = ref(false);
     const isAdding = ref(false);
     
-    // 加载实体列表
-    const loadEntityList = async () => {
-      if (!authStore.currentUser?.id) return;
-      
-      loading.value = true;
-      try {
-        const response = await pageEntities({
-          current: pagination.current,
-          size: pagination.size,
-          ...searchForm,
-          ownerId: authStore.currentUser.id
-        });
-        
-        if (response.data && response.data.records) {
-          entityList.value = response.data.records;
-          pagination.total = response.data.total;
-        }
-      } catch (error) {
-        console.error('加载实体列表失败:', error);
-        ElMessage.error('加载实体列表失败，请检查网络连接');
-      } finally {
-        loading.value = false;
-      }
-    };
-    
-    // 加载空间列表
-    const loadSpaceList = async () => {
-      if (!authStore.currentUser?.id) return;
-      
-      try {
-        const response = await listEntitiesByType('space', authStore.currentUser.id);
-        
-        if (response.data) {
-          spaceList.value = response.data;
-        }
-      } catch (error) {
-        console.error('加载空间列表失败:', error);
-      }
-    };
-    
-    // 处理搜索
-    const handleSearch = () => {
-      pagination.current = 1;
-      loadEntityList();
-    };
-    
-    // 重置搜索
-    const resetSearch = () => {
-      Object.assign(searchForm, {
-        name: '',
-        type: '',
-        specification: '',
-        status: '',
-        usageFrequency: '',
-        parentId: undefined
-      });
-      pagination.current = 1;
-      loadEntityList();
-    };
-    
-    // 处理表格行点击
-    const handleRowClick = (row: Entity) => {
-      router.push(`/entity/${row.id}`);
-    };
-    
-    // 处理查看实体
-    const handleView = (row: Entity) => {
-      router.push(`/entity/${row.id}`);
-    };
-    
+
+
     // 处理编辑实体
     const handleEdit = (row: Entity) => {
       // 将实体数据填充到表单
@@ -712,16 +476,27 @@ export default defineComponent({
         expirationDate: (row as any).expirationDate || '',
         status: (row as any).status || 'normal',
         usageFrequency: (row as any).usageFrequency || 'medium',
-        parentId: row.parentId,
+        parentId: row.parentId ? String(row.parentId) : '0',
         tags: row.tags ? row.tags.map(tag => tag.id) : [],
         description: row.description || '',
         images: (row as any).images || [],
-        ownerId: row.ownerId || authStore.currentUser?.id
+        userId: row.userId || authStore.currentUser?.id
       });
       
       // 加载标签和位置选项
       loadTags();
       loadLocationOptions();
+      // 设置已选位置名称
+      if (row.parentId) {
+        const parent = treeData.value.find(tree => tree.id === row.parentId);
+        if (parent) {
+          selectedLocationName.value = parent.name;
+        } else {
+          selectedLocationName.value = '根空间';
+        }
+      } else {
+        selectedLocationName.value = '根空间';
+      }
       
       // 设置编辑状态
       isEditing.value = true;
@@ -738,9 +513,9 @@ export default defineComponent({
         
         if (response.data) {
           ElMessage.success('删除成功');
-          loadEntityList(); // 重新加载列表
+          loadTreeData();
         } else {
-          ElMessage.error(`删除失败: ${response.message}`);
+          ElMessage.error(`删除失败: ${response.msg}`);
         }
       } catch (error) {
         console.error('删除实体失败:', error);
@@ -748,18 +523,7 @@ export default defineComponent({
       }
     };
     
-    // 处理分页大小改变
-    const handleSizeChange = (size: number) => {
-      pagination.size = size;
-      loadEntityList();
-    };
-    
-    // 处理当前页改变
-    const handleCurrentChange = (current: number) => {
-      pagination.current = current;
-      loadEntityList();
-    };
-    
+
     // 格式化日期
     const formatDate = (date: string) => {
       if (!date) return '-';
@@ -816,13 +580,16 @@ export default defineComponent({
         purchaseDate: '',
         expirationDate: '',
         status: 'normal',
-        usageFrequency: 'medium', // 默认中等使用频率
-        parentId: undefined,
+        usageFrequency: 'medium',
+        parentId: '0',
         tags: [],
         description: '',
         images: [],
-        ownerId: authStore.currentUser?.id
+        userId: authStore.currentUser?.id
       });
+      
+      // 重置已选位置名称
+      selectedLocationName.value = '根空间';
       
       // 加载标签和位置选项
       loadTags();
@@ -873,12 +640,17 @@ export default defineComponent({
         try {
           // 使用类型断言解决类型不匹配问题
           const submitData = {
-            ...entityForm,
-            type: 'item' as const, 
+            ...JSON.parse(JSON.stringify(entityForm)), // 深拷贝避免直接修改引用
             status: entityForm.status as 'normal' | 'damaged' | 'discarded',
             usageFrequency: entityForm.usageFrequency as 'high' | 'medium' | 'low' | 'rare',
-            ownerId: authStore.currentUser.id
+            userId: authStore.currentUser.id
           };
+          
+          // 特殊处理根空间的情况
+          if (submitData.parentId === '0') {
+            // @ts-ignore - 忽略类型检查，因为服务端需要接收null值
+            submitData.parentId = null; // 发送null表示没有父节点
+          }
           
           let response;
           if (isAdding.value) {
@@ -891,7 +663,9 @@ export default defineComponent({
             ElMessage.success(isAdding.value ? '添加物品成功' : '更新物品成功');
             isAdding.value = false;
             isEditing.value = false;
-            loadEntityList(); // 重新加载列表
+
+            loadTreeData();
+
           } else {
             ElMessage.error(isAdding.value ? '添加物品失败，请重试' : '更新物品失败，请重试');
           }
@@ -955,8 +729,8 @@ export default defineComponent({
     const loadLocationOptions = async () => {
       try {
         if (!authStore.currentUser?.id) return;
-        const ownerId = authStore.currentUser.id;
-        const response = await listEntitiesByType('space', ownerId);
+        const userId = authStore.currentUser.id;
+        const response = await getEntitiesByUser(userId);
         if (response.data) {
           // 构建级联选择器需要的树形结构
           locationOptions.value = buildLocationTree(response.data || []);
@@ -972,6 +746,23 @@ export default defineComponent({
       const result: any[] = [];
       const map = new Map();
       
+      // 添加一个根空间作为顶级目录
+      const rootSpace: {
+        id: string;
+        name: string;
+        type: string;
+        children: any[];
+      } = {
+        id: '0',
+        name: '根空间',
+        type: 'space',
+        children: []
+      };
+      
+      // 添加根空间到结果中
+      result.push(rootSpace);
+      map.set('0', rootSpace);
+      
       // 先创建映射
       spaces.forEach(space => {
         map.set(space.id, { ...space, children: [] });
@@ -985,10 +776,12 @@ export default defineComponent({
           if (parent) {
             parent.children.push(node);
           } else {
-            result.push(node);
+            // 如果找不到父节点，默认放到根空间下
+            rootSpace.children.push(node);
           }
         } else {
-          result.push(node);
+          // 没有父节点的空间，作为根空间的子节点
+          rootSpace.children.push(node);
         }
       });
       
@@ -1040,32 +833,40 @@ export default defineComponent({
     const handleNodeClick = (data: any) => {
       currentEntity.value = data;
       
-      // 更新搜索条件，根据点击的节点过滤物品
-      if (data && data.id) {
-        searchForm.parentId = data.id;
-        // 重新加载物品列表
-        loadEntityList();
-        ElMessage.info(`已选择 ${data.name}，显示该${data.type === 'space' ? '空间' : '物品'}下的内容`);
-      } else {
-        // 如果点击了无效节点，清除筛选
-        searchForm.parentId = undefined;
-        loadEntityList();
-      }
     };
     
     // 在组件挂载时加载数据
     onMounted(() => {
-      loadEntityList();
       // 加载空间列表用于筛选
-      loadSpaceList();
       loadTreeData();
     });
-    
+
+    // 新增两个新变量和两个新方法
+    const selectedLocationName = ref<string>('');
+
+    // 处理位置选择
+    const handleLocationSelect = (data: any, node: any) => {
+      if (data && data.id) {
+        if (entityForm.parentId === data.id) {
+          // 如果再次点击同一项，则取消选择，并默认选择根空间
+          entityForm.parentId = '0';
+          selectedLocationName.value = '根空间';
+        } else {
+          entityForm.parentId = data.id;
+          selectedLocationName.value = data.name;
+        }
+      }
+    };
+
+    // 清除选中的位置（设置为根空间）
+    const clearSelectedLocation = () => {
+      entityForm.parentId = '0';
+      selectedLocationName.value = '根空间';
+    };
+
     return {
       loading,
       saving,
-      entityList,
-      spaceList,
       pagination,
       searchForm,
       entityForm,
@@ -1076,14 +877,8 @@ export default defineComponent({
       tempImages,
       tagOptions,
       locationOptions,
-      handleSearch,
-      resetSearch,
-      handleRowClick,
-      handleView,
       handleEdit,
       handleDelete,
-      handleSizeChange,
-      handleCurrentChange,
       formatDate,
       getStatusType,
       getStatusText,
@@ -1101,7 +896,10 @@ export default defineComponent({
       handleNodeClick,
       isEditing,
       isAdding,
-      cancelEditOrAdd
+      cancelEditOrAdd,
+      selectedLocationName,
+      handleLocationSelect,
+      clearSelectedLocation
     };
   }
 });
@@ -1109,7 +907,8 @@ export default defineComponent({
 
 <style scoped>
 .entity-container {
-  padding: 16px;
+  width: 100%;
+  padding: 0;
 }
 
 .entity-header {
@@ -1181,7 +980,7 @@ export default defineComponent({
 
 /* 添加物品对话框样式 */
 .entity-form {
-  margin-top: 20px;
+  width: 100%;
 }
 
 .card-header {
@@ -1255,12 +1054,14 @@ export default defineComponent({
 
 .main-content {
   display: flex;
+  gap: 20px;
+  width: 100%;
 }
 
 .tree-container {
-  width: 250px;
-  margin-right: 16px;
-  float: left;
+  width: 25%;
+  min-width: 200px;
+  transition: all 0.3s ease;
 }
 
 .tree-card {
@@ -1270,7 +1071,6 @@ export default defineComponent({
 
 .detail-container {
   flex: 1;
-  min-width: 0;
 }
 
 .detail-card {
@@ -1323,5 +1123,81 @@ export default defineComponent({
 
 .tree-loading {
   padding: 20px;
+}
+
+/* 位置树样式 */
+.location-tree {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.location-tree .el-tree-node__content {
+  height: 32px;
+}
+
+.selected-location {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 992px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .tree-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .entity-form {
+    padding: 0;
+  }
+  
+  .info-item {
+    flex: 1 0 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .entity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .detail-image-container {
+    height: 150px;
+  }
+  
+  .el-form-item {
+    margin-bottom: 18px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .detail-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .detail-card .header-actions {
+    margin-top: 10px;
+  }
 }
 </style> 

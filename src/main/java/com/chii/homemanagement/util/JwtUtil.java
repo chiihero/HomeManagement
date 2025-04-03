@@ -12,6 +12,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -22,6 +23,9 @@ public class JwtUtil {
 
     // Token有效期（毫秒）- 默认24小时
     private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
+    
+    // 刷新Token有效期（毫秒）- 默认7天
+    private static final long JWT_REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000;
 
     // 签名密钥
     private Key key;
@@ -100,7 +104,20 @@ public class JwtUtil {
      */
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, username);
+        return doGenerateToken(claims, username, JWT_TOKEN_VALIDITY);
+    }
+    
+    /**
+     * 为指定用户生成刷新token
+     *
+     * @param username 用户名
+     * @return 刷新JWT令牌
+     */
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+        claims.put("id", UUID.randomUUID().toString()); // 添加随机ID确保每次生成的刷新令牌都不同
+        return doGenerateToken(claims, username, JWT_REFRESH_TOKEN_VALIDITY);
     }
 
     /**
@@ -108,11 +125,12 @@ public class JwtUtil {
      *
      * @param claims  声明
      * @param subject 主题（用户名）
+     * @param validity 有效期（毫秒）
      * @return JWT令牌
      */
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
+    private String doGenerateToken(Map<String, Object> claims, String subject, long validity) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + JWT_TOKEN_VALIDITY);
+        Date expiryDate = new Date(now.getTime() + validity);
         
         return Jwts.builder()
                 .setClaims(claims)
@@ -133,5 +151,30 @@ public class JwtUtil {
     public Boolean validateToken(String token, String username) {
         final String tokenUsername = getUsernameFromToken(token);
         return (tokenUsername.equals(username) && !isTokenExpired(token));
+    }
+    
+    /**
+     * 验证刷新token是否有效
+     *
+     * @param token 刷新JWT令牌
+     * @return 是否有效
+     */
+    public Boolean validateRefreshToken(String token) {
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            String type = (String) claims.get("type");
+            return "refresh".equals(type) && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 获取令牌有效期（秒）
+     * 
+     * @return 有效期（秒）
+     */
+    public int getTokenExpiresIn() {
+        return (int) (JWT_TOKEN_VALIDITY / 1000);
     }
 } 

@@ -21,10 +21,10 @@ public interface TagService extends IService<Tag> {
     /**
      * 获取所有者的所有标签
      *
-     * @param ownerId 所有者ID
+     * @param userId 用户ID
      * @return 标签列表
      */
-    List<Tag> getTagsByOwnerId(Long ownerId);
+    List<Tag> getTagsByUserId(Long userId);
 
     /**
      * 添加标签

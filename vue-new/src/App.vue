@@ -1,24 +1,16 @@
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { useThemeStore } from './store/modules/theme';
+import { onMounted } from 'vue';
 
-export default defineComponent({
-  name: 'App'
+// 获取主题存储
+const themeStore = useThemeStore();
+
+// 组件挂载时初始化主题
+onMounted(() => {
+  themeStore.init();
 });
 </script>
 
 <template>
   <router-view />
 </template>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-}
-
-#app {
-  height: 100%;
-}
-</style>

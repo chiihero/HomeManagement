@@ -166,4 +166,36 @@ public class EntityTagServiceImpl extends ServiceImpl<EntityTagMapper, EntityTag
         
         return entityIds;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByTagId(Long tagId) {
+        if (tagId == null) {
+            log.warn("删除标签关联失败: 标签ID为空");
+            return;
+        }
+        
+        log.info("删除标签所有关联: tagId={}", tagId);
+        
+        try {
+            long count = this.count(new LambdaQueryWrapper<EntityTag>()
+                    .eq(EntityTag::getTagId, tagId));
+            if (count == 0) {
+                log.info("无标签关联: tagId={}", tagId);
+                return;
+            }
+
+            boolean success = this.remove(new LambdaQueryWrapper<EntityTag>()
+                    .eq(EntityTag::getTagId, tagId));
+            
+            if (success) {
+                log.info("删除标签关联成功: tagId={}, removedCount={}", tagId, count);
+            } else {
+                log.warn("删除标签关联失败: tagId={}", tagId);
+            }
+        } catch (Exception e) {
+            log.error("删除标签关联异常: tagId={}", tagId, e);
+            throw e;
+        }
+    }
 } 

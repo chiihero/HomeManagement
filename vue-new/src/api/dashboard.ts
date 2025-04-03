@@ -8,7 +8,9 @@ import type { Reminder } from '@/types/reminder'
  * @returns 统计数据
  */
 export const getDashboardStatistics = (): Promise<ResponseResult<any>> => {
-  return http.get('/dashboard/statistics')
+  const authStore = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') as string) : null
+  const userId = authStore?.currentUser?.id || 1
+  return http.get('/dashboard/statistics', { params: { userId } })
 }
 
 /**
@@ -30,7 +32,9 @@ export interface DashboardStats {
  * @returns 统计卡片数据
  */
 export const getDashboardStats = (): Promise<ResponseResult<DashboardStats>> => {
-  return http.get('/dashboard/stats')
+  const authStore = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') as string) : null
+  const userId = authStore?.currentUser?.id || 1
+  return http.get('/dashboard/stats', { params: { userId } })
 }
 
 /**
@@ -64,15 +68,19 @@ export interface DashboardChartData {
  * @returns 图表数据
  */
 export const getDashboardChartData = (): Promise<ResponseResult<DashboardChartData>> => {
-  return http.get('/dashboard/chart-data')
+  const authStore = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') as string) : null
+  const userId = authStore?.currentUser?.id || 1
+  return http.get('/dashboard/chart-data', { params: { userId } })
 }
 
 /**
  * 获取最近添加的实体
  * @param limit 限制数量
  */
-export const getRecentAddedEntities = (limit: number = 5): Promise<ResponseResult<Entity[]>> => {
-  return http.get(`/api/dashboard/recent-entities?limit=${limit}`)
+export const getRecentEntities = (limit: number = 5): Promise<ResponseResult<Entity[]>> => {
+  const authStore = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') as string) : null
+  const userId = authStore?.currentUser?.id || 1
+  return http.get(`/dashboard/recent-entities`, { params: { limit, userId } })
 }
 
 /**
@@ -80,7 +88,9 @@ export const getRecentAddedEntities = (limit: number = 5): Promise<ResponseResul
  * @param limit 限制数量
  */
 export const getRecentReminders = (limit: number = 5): Promise<ResponseResult<Reminder[]>> => {
-  return http.get(`/api/dashboard/recent-reminders?limit=${limit}`)
+  const authStore = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') as string) : null
+  const userId = authStore?.currentUser?.id || 1
+  return http.get(`/dashboard/recent-reminders`, { params: { limit, userId } })
 }
 
 /**
@@ -88,5 +98,7 @@ export const getRecentReminders = (limit: number = 5): Promise<ResponseResult<Re
  * @param period 时间周期：week, month, quarter, year
  */
 export const getTimeTrendData = (period: 'week' | 'month' | 'quarter' | 'year'): Promise<ResponseResult<any>> => {
-  return http.get(`/api/dashboard/trends?period=${period}`)
+  const authStore = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth') as string) : null
+  const userId = authStore?.currentUser?.id || 1
+  return http.get(`/dashboard/trends`, { params: { period, userId } })
 } 

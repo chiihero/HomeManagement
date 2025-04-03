@@ -48,8 +48,7 @@ public class Entity {
      * 类型：item-物品, space-空间
      */
     @NotBlank(message = "类型不能为空")
-    @Pattern(regexp = "item|space", message = "类型只能是物品或空间")
-    @Schema(description = "类型", allowableValues = {"item", "space"}, defaultValue = "item")
+    @Schema(description = "类型", defaultValue = "item")
     private String type = "item";
 
     /**
@@ -65,21 +64,21 @@ public class Entity {
     private String specification;
 
     /**
-     * 数量（物品专用）
+     * 数量
      */
     @Min(value = 1, message = "数量必须大于0")
     @Schema(description = "数量", minimum = "1")
     private Integer quantity;
 
     /**
-     * 价格（物品专用）
+     * 价格
      */
     @Min(value = 0, message = "价格不能为负数")
     @Schema(description = "价格")
     private BigDecimal price;
 
     /**
-     * 购买日期（物品专用）
+     * 购买日期
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -87,13 +86,13 @@ public class Entity {
     private LocalDate purchaseDate;
 
     /**
-     * 保修期（月）（物品专用）
+     * 保修期（月）
      */
     @Schema(description = "保修期（月）")
     private Integer warrantyPeriod;
 
     /**
-     * 保修截止日期（物品专用）
+     * 保修截止日期
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -101,20 +100,20 @@ public class Entity {
     private LocalDate warrantyEndDate;
 
     /**
-     * 使用频率（物品专用）：daily-每天，weekly-每周，monthly-每月，rarely-很少
+     * 使用频率：daily-每天，weekly-每周，monthly-每月，rarely-很少
      */
     @Pattern(regexp = "daily|weekly|monthly|rarely", message = "使用频率只能是每天、每周、每月或很少")
     @Schema(description = "使用频率", allowableValues = {"daily", "weekly", "monthly", "rarely"})
     private String usageFrequency;
 
     /**
-     * 使用年限（物品专用）
+     * 使用年限
      */
     @Schema(description = "使用年限")
     private Integer usageYears;
 
     /**
-     * 使用人ID（物品专用）
+     * 使用人ID
      */
     @Schema(description = "使用人ID")
     private Long userId;
@@ -140,19 +139,19 @@ public class Entity {
     private String parentName;
 
     /**
-     * 层级（空间专用）
+     * 层级
      */
     @Schema(description = "层级")
     private Integer level;
 
     /**
-     * 路径（空间专用）
+     * 路径
      */
     @Schema(description = "路径，例如: 1,2,3")
     private String path;
 
     /**
-     * 排序（空间专用）
+     * 排序
      */
     @Schema(description = "排序")
     private Integer sort;
@@ -165,7 +164,7 @@ public class Entity {
     private List<Entity> children;
 
     /**
-     * 状态（物品专用）：normal-正常，damaged-损坏，discarded-丢弃
+     * 状态：normal-正常，damaged-损坏，discarded-丢弃
      */
     @Pattern(regexp = "normal|damaged|discarded", message = "状态只能是正常、损坏或丢弃")
     @Schema(description = "状态", allowableValues = {"normal", "damaged", "discarded"}, defaultValue = "normal")
@@ -198,12 +197,6 @@ public class Entity {
     @Schema(description = "标签ID列表")
     private List<Long> tagIds;
 
-    /**
-     * 物品所有者ID
-     */
-    @NotNull(message = "所有者ID不能为空")
-    @Schema(description = "所有者ID", required = true)
-    private Long ownerId;
 
     /**
      * 创建者用户ID

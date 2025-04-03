@@ -50,24 +50,24 @@ public class IndexController {
         // 将用户信息放入 session
         session.setAttribute("user", user);
 
-        // 获取当前所有者ID
-        Long ownerId = (Long) session.getAttribute("currentownerId");
-        if (ownerId == null) {
-            // 如果用户还没选择所有者，设置一个默认所有者ID（可以从数据库获取）
-            ownerId = 1L; // 默认所有者ID
-            session.setAttribute("currentownerId", ownerId);
+        // 获取当前用户ID
+        Long userId = (Long) session.getAttribute("currentuserId");
+        if (userId == null) {
+            // 如果用户还没选择所有者，设置一个默认用户ID（可以从数据库获取）
+            userId = 1L; // 默认用户ID
+            session.setAttribute("currentuserId", userId);
         }
 
         // 实体总数（物品类型）
-        int entityCount = entityService.getEntitiesByType(ownerId, "item").size();
+        int entityCount = entityService.getEntitiesByType(userId, "item").size();
         model.addAttribute("itemCount", entityCount);
 
         // 实体总价值
-        double totalValue = entityService.sumEntitiesValue(ownerId);
+        double totalValue = entityService.sumEntitiesValue(userId);
         model.addAttribute("totalValue", totalValue);
 
         // 标签数量
-        int tagCount = tagService.getTagsByOwnerId(ownerId).size();
+        int tagCount = tagService.getTagsByUserId(userId).size();
         model.addAttribute("tagCount", tagCount);
 
         // 添加用户信息

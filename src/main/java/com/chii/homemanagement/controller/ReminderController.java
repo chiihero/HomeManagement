@@ -57,8 +57,8 @@ public class ReminderController {
      * 获取当天提醒
      */
     @GetMapping("/today")
-    public ResponseInfo<List<Reminder>> getTodayReminders(@RequestParam Long ownerId) {
-        return ResponseInfo.successResponse(reminderService.getTodayReminders(ownerId));
+    public ResponseInfo<List<Reminder>> getTodayReminders(@RequestParam Long userId) {
+        return ResponseInfo.successResponse(reminderService.getTodayReminders(userId));
     }
 
     /**
@@ -66,10 +66,10 @@ public class ReminderController {
      */
     @GetMapping("/date-range")
     public ResponseInfo<List<Reminder>> getRemindersByDateRange(
-            @RequestParam Long ownerId,
+            @RequestParam Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByDateRange(ownerId, startDate, endDate));
+        return ResponseInfo.successResponse(reminderService.getRemindersByDateRange(userId, startDate, endDate));
     }
 
     /**
@@ -94,9 +94,9 @@ public class ReminderController {
      */
     @GetMapping("/status")
     public ResponseInfo<List<Reminder>> getRemindersByStatus(
-            @RequestParam Long ownerId,
+            @RequestParam Long userId,
             @RequestParam String status) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByStatus(ownerId, status));
+        return ResponseInfo.successResponse(reminderService.getRemindersByStatus(userId, status));
     }
 
     /**

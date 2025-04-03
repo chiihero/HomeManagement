@@ -2,10 +2,7 @@ package com.chii.homemanagement.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chii.homemanagement.entity.Entity;
-import com.chii.homemanagement.entity.EntityImage;
-import com.chii.homemanagement.entity.ResponseInfo;
-import com.chii.homemanagement.entity.Tag;
+import com.chii.homemanagement.entity.*;
 import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.EntityTagService;
 import com.chii.homemanagement.service.EntityImageService;
@@ -19,6 +16,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -56,12 +55,11 @@ public class EntityController {
             @Parameter(description = "规格") @RequestParam(value = "specification", required = false) String specification,
             @Parameter(description = "状态") @RequestParam(value = "status", required = false) String status,
             @Parameter(description = "使用频率") @RequestParam(value = "usageFrequency", required = false) String usageFrequency,
-            @Parameter(description = "使用人ID") @RequestParam(value = "userId", required = false) Long userId,
-            @Parameter(description = "父实体ID") @RequestParam(value = "parentId", required = false) Long parentId,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "使用人ID") @RequestParam(value = "userId") Long userId,
+            @Parameter(description = "父实体ID") @RequestParam(value = "parentId", required = false) Long parentId) {
 
         try {
-            log.info("分页查询实体列表: ownerId={}, current={}, size={}", ownerId, current, size);
+            log.info("分页查询实体列表: userId={}, current={}, size={}", userId, current, size);
             
             // 构建分页对象
             Page<Entity> page = new Page<>(current, size);
@@ -77,7 +75,7 @@ public class EntityController {
             entity.setParentId(parentId);
 
             // 调用服务层方法
-            IPage<Entity> result = entityService.pageEntities(page, entity, ownerId);
+            IPage<Entity> result = entityService.pageEntities(page, entity, userId);
 
             return ResponseInfo.successResponse(result);
         } catch (Exception e) {
@@ -193,17 +191,17 @@ public class EntityController {
     @GetMapping("/tree")
     @Operation(summary = "获取实体树", description = "获取所有者下的实体树结构")
     public ResponseInfo<List<Entity>> getEntityTree(
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
-        
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+
         try {
-            log.info("获取实体树: ownerId={}", ownerId);
-            List<Entity> tree = entityService.getEntityTree(ownerId);
+            log.info("获取实体树: userId={}", userId);
+            List<Entity> tree = entityService.getEntityTree(userId);
             log.info("获取到实体树，根节点数量: {}, 总节点数量: {}", 
                     tree.size(), 
                     countTotalNodes(tree));
             return ResponseInfo.successResponse(tree);
         } catch (Exception e) {
-            log.error("获取实体树异常: ownerId={}", ownerId, e);
+            log.error("获取实体树异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("获取实体树失败: " + e.getMessage());
         }
     }
@@ -225,34 +223,19 @@ public class EntityController {
         return count;
     }
 
-    @GetMapping("/list/by-type")
-    @Operation(summary = "根据类型获取实体列表", description = "获取所有者下指定类型的实体列表")
-    public ResponseInfo<List<Entity>> listEntitiesByType(
-            @Parameter(description = "类型: item-物品, space-空间") @RequestParam(value = "type") String type,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
-        
-        try {
-            log.info("根据类型获取实体列表: type={}, ownerId={}", type, ownerId);
-            List<Entity> entities = entityService.getEntitiesByType(ownerId, type);
-            return ResponseInfo.successResponse(entities);
-        } catch (Exception e) {
-            log.error("根据类型获取实体列表异常: type={}, ownerId={}", type, ownerId, e);
-            return ResponseInfo.errorResponse("获取实体列表失败: " + e.getMessage());
-        }
-    }
 
     @GetMapping("/list/by-parent")
     @Operation(summary = "获取子实体列表", description = "获取指定父实体下的子实体列表")
     public ResponseInfo<List<Entity>> listChildEntities(
             @Parameter(description = "父实体ID") @RequestParam(value = "parentId") Long parentId,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("获取子实体列表: parentId={}, ownerId={}", parentId, ownerId);
-            List<Entity> entities = entityService.listChildEntities(parentId, ownerId);
+            log.info("获取子实体列表: parentId={}, userId={}", parentId, userId);
+            List<Entity> entities = entityService.listChildEntities(parentId, userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("获取子实体列表异常: parentId={}, ownerId={}", parentId, ownerId, e);
+            log.error("获取子实体列表异常: parentId={}, userId={}", parentId, userId, e);
             return ResponseInfo.errorResponse("获取子实体列表失败: " + e.getMessage());
         }
     }
@@ -260,15 +243,14 @@ public class EntityController {
     @GetMapping("/list/by-user")
     @Operation(summary = "获取用户使用的物品列表", description = "获取指定用户使用的物品列表")
     public ResponseInfo<List<Entity>> listEntitiesByUser(
-            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("获取用户使用的物品列表: userId={}, ownerId={}", userId, ownerId);
-            List<Entity> entities = entityService.listEntitiesByUser(userId, ownerId);
+            log.info("获取用户使用的物品列表: userId={}", userId);
+            List<Entity> entities = entityService.listEntitiesByUser(userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("获取用户使用的物品列表异常: userId={}, ownerId={}", userId, ownerId, e);
+            log.error("获取用户使用的物品列表异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("获取用户物品列表失败: " + e.getMessage());
         }
     }
@@ -277,14 +259,14 @@ public class EntityController {
     @Operation(summary = "根据状态获取物品列表", description = "获取指定状态的物品列表")
     public ResponseInfo<List<Entity>> listEntitiesByStatus(
             @Parameter(description = "状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出") @RequestParam(value = "status") String status,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据状态获取物品列表: status={}, ownerId={}", status, ownerId);
-            List<Entity> entities = entityService.listEntitiesByStatus(status, ownerId);
+            log.info("根据状态获取物品列表: status={}, userId={}", status, userId);
+            List<Entity> entities = entityService.listEntitiesByStatus(status, userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("根据状态获取物品列表异常: status={}, ownerId={}", status, ownerId, e);
+            log.error("根据状态获取物品列表异常: status={}, userId={}", status, userId, e);
             return ResponseInfo.errorResponse("获取物品列表失败: " + e.getMessage());
         }
     }
@@ -293,14 +275,14 @@ public class EntityController {
     @Operation(summary = "获取即将过保的物品列表", description = "获取未来指定天数内即将过保的物品列表")
     public ResponseInfo<List<Entity>> listExpiringEntities(
             @Parameter(description = "天数") @RequestParam(value = "days", defaultValue = "30") Integer days,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("获取即将过保的物品列表: days={}, ownerId={}", days, ownerId);
-            List<Entity> entities = entityService.listExpiringEntities(days, ownerId);
+            log.info("获取即将过保的物品列表: days={}, userId={}", days, userId);
+            List<Entity> entities = entityService.listExpiringEntities(days, userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("获取即将过保的物品列表异常: days={}, ownerId={}", days, ownerId, e);
+            log.error("获取即将过保的物品列表异常: days={}, userId={}", days, userId, e);
             return ResponseInfo.errorResponse("获取即将过保物品列表失败: " + e.getMessage());
         }
     }
@@ -308,14 +290,14 @@ public class EntityController {
     @GetMapping("/list/expired")
     @Operation(summary = "获取已过保的物品列表", description = "获取已过保的物品列表")
     public ResponseInfo<List<Entity>> listExpiredEntities(
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("获取已过保的物品列表: ownerId={}", ownerId);
-            List<Entity> entities = entityService.listExpiredEntities(ownerId);
+            log.info("获取已过保的物品列表: userId={}", userId);
+            List<Entity> entities = entityService.listExpiredEntities(userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("获取已过保的物品列表异常: ownerId={}", ownerId, e);
+            log.error("获取已过保的物品列表异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("获取已过保物品列表失败: " + e.getMessage());
         }
     }
@@ -324,14 +306,14 @@ public class EntityController {
     @Operation(summary = "根据标签获取实体列表", description = "获取具有指定标签的实体列表")
     public ResponseInfo<List<Entity>> listEntitiesByTag(
             @Parameter(description = "标签ID") @RequestParam(value = "tagId") Long tagId,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据标签获取实体列表: tagId={}, ownerId={}", tagId, ownerId);
-            List<Entity> entities = entityService.listEntitiesByTag(tagId, ownerId);
+            log.info("根据标签获取实体列表: tagId={}, userId={}", tagId, userId);
+            List<Entity> entities = entityService.listEntitiesByTag(tagId, userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("根据标签获取实体列表异常: tagId={}, ownerId={}", tagId, ownerId, e);
+            log.error("根据标签获取实体列表异常: tagId={}, userId={}", tagId, userId, e);
             return ResponseInfo.errorResponse("获取实体列表失败: " + e.getMessage());
         }
     }
@@ -341,14 +323,14 @@ public class EntityController {
     public ResponseInfo<List<Entity>> listEntitiesByPurchaseDateRange(
             @Parameter(description = "开始日期") @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @Parameter(description = "结束日期") @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据购买日期范围获取物品列表: startDate={}, endDate={}, ownerId={}", startDate, endDate, ownerId);
-            List<Entity> entities = entityService.listEntitiesByPurchaseDateRange(startDate, endDate, ownerId);
+            log.info("根据购买日期范围获取物品列表: startDate={}, endDate={}, userId={}", startDate, endDate, userId);
+            List<Entity> entities = entityService.listEntitiesByPurchaseDateRange(startDate, endDate, userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("根据购买日期范围获取物品列表异常: startDate={}, endDate={}, ownerId={}", startDate, endDate, ownerId, e);
+            log.error("根据购买日期范围获取物品列表异常: startDate={}, endDate={}, userId={}", startDate, endDate, userId, e);
             return ResponseInfo.errorResponse("获取物品列表失败: " + e.getMessage());
         }
     }
@@ -358,14 +340,14 @@ public class EntityController {
     public ResponseInfo<List<Entity>> listEntitiesByPriceRange(
             @Parameter(description = "最小价格") @RequestParam(value = "minPrice", required = false) Double minPrice,
             @Parameter(description = "最大价格") @RequestParam(value = "maxPrice", required = false) Double maxPrice,
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据价格范围获取物品列表: minPrice={}, maxPrice={}, ownerId={}", minPrice, maxPrice, ownerId);
-            List<Entity> entities = entityService.listEntitiesByPriceRange(minPrice, maxPrice, ownerId);
+            log.info("根据价格范围获取物品列表: minPrice={}, maxPrice={}, userId={}", minPrice, maxPrice, userId);
+            List<Entity> entities = entityService.listEntitiesByPriceRange(minPrice, maxPrice, userId);
             return ResponseInfo.successResponse(entities);
         } catch (Exception e) {
-            log.error("根据价格范围获取物品列表异常: minPrice={}, maxPrice={}, ownerId={}", minPrice, maxPrice, ownerId, e);
+            log.error("根据价格范围获取物品列表异常: minPrice={}, maxPrice={}, userId={}", minPrice, maxPrice, userId, e);
             return ResponseInfo.errorResponse("获取物品列表失败: " + e.getMessage());
         }
     }
@@ -373,14 +355,14 @@ public class EntityController {
     @GetMapping("/stat/by-parent")
     @Operation(summary = "根据父实体统计子实体", description = "根据父实体统计子实体数量和价值")
     public ResponseInfo<List<Object>> statEntitiesByParent(
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据父实体统计子实体: ownerId={}", ownerId);
-            List<Object> stats = entityService.statEntitiesByParent(ownerId);
+            log.info("根据父实体统计子实体: userId={}", userId);
+            List<Object> stats = entityService.statEntitiesByParent(userId);
             return ResponseInfo.successResponse(stats);
         } catch (Exception e) {
-            log.error("根据父实体统计子实体异常: ownerId={}", ownerId, e);
+            log.error("根据父实体统计子实体异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
         }
     }
@@ -388,14 +370,14 @@ public class EntityController {
     @GetMapping("/stat/by-tag")
     @Operation(summary = "根据标签统计物品", description = "根据标签统计物品数量和价值")
     public ResponseInfo<List<Object>> statEntitiesByTag(
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据标签统计物品: ownerId={}", ownerId);
-            List<Object> stats = entityService.statEntitiesByTag(ownerId);
+            log.info("根据标签统计物品: userId={}", userId);
+            List<Object> stats = entityService.statEntitiesByTag(userId);
             return ResponseInfo.successResponse(stats);
         } catch (Exception e) {
-            log.error("根据标签统计物品异常: ownerId={}", ownerId, e);
+            log.error("根据标签统计物品异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
         }
     }
@@ -403,14 +385,14 @@ public class EntityController {
     @GetMapping("/stat/by-usage-frequency")
     @Operation(summary = "根据使用频率统计物品", description = "根据使用频率统计物品数量")
     public ResponseInfo<List<Object>> statEntitiesByUsageFrequency(
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("根据使用频率统计物品: ownerId={}", ownerId);
-            List<Object> stats = entityService.statEntitiesByUsageFrequency(ownerId);
+            log.info("根据使用频率统计物品: userId={}", userId);
+            List<Object> stats = entityService.statEntitiesByUsageFrequency(userId);
             return ResponseInfo.successResponse(stats);
         } catch (Exception e) {
-            log.error("根据使用频率统计物品异常: ownerId={}", ownerId, e);
+            log.error("根据使用频率统计物品异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
         }
     }
@@ -418,14 +400,14 @@ public class EntityController {
     @GetMapping("/sum-value")
     @Operation(summary = "统计物品总价值", description = "统计所有者物品总价值")
     public ResponseInfo<Double> sumEntitiesValue(
-            @Parameter(description = "所有者ID") @RequestParam(value = "ownerId") Long ownerId) {
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("统计物品总价值: ownerId={}", ownerId);
-            double totalValue = entityService.sumEntitiesValue(ownerId);
+            log.info("统计物品总价值: userId={}", userId);
+            double totalValue = entityService.sumEntitiesValue(userId);
             return ResponseInfo.successResponse(totalValue);
         } catch (Exception e) {
-            log.error("统计物品总价值异常: ownerId={}", ownerId, e);
+            log.error("统计物品总价值异常: userId={}", userId, e);
             return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
         }
     }
@@ -494,5 +476,22 @@ public class EntityController {
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(java.util.stream.Collectors.toList());
+    }
+
+    @GetMapping("/recent")
+    @Operation(summary = "获取最近添加的实体列表", description = "获取指定天数内添加的实体列表")
+    public ResponseInfo<List<Entity>> getRecentEntities(
+            @Parameter(description = "天数") @RequestParam(value = "days", defaultValue = "7") Integer days,
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+        
+        try {
+            log.info("获取最近添加的实体列表: days={}, userId={}", days, userId);
+            
+            List<Entity> entities = entityService.getRecentEntitiesByDays(userId, days);
+            return ResponseInfo.successResponse(entities);
+        } catch (Exception e) {
+            log.error("获取最近添加的实体列表异常: days={}, userId={}", days, userId, e);
+            return ResponseInfo.errorResponse("获取最近添加的实体列表失败: " + e.getMessage());
+        }
     }
 } 

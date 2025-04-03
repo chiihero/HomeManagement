@@ -62,21 +62,21 @@ public class EntityViewController {
         // 将用户信息放入session
         session.setAttribute("user", user);
         
-        // 获取当前所有者ID
-        Long ownerId = (Long) session.getAttribute("currentownerId");
-        if (ownerId == null) {
-            // 如果未选择所有者，设置默认所有者ID
-            ownerId = 1L;
-            session.setAttribute("currentownerId", ownerId);
+        // 获取当前用户ID
+        Long userId = (Long) session.getAttribute("currentuserId");
+        if (userId == null) {
+            // 如果未选择所有者，设置默认用户ID
+            userId = 1L;
+            session.setAttribute("currentuserId", userId);
         }
         
         // 获取根实体（空间和顶级物品）
-        List<Entity> rootEntities = entityService.getEntityTree(ownerId);
+        List<Entity> rootEntities = entityService.getEntityTree(userId);
         model.addAttribute("rootEntities", rootEntities);
         
-        // 添加用户信息和所有者ID到模型
+        // 添加用户信息和用户ID到模型
         model.addAttribute("user", user);
-        model.addAttribute("ownerId", ownerId);
+        model.addAttribute("userId", userId);
         
         return "entities/index";
     }
@@ -92,23 +92,23 @@ public class EntityViewController {
             return "redirect:/auth/login";
         }
         
-        // 获取当前所有者ID
-        Long ownerId = (Long) session.getAttribute("currentownerId");
-        if (ownerId == null) {
+        // 获取当前用户ID
+        Long userId = (Long) session.getAttribute("currentuserId");
+        if (userId == null) {
             return "redirect:/";
         }
         
         // 获取所有可用的父实体
-        List<Entity> parentEntities = entityService.getEntityTree(ownerId);
+        List<Entity> parentEntities = entityService.getEntityTree(userId);
         model.addAttribute("parentEntities", parentEntities);
         
         // 获取所有标签
-        List<Tag> tags = tagService.getTagsByOwnerId(ownerId);
+        List<Tag> tags = tagService.getTagsByUserId(userId);
         model.addAttribute("tags", tags);
         
         // 添加用户信息到模型
         model.addAttribute("user", user);
-        model.addAttribute("ownerId", ownerId);
+        model.addAttribute("userId", userId);
         
         // 添加空白实体对象，用于新增实体的情况
         Entity entity = new Entity();
@@ -136,9 +136,9 @@ public class EntityViewController {
                 return "redirect:/auth/login";
             }
             
-            // 获取当前所有者ID
-            Long ownerId = (Long) session.getAttribute("currentownerId");
-            if (ownerId == null) {
+            // 获取当前用户ID
+            Long userId = (Long) session.getAttribute("currentuserId");
+            if (userId == null) {
                 return "redirect:/";
             }
             
@@ -147,11 +147,11 @@ public class EntityViewController {
             model.addAttribute("entity", entity);
             
             // 获取所有可用的父实体（排除当前实体及其子实体）
-            List<Entity> parentEntities = entityService.getEntityTree(ownerId);
+            List<Entity> parentEntities = entityService.getEntityTree(userId);
             model.addAttribute("parentEntities", parentEntities);
             
             // 获取所有标签
-            List<Tag> tags = tagService.getTagsByOwnerId(ownerId);
+            List<Tag> tags = tagService.getTagsByUserId(userId);
             model.addAttribute("tags", tags);
             
             // 获取实体的标签
@@ -160,7 +160,7 @@ public class EntityViewController {
             
             // 添加用户信息到模型
             model.addAttribute("user", user);
-            model.addAttribute("ownerId", ownerId);
+            model.addAttribute("userId", userId);
             
             return "entities/edit";
         } catch (Exception e) {
@@ -182,9 +182,9 @@ public class EntityViewController {
                 return "redirect:/auth/login";
             }
             
-            // 获取当前所有者ID
-            Long ownerId = (Long) session.getAttribute("currentownerId");
-            if (ownerId == null) {
+            // 获取当前用户ID
+            Long userId = (Long) session.getAttribute("currentuserId");
+            if (userId == null) {
                 return "redirect:/";
             }
             
@@ -197,8 +197,8 @@ public class EntityViewController {
             List<Long> tagIds = entityTags.stream().map(Tag::getId).toList();
             entity.setTagIds(tagIds);
             
-            // 添加所有者ID到模型
-            model.addAttribute("ownerId", ownerId);
+            // 添加用户ID到模型
+            model.addAttribute("userId", userId);
             
             // 返回片段视图
             return "entities/edit :: editForm(entity=${entity})";
@@ -220,9 +220,9 @@ public class EntityViewController {
                 return "redirect:/auth/login";
             }
             
-            // 获取当前所有者ID
-            Long ownerId = (Long) session.getAttribute("currentownerId");
-            if (ownerId == null) {
+            // 获取当前用户ID
+            Long userId = (Long) session.getAttribute("currentuserId");
+            if (userId == null) {
                 return "redirect:/";
             }
             
@@ -238,8 +238,8 @@ public class EntityViewController {
             
             model.addAttribute("entity", entity);
             
-            // 添加所有者ID到模型
-            model.addAttribute("ownerId", ownerId);
+            // 添加用户ID到模型
+            model.addAttribute("userId", userId);
             
             // 返回片段视图
             return "entities/edit :: editForm(entity=${entity})";

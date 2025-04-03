@@ -34,16 +34,16 @@ public class TagViewController {
             return "redirect:/auth/login";
         }
 
-        // 获取当前所有者ID
-        Long ownerId = (Long) session.getAttribute("currentownerId");
-        if (ownerId == null) {
+        // 获取当前用户ID
+        Long userId = (Long) session.getAttribute("currentuserId");
+        if (userId == null) {
             // 如果未选择所有者，重定向到所有者选择页面
             return "redirect:/";
         }
 
         // 添加模型属性
         model.addAttribute("user", user);
-        model.addAttribute("ownerId", ownerId);
+        model.addAttribute("userId", userId);
 
         return "tags/index";
     }

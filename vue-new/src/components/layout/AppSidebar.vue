@@ -2,8 +2,8 @@
   <div class="sidebar-container" :class="{ 'is-collapse': isCollapse }">
     <div class="logo-container">
       <router-link to="/">
-        <img src="@/assets/images/logo.png" alt="Logo" class="logo-image" v-if="!isCollapse" />
-        <img src="@/assets/images/logo-mini.png" alt="Logo" class="logo-image-mini" v-else />
+        <img src="@/assets/images/logo.png" alt="Logo" class="logo-image"/>
+        <!-- <img src="@/assets/images/logo-mini.png" alt="Logo" class="logo-image-mini" v-else /> -->
       </router-link>
     </div>
     
@@ -118,7 +118,7 @@ export default defineComponent({
     });
     
     const userAvatar = computed(() => {
-      return authStore.currentUser?.avatar || '/placeholder-avatar.png';
+      return authStore.currentUser?.avatar || '@/assets/images/default-avatar.png';
     });
     
     // 处理下拉菜单命令

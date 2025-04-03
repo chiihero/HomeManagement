@@ -3,14 +3,23 @@ import { User, LoginRequest, RegisterRequest, ChangePasswordRequest } from '@/ty
 import { ResponseResult } from '@/types/entity';
 
 // 登录响应数据类型
-interface LoginResponse {
+export interface LoginResponse {
   token: string;
-  user: User;
+  refreshToken: string;
+  expiresIn: number;
+  user: Record<string, any>;
   loginTime: string;
 }
 
+// 刷新令牌响应数据类型
+export interface RefreshTokenResponse {
+  token: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
 // 登录
-export function login(username: string, password: string, rememberMe: boolean = false) {
+export function login(username: string, password: string, rememberMe: boolean = false): Promise<ResponseResult<LoginResponse>> {
   return http.post<ResponseResult<LoginResponse>>('/auth/login', {
     username,
     password,
@@ -19,18 +28,18 @@ export function login(username: string, password: string, rememberMe: boolean = 
 }
 
 // 注册
-export function register(data: RegisterRequest) {
+export function register(data: RegisterRequest): Promise<ResponseResult<User>> {
   return http.post<ResponseResult<User>>('/auth/register', data);
 }
 
 // 退出登录
-export function logout() {
+export function logout(): Promise<ResponseResult<null>> {
   return http.post<ResponseResult<null>>('/auth/logout');
 }
 
 // 获取当前用户信息
-export function getUserInfo() {
-  return http.get<ResponseResult<User>>('/auth/info');
+export function getUserInfo(): Promise<ResponseResult<Record<string, any>>> {
+  return http.post<ResponseResult<Record<string, any>>>('/auth/info');
 }
 
 // 修改密码
@@ -38,13 +47,13 @@ export function changePassword(data: ChangePasswordRequest) {
   return http.post<ResponseResult<boolean>>('/auth/change-password', data);
 }
 
-// 发送重置密码邮件
-export function sendResetPasswordEmail(email: string) {
-  return http.post<ResponseResult<boolean>>('/auth/send-reset-password-email', { email });
+// 发送忘记密码邮件
+export function forgotPassword(email: string): Promise<ResponseResult<boolean>> {
+  return http.post<ResponseResult<boolean>>('/auth/forgot-password', { email });
 }
 
 // 重置密码
-export function resetPassword(token: string, newPassword: string) {
+export function resetPassword(token: string, newPassword: string): Promise<ResponseResult<boolean>> {
   return http.post<ResponseResult<boolean>>('/auth/reset-password', {
     token,
     newPassword
@@ -52,7 +61,7 @@ export function resetPassword(token: string, newPassword: string) {
 }
 
 // 更新用户信息
-export function updateUserInfo(data: Partial<User>) {
+export function updateUserInfo(data: Partial<User>): Promise<ResponseResult<User>> {
   return http.post<ResponseResult<User>>('/auth/update-info', data);
 }
 
@@ -62,4 +71,11 @@ export function uploadAvatar(file: File) {
   formData.append('file', file);
   
   return http.post<ResponseResult<{ avatarUrl: string }>>('/auth/upload-avatar', formData);
+}
+
+// 刷新Token
+export function refreshToken(refreshTokenValue: string): Promise<ResponseResult<RefreshTokenResponse>> {
+  return http.post<ResponseResult<RefreshTokenResponse>>('/auth/refresh-token', { 
+    refreshToken: refreshTokenValue 
+  });
 } 

@@ -34,10 +34,10 @@ public class Tag {
     private String color;
 
     /**
-     * 所属所有者ID
+     * 所属用户ID
      */
-    @Schema(description = "所属所有者ID", required = true)
-    private Long ownerId;
+    @Schema(description = "所属用户ID", required = true)
+    private Long userId;
 
     /**
      * 创建者用户ID

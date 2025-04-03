@@ -26,19 +26,19 @@ public class TagController {
     /**
      * 获取标签列表
      * 
-     * @param ownerId 所有者ID
+     * @param userId 用户ID
      * @return 标签列表
      */
     @GetMapping
-    @Operation(summary = "获取标签列表", description = "根据所有者ID获取所有标签")
-    public ResponseInfo<List<Tag>> getTags(@RequestParam(value = "ownerId", required = false) Long ownerId) {
-        if (ownerId != null) {
-            // 如果提供了ownerId，返回对应所有者的标签
-            List<Tag> tags = tagService.getTagsByOwnerId(ownerId);
+    @Operation(summary = "获取标签列表", description = "根据用户ID获取所有标签")
+    public ResponseInfo<List<Tag>> getTags(@RequestParam(value = "userId", required = false) Long userId) {
+        if (userId != null) {
+            // 如果提供了userId，返回对应所有者的标签
+            List<Tag> tags = tagService.getTagsByUserId(userId);
             return ResponseInfo.successResponse(tags);
         } else {
-            // 如果没有提供ownerId，返回错误信息
-            return ResponseInfo.errorResponse("需要提供ownerId参数");
+            // 如果没有提供userId，返回错误信息
+            return ResponseInfo.errorResponse("需要提供userId参数");
         }
     }
 

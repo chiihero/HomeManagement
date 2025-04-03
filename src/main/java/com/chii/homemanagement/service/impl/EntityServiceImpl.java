@@ -55,9 +55,9 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     private TagService tagService;
 
     @Override
-    public IPage<Entity> pageEntities(Page<Entity> page, Entity entity, Long ownerId) {
-        if (ownerId == null) {
-            throw new IllegalArgumentException("所有者ID不能为空");
+    public IPage<Entity> pageEntities(Page<Entity> page, Entity entity, Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("用户ID不能为空");
         }
         
         // 默认分页参数
@@ -65,7 +65,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         
         // 构建查询条件
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<Entity>()
-                .eq(Entity::getOwnerId, ownerId)
+                .eq(Entity::getUserId, userId)
                 // 排除已丢弃的实体
                 .ne(Entity::getStatus, "discarded")
                 .orderByDesc(Entity::getCreateTime);
@@ -94,7 +94,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         
         // 并行加载所有相关数据
         // 1. 加载子实体列表
-        List<Entity> children = entityMapper.listChildren(id, entity.getOwnerId());
+        List<Entity> children = entityMapper.listChildren(id, entity.getUserId());
         if (!children.isEmpty()) {
             entity.setChildren(children);
         }
@@ -209,7 +209,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         }
         
         // 处理子实体
-        List<Entity> children = entityMapper.listChildren(id, entity.getOwnerId());
+        List<Entity> children = entityMapper.listChildren(id, entity.getUserId());
         if (!children.isEmpty()) {
             // 将子实体的父ID设为null
             children.forEach(child -> {
@@ -239,23 +239,23 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
 
 
     @Override
-    public List<Entity> getEntitiesByOwnerId(Long ownerId) {
-        if (ownerId == null) {
-            throw new IllegalArgumentException("所有者ID不能为空");
+    public List<Entity> getEntitiesByUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("用户ID不能为空");
         }
         
         return list(new LambdaQueryWrapper<Entity>()
-                .eq(Entity::getOwnerId, ownerId));
+                .eq(Entity::getUserId, userId));
     }
 
     @Override
-    public List<Entity> getEntitiesByType(Long ownerId, String type) {
-        if (ownerId == null) {
+    public List<Entity> getEntitiesByType(Long userId, String type) {
+        if (userId == null) {
             return new ArrayList<>();
         }
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .eq(StringUtils.hasText(type), Entity::getType, type);
         
         // 根据类型进行不同处理
@@ -265,7 +265,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         }
         
         // 根据条件查询
-        queryWrapper.eq(Entity::getOwnerId, ownerId);
+        queryWrapper.eq(Entity::getUserId, userId);
         
         // 排除已丢弃的实体
         queryWrapper.ne(Entity::getStatus, "discarded");
@@ -274,43 +274,42 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
 
     @Override
-    public List<Entity> listChildEntities(Long parentId, Long ownerId) {
-        if (parentId == null || ownerId == null) {
+    public List<Entity> listChildEntities(Long parentId, Long userId) {
+        if (parentId == null || userId == null) {
             return Collections.emptyList();
         }
-        return entityMapper.listChildren(parentId, ownerId);
+        return entityMapper.listChildren(parentId, userId);
     }
 
     @Override
-    public List<Entity> listEntitiesByUser(Long userId, Long ownerId) {
-        if (userId == null || ownerId == null) {
+    public List<Entity> listEntitiesByUser(Long userId) {
+        if (userId == null) {
             return new ArrayList<>();
         }
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
-                   .eq(Entity::getUserId, userId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .ne(Entity::getStatus, "discarded");
         
         return list(queryWrapper);
     }
 
     @Override
-    public List<Entity> listEntitiesByStatus(String status, Long ownerId) {
-        if (!StringUtils.hasText(status) || ownerId == null) {
+    public List<Entity> listEntitiesByStatus(String status, Long userId) {
+        if (!StringUtils.hasText(status) || userId == null) {
             return new ArrayList<>();
         }
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .eq(Entity::getStatus, status);
         
         return list(queryWrapper);
     }
 
     @Override
-    public List<Entity> listExpiringEntities(Integer days, Long ownerId) {
-        if (days == null || ownerId == null) {
+    public List<Entity> listExpiringEntities(Integer days, Long userId) {
+        if (days == null || userId == null) {
             return new ArrayList<>();
         }
         
@@ -318,7 +317,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         LocalDate expiryThreshold = currentDate.plusDays(days);
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .ne(Entity::getStatus, "discarded")
                    .isNotNull(Entity::getWarrantyEndDate)
                    .between(Entity::getWarrantyEndDate, currentDate, expiryThreshold);
@@ -327,15 +326,15 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
 
     @Override
-    public List<Entity> listExpiredEntities(Long ownerId) {
-        if (ownerId == null) {
+    public List<Entity> listExpiredEntities(Long userId) {
+        if (userId == null) {
             return new ArrayList<>();
         }
         
         LocalDate currentDate = LocalDate.now();
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .ne(Entity::getStatus, "discarded")
                    .isNotNull(Entity::getWarrantyEndDate)
                    .lt(Entity::getWarrantyEndDate, currentDate);
@@ -344,13 +343,13 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
 
     @Override
-    public double sumEntitiesValue(Long ownerId) {
-        if (ownerId == null) {
+    public double sumEntitiesValue(Long userId) {
+        if (userId == null) {
             return 0;
         }
         
         List<Entity> entities = list(new LambdaQueryWrapper<Entity>()
-                .eq(Entity::getOwnerId, ownerId)
+                .eq(Entity::getUserId, userId)
                 .ne(Entity::getStatus, "discarded")
                 .isNotNull(Entity::getPrice));
         
@@ -362,15 +361,15 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
 
     @Override
-    public List<Object> statEntitiesByParent(Long ownerId) {
-        if (ownerId == null) {
-            throw new IllegalArgumentException("所有者ID不能为空");
+    public List<Object> statEntitiesByParent(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("用户ID不能为空");
         }
         
         List<Object> result = new ArrayList<>();
         
         // 获取所有实体
-        List<Entity> allEntities = getEntitiesByOwnerId(ownerId);
+        List<Entity> allEntities = getEntitiesByUserId(userId);
         
         // 构建父ID到子实体的映射
         Map<Long, List<Entity>> parentChildMap = allEntities.stream()
@@ -428,17 +427,17 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
 
     @Override
-    public List<Object> statEntitiesByTag(Long ownerId) {
-        if (ownerId == null) {
-            throw new IllegalArgumentException("所有者ID不能为空");
+    public List<Object> statEntitiesByTag(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("用户ID不能为空");
         }
         
         // 获取所有者下的所有标签
-        List<Tag> tags = tagService.getTagsByOwnerId(ownerId);
+        List<Tag> tags = tagService.getTagsByUserId(userId);
         
         return tags.stream().map(tag -> {
             // 获取该标签下的所有实体
-            List<Entity> entities = listEntitiesByTag(tag.getId(), ownerId);
+            List<Entity> entities = listEntitiesByTag(tag.getId(), userId);
             
             // 过滤有效物品
             List<Entity> validItems = entities.stream()
@@ -468,8 +467,8 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
 
     @Override
-    public List<Object> statEntitiesByUsageFrequency(Long ownerId) {
-        if (ownerId == null) {
+    public List<Object> statEntitiesByUsageFrequency(Long userId) {
+        if (userId == null) {
             return new ArrayList<>();
         }
         
@@ -485,13 +484,13 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         
         // 查询所有实体
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .ne(Entity::getStatus, "discarded");
         
         // 统计每种使用频率的实体数量
         for (String frequency : frequencyNameMap.keySet()) {
             long countValue = count(new LambdaQueryWrapper<Entity>()
-                    .eq(Entity::getOwnerId, ownerId)
+                    .eq(Entity::getUserId, userId)
                     .eq(Entity::getUsageFrequency, frequency)
                     .ne(Entity::getStatus, "discarded"));
             
@@ -507,7 +506,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         // 未指定使用频率的实体
         long noFrequencyCount = count(new LambdaQueryWrapper<Entity>()
                 .isNull(Entity::getUsageFrequency)
-                .eq(Entity::getOwnerId, ownerId)
+                .eq(Entity::getUserId, userId)
                 .ne(Entity::getStatus, "discarded"));
         
         if (noFrequencyCount > 0) {
@@ -522,13 +521,13 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
     
     @Override
-    public List<Entity> listEntitiesByPurchaseDateRange(LocalDate startDate, LocalDate endDate, Long ownerId) {
-        if (ownerId == null) {
+    public List<Entity> listEntitiesByPurchaseDateRange(LocalDate startDate, LocalDate endDate, Long userId) {
+        if (userId == null) {
             return new ArrayList<>();
         }
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .ne(Entity::getStatus, "discarded");
         
         if (startDate != null && endDate != null) {
@@ -543,13 +542,13 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
     
     @Override
-    public List<Entity> listEntitiesByPriceRange(Double minPrice, Double maxPrice, Long ownerId) {
-        if (ownerId == null) {
+    public List<Entity> listEntitiesByPriceRange(Double minPrice, Double maxPrice, Long userId) {
+        if (userId == null) {
             return new ArrayList<>();
         }
         
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Entity::getOwnerId, ownerId)
+        queryWrapper.eq(Entity::getUserId, userId)
                    .ne(Entity::getStatus, "discarded");
         
         if (minPrice != null) {
@@ -564,23 +563,23 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     }
     
     @Override
-    public List<Entity> listEntitiesByTag(Long tagId, Long ownerId) {
-        if (tagId == null || ownerId == null) {
+    public List<Entity> listEntitiesByTag(Long tagId, Long userId) {
+        if (tagId == null || userId == null) {
             return new ArrayList<>();
         }
         
-        return entityMapper.listEntitiesByTagId(tagId, ownerId);
+        return entityMapper.listEntitiesByTagId(tagId, userId);
     }
     
     @Override
-    public List<Entity> getEntityTree(Long ownerId) {
-        if (ownerId == null) {
-            throw new IllegalArgumentException("所有者ID不能为空");
+    public List<Entity> getEntityTree(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("用户ID不能为空");
         }
         
         // 获取所有有效实体
         List<Entity> allEntities = list(new LambdaQueryWrapper<Entity>()
-                .eq(Entity::getOwnerId, ownerId)
+                .eq(Entity::getUserId, userId)
                 .and(wrapper -> wrapper.ne(Entity::getStatus, "discarded")
                                       .or()
                                       .ne(Entity::getType, "item")));
@@ -659,5 +658,60 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         } else {
             parent.setChildren(Collections.emptyList());
         }
+    }
+
+    @Override
+    public List<Entity> getRecentEntities(Long userId, Integer limit) {
+        if (userId == null) {
+            return new ArrayList<>();
+        }
+        
+        // 构建查询条件
+        LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Entity::getUserId, userId)
+                   .eq(Entity::getType, "item")  // 只查询物品类型的实体
+                   .ne(Entity::getStatus, "discarded")  // 排除已丢弃的实体
+                   .orderByDesc(Entity::getCreateTime)  // 按创建时间降序排列
+                   .last("LIMIT " + limit);  // 限制结果数量
+        
+        List<Entity> entities = list(queryWrapper);
+        
+        // 为每个实体加载关联的标签和图片
+        entities.forEach(entity -> {
+            // 加载标签
+            List<Tag> tags = entityTagService.getTagsByEntityId(entity.getId());
+            entity.setTags(tags);
+            
+            // 加载图片（仅加载URL，不加载二进制数据）
+            entity.setImages(entityImageService.getImagesByEntityId(entity.getId()));
+            
+            // 如果有父实体，加载父实体名称
+            if (entity.getParentId() != null) {
+                Entity parent = getById(entity.getParentId());
+                if (parent != null) {
+                    entity.setParentName(parent.getName());
+                }
+            }
+        });
+        
+        return entities;
+    }
+
+    @Override
+    public List<Entity> getRecentEntitiesByDays(Long userId, Integer days) {
+        if (userId == null || days == null || days <= 0) {
+            return new ArrayList<>();
+        }
+        
+        // 计算开始日期
+        LocalDate startDate = LocalDate.now().minusDays(days);
+        
+        LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Entity::getUserId, userId)
+                   .ne(Entity::getStatus, "discarded")
+                   .ge(Entity::getCreateTime, startDate)
+                   .orderByDesc(Entity::getCreateTime);
+        
+        return list(queryWrapper);
     }
 } 

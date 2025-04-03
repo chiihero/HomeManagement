@@ -145,7 +145,7 @@ export default defineComponent({
       id: undefined as number | undefined,
       name: '',
       color: '#409EFF',
-      ownerId: undefined as number | undefined
+      userId: undefined as number | undefined
     });
     
     // 表单校验规则
@@ -171,7 +171,7 @@ export default defineComponent({
         const params = {
           current: pagination.current,
           size: pagination.size,
-          ownerId: authStore.currentUser.id
+          userId: authStore.currentUser.id
         };
         
         console.log('请求标签列表，参数:', params);
@@ -238,7 +238,7 @@ export default defineComponent({
         tagForm.name = '';
         tagForm.color = '#409EFF';
       }
-      tagForm.ownerId = authStore.currentUser?.id;
+      tagForm.userId = authStore.currentUser?.id;
       dialogVisible.value = true;
     };
     
@@ -250,12 +250,12 @@ export default defineComponent({
         if (valid) {
           try {
             if (formType.value === 'add') {
-              // 确保ownerId不为undefined
-              if (tagForm.ownerId) {
+              // 确保userId不为undefined
+              if (tagForm.userId) {
                 const tagData = {
                   name: tagForm.name,
                   color: tagForm.color,
-                  ownerId: tagForm.ownerId
+                  userId: tagForm.userId
                 };
                 const response = await createTag(tagData);
                 if (response.code === 200) {
@@ -404,7 +404,8 @@ export default defineComponent({
 
 <style scoped>
 .tag-container {
-  padding: 16px;
+  padding: 0;
+  width: 100%;
 }
 
 .tag-header {
@@ -444,5 +445,41 @@ export default defineComponent({
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* 添加响应式设计 */
+@media screen and (max-width: 768px) {
+  .tag-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .action-buttons {
+    width: 100%;
+  }
+  
+  .pagination-container {
+    justify-content: center;
+  }
+  
+  .el-table {
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .page-title {
+    font-size: 20px;
+  }
+  
+  .el-dialog {
+    width: 90% !important;
+  }
+  
+  .color-preview {
+    width: 60px;
+  }
 }
 </style> 

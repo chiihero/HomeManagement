@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 提醒服务实现类
@@ -52,14 +53,49 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
     }
 
     @Override
-    public List<Reminder> getTodayReminders(Long ownerId) {
-        return reminderMapper.findRemindersByDate(ownerId, LocalDate.now());
+    public List<Reminder> getTodayReminders(Long userId) {
+        return reminderMapper.findRemindersByDate(userId, LocalDate.now());
     }
 
     @Override
-    public List<Reminder> getRemindersByDateRange(Long ownerId, LocalDate startDate, LocalDate endDate) {
+    public List<Object> getRecentReminders(Long userId, Integer limit) {
         LambdaQueryWrapper<Reminder> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Reminder::getOwnerId, ownerId)
+        queryWrapper.eq(Reminder::getUserId, userId)
+                .orderByDesc(Reminder::getCreateTime)
+                .last("LIMIT " + limit);
+        
+        List<Reminder> reminders = list(queryWrapper);
+        
+        // 转换为前端需要的对象格式
+        return reminders.stream().map(reminder -> {
+            // 获取关联的物品名称
+            String itemName = "";
+            if (reminder.getEntityId() != null) {
+                Entity entity = entityMapper.selectById(reminder.getEntityId());
+                if (entity != null) {
+                    itemName = entity.getName();
+                }
+            }
+            
+            // 构建返回对象
+            java.util.Map<String, Object> result = new java.util.HashMap<>();
+            result.put("id", reminder.getId());
+            result.put("type", reminder.getType());
+            result.put("title", reminder.getTitle());
+            result.put("content", reminder.getContent());
+            result.put("reminderDate", reminder.getRemindDate());
+            result.put("status", reminder.getStatus());
+            result.put("itemId", reminder.getEntityId());
+            result.put("itemName", itemName);
+            
+            return result;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Reminder> getRemindersByDateRange(Long userId, LocalDate startDate, LocalDate endDate) {
+        LambdaQueryWrapper<Reminder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Reminder::getUserId, userId)
                 .ge(Reminder::getRemindDate, startDate)
                 .le(Reminder::getRemindDate, endDate)
                 .orderByAsc(Reminder::getRemindDate);
@@ -101,7 +137,7 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
                         .content("物品 [" + entity.getName() + "] 的保修将在30天后到期，到期日期：" + entity.getWarrantyEndDate())
                         .remindDate(entity.getWarrantyEndDate().minusDays(30))
                         .status("pending")
-                        .ownerId(entity.getOwnerId())
+                        .userId(entity.getUserId())
                         .createUserId(entity.getCreateUserId())
                         .createTime(LocalDateTime.now())
                         .updateTime(LocalDateTime.now())
@@ -131,7 +167,7 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
     }
 
     @Override
-    public List<Reminder> getRemindersByStatus(Long ownerId, String status) {
-        return reminderMapper.findRemindersByStatus(ownerId, status);
+    public List<Reminder> getRemindersByStatus(Long userId, String status) {
+        return reminderMapper.findRemindersByStatus(userId, status);
     }
 } 

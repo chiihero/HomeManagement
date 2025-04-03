@@ -26,17 +26,20 @@
             type="text"
             autocomplete="on"
             prefix-icon="User"
+            @keyup.enter="focusPassword"
           />
         </el-form-item>
         
         <el-form-item prop="password">
           <el-input
+            ref="passwordRef"
             v-model="loginForm.password"
             :type="passwordVisible ? 'text' : 'password'"
             placeholder="密码"
             name="password"
             autocomplete="on"
             prefix-icon="Lock"
+            @keyup.enter="handleLogin"
           >
             <template #suffix>
               <el-icon 
@@ -96,6 +99,7 @@ export default defineComponent({
     
     const loginFormRef = ref();
     const userNameRef = ref();
+    const passwordRef = ref();
     const loading = ref(false);
     const passwordVisible = ref(false);
     
@@ -116,6 +120,13 @@ export default defineComponent({
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
       ]
+    };
+    
+    // 用户名输入后按回车跳转到密码框
+    const focusPassword = () => {
+      if (passwordRef.value) {
+        passwordRef.value.focus();
+      }
     };
     
     // 处理登录
@@ -162,11 +173,13 @@ export default defineComponent({
     return {
       loginFormRef,
       userNameRef,
+      passwordRef,
       loginForm,
       loginRules,
       loading,
       passwordVisible,
       handleLogin,
+      focusPassword,
       goToForgotPassword
     };
   }
@@ -181,7 +194,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   background-color: #f0f2f5;
-  background-image: url('@/assets/images/login-bg.jpg');
+  /* background-image: url('@/assets/images/login-bg.jpg'); */
   background-size: cover;
   background-position: center;
 }

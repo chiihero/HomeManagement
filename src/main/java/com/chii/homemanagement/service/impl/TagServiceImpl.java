@@ -26,8 +26,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     }
 
     @Override
-    public  List<Tag> getTagsByOwnerId(Long ownerId){
-        return tagMapper.getTagsByOwnerId(ownerId);
+    public  List<Tag> getTagsByUserId(Long userId){
+        return tagMapper.getTagsByUserId(userId);
     }
 
     @Override

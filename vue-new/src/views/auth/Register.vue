@@ -277,7 +277,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   background-color: #f0f2f5;
-  background-image: url('@/assets/images/login-bg.jpg');
+  /* background-image: url('@/assets/images/login-bg.jpg'); */
   background-size: cover;
   background-position: center;
 }

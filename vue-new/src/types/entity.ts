@@ -21,7 +21,6 @@ export interface Entity {
   level?: number;
   path?: string;
   sort?: number;
-  ownerId: string;
   createUserId?: string;
   tags?: Tag[];
   tagIds?: string[];
@@ -36,7 +35,7 @@ export interface Tag {
   id: number;
   name: string;
   color: string;
-  ownerId: number;
+  userId: number;
 }
 
 // 定义实体图片类型
@@ -60,6 +59,6 @@ export interface PageResult<T> {
 // 响应类型
 export interface ResponseResult<T> {
   code: number;
-  message: string;
+  msg: string;
   data: T;
 } 

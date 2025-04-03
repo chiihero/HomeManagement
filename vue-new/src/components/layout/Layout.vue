@@ -25,9 +25,14 @@
             
             <el-menu-item index="/entities">
               <el-icon><Box /></el-icon>
-              <template #title>物品管理</template>
+              <template #title>物品结构</template>
             </el-menu-item>
-            
+
+            <el-menu-item index="/entitiesSearch">
+              <el-icon><Box /></el-icon>
+              <template #title>物品搜索</template>
+            </el-menu-item>
+
             <el-menu-item index="/tags">
               <el-icon><Collection /></el-icon>
               <template #title>标签管理</template>

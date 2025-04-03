@@ -22,8 +22,8 @@ export const getTags = (params: any): Promise<ResponseResult<PageResult<Tag>>> =
  * 获取所有标签
  * @returns 标签列表
  */
-export const getAllTags = (ownerId: number): Promise<ResponseResult<Tag[]>> => {
-  return http.get('/tags', { params: { ownerId } });
+export const getAllTags = (userId: number): Promise<ResponseResult<Tag[]>> => {
+  return http.get('/tags', { params: { userId } });
 };
 
 /**
@@ -76,8 +76,8 @@ export const batchDeleteTags = (ids: string[]): Promise<ResponseResult<null>> =>
  * 获取标签使用统计
  * @returns 标签使用统计
  */
-export const getTagUsageStats = (ownerId: number): Promise<ResponseResult<any[]>> => {
-  return http.get('/tags/usage-stats', { params: { ownerId } });
+export const getTagUsageStats = (userId: number): Promise<ResponseResult<any[]>> => {
+  return http.get('/tags/usage-stats', { params: { userId } });
 };
 
 /**

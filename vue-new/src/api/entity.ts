@@ -12,7 +12,7 @@ export interface EntityQueryParams {
   usageFrequency?: string;
   userId?: number;
   parentId?: number;
-  ownerId?: number;
+  userId?: number;
 }
 
 /**
@@ -95,12 +95,12 @@ export function getTopLevelEntities() {
 
 /**
  * 获取物品树形结构
- * @param ownerId 所有者ID
+ * @param userId 用户ID
  * @returns Promise<ResponseResult<any>>
  */
-export function getEntityTree(ownerId: number) {
-  console.log('请求物品树形结构，ownerId:', ownerId);
-  return http.get('/entities/tree', { params: { ownerId } }).then(response => {
+export function getEntityTree(userId: number) {
+  console.log('请求物品树形结构，userId:', userId);
+  return http.get('/entities/tree', { params: { userId } }).then(response => {
     console.log('物品树形结构响应:', response);
     return response;
   }).catch(error => {
@@ -156,15 +156,6 @@ export const getEntitiesByParent = (parentId: string, params: any): Promise<Resp
   return http.get(`/entities/list/by-parent`, { params: {...params, parentId} });
 };
 
-/**
- * 根据类型获取实体列表
- * @param type 实体类型
- * @param params 查询参数
- * @returns 分页结果
- */
-export const getEntitiesByType = (type: string, params: any): Promise<ResponseResult<PageResult<Entity>>> => {
-  return http.get(`/entities/list/by-type`, { params: {...params, type} });
-};
 
 /**
  * 根据状态获取实体列表
@@ -181,7 +172,7 @@ export const getEntitiesByStatus = (status: string, params: any): Promise<Respon
  * @param params 查询参数
  * @returns 分页结果
  */
-export function getExpiringEntities(params: { days: number, ownerId: number }) {
+export function getExpiringEntities(params: { days: number, userId: number }) {
   return http.get('/entities/list/expiring', { params });
 }
 
@@ -190,7 +181,7 @@ export function getExpiringEntities(params: { days: number, ownerId: number }) {
  * @param params 查询参数
  * @returns 分页结果
  */
-export function getRecentEntities(params: { days: number, ownerId: number }) {
+export function getRecentEntities(params: { days: number, userId: number }) {
   return http.get('/entities/recent', { params });
 }
 
@@ -198,79 +189,85 @@ export function getRecentEntities(params: { days: number, ownerId: number }) {
  * 获取实体统计数据
  * @returns 统计数据
  */
-export function getEntitiesStats(ownerId: number) {
-  return http.get('/entities/stats', { params: { ownerId } });
+export function getEntitiesStats(userId: number) {
+  return http.get('/entities/stats', { params: { userId } });
 }
 
 /**
  * 获取实体类型分布统计
  * @returns 类型分布数据
  */
-export function getEntityTypeDistribution(ownerId: number) {
-  return http.get('/entities/stat/by-type', { params: { ownerId } });
+export function getEntityTypeDistribution(userId: number) {
+  return http.get('/entities/stat/by-type', { params: { userId } });
 }
 
 /**
  * 获取实体状态分布统计
  * @returns 状态分布数据
  */
-export function getEntityStatusDistribution(ownerId: number) {
-  return http.get('/entities/stat/by-status', { params: { ownerId } });
+export function getEntityStatusDistribution(userId: number) {
+  return http.get('/entities/stat/by-status', { params: { userId } });
 }
 
 /**
  * 根据标签统计物品
  * @returns 标签统计数据
  */
-export function getEntityTagDistribution(ownerId: number) {
-  return http.get('/entities/stat/by-tag', { params: { ownerId } });
+export function getEntityTagDistribution(userId: number) {
+  return http.get('/entities/stat/by-tag', { params: { userId } });
 }
 
 /**
  * 根据父实体统计子实体
  * @returns 父实体统计数据
  */
-export function getEntityParentDistribution(ownerId: number) {
-  return http.get('/entities/stat/by-parent', { params: { ownerId } });
+export function getEntityParentDistribution(userId: number) {
+  return http.get('/entities/stat/by-parent', { params: { userId } });
 }
 
 /**
  * 根据使用频率统计物品
  * @returns 使用频率统计数据
  */
-export function getEntityUsageDistribution(ownerId: number) {
-  return http.get('/entities/stat/by-usage-frequency', { params: { ownerId } });
+export function getEntityUsageDistribution(userId: number) {
+  return http.get('/entities/stat/by-usage-frequency', { params: { userId } });
 }
 
 /**
  * 获取实体趋势数据（最近6个月）
  * @returns 趋势数据
  */
-export function getEntityTrends(ownerId: number) {
-  return http.get('/entities/trends', { params: { ownerId } });
+export function getEntityTrends(userId: number) {
+  return http.get('/entities/trends', { params: { userId } });
 }
 
 /**
  * 统计物品总价值
  * @returns 总价值
  */
-export function getEntitiesSumValue(ownerId: number) {
-  return http.get('/entities/sum-value', { params: { ownerId } });
+export function getEntitiesSumValue(userId: number) {
+  return http.get('/entities/sum-value', { params: { userId } });
 }
-
+/**
+ * 获取用户使用的物品列表
+ * @returns 实体列表
+ */
+export const getEntitiesByUser = (userId: number): Promise<ResponseResult<Entity[]>> => {
+  return http.get(`/entities/list/by-user`, { params: { userId} });
+};
 /**
  * 根据类型获取实体列表
  * @returns 实体列表
  */
-export const listEntitiesByType = (type: string, ownerId: number): Promise<ResponseResult<Entity[]>> => {
-  return http.get(`/entities/list/by-type`, { params: { type, ownerId } });
+export const listEntitiesByType = (type: string, userId: number): Promise<ResponseResult<Entity[]>> => {
+  return http.get(`/entities/list/by-type`, { params: { type, userId } });
 };
 
 /**
  * 搜索实体
  * @returns 实体列表
  */
-export function searchEntities(params: { keyword: string, ownerId: number }) {
+export function searchEntities(params: { keyword: string, userId: number }) {
   return http.get('/entities/search', { params });
 }
 
@@ -278,6 +275,6 @@ export function searchEntities(params: { keyword: string, ownerId: number }) {
  * 高级搜索实体
  * @returns 实体列表
  */
-export function advancedSearchEntities(params: { keyword: string, onlyAvailable: boolean, ownerId: number }) {
+export function advancedSearchEntities(params: { keyword: string, onlyAvailable: boolean, userId: number }) {
   return http.get('/entities/advanced-search', { params });
 }

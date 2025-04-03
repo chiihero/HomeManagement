@@ -45,21 +45,29 @@ public interface ReminderService {
     /**
      * 获取当天提醒
      *
-     * @param ownerId 所有者ID
+     * @param userId 用户ID
      * @return 提醒列表
      */
-    List<Reminder> getTodayReminders(Long ownerId);
+    List<Reminder> getTodayReminders(Long userId);
+
+    /**
+     * 获取最近的提醒
+     *
+     * @param userId 用户ID
+     * @param limit 数量限制
+     * @return 提醒列表
+     */
+    List<Object> getRecentReminders(Long userId, Integer limit);
 
     /**
      * 获取指定日期范围的提醒
      *
-     * @param ownerId  所有者ID
+     * @param userId  用户ID
      * @param startDate 开始日期
      * @param endDate   结束日期
      * @return 提醒列表
      */
-    List<Reminder> getRemindersByDateRange(Long ownerId, LocalDate startDate, LocalDate endDate);
-
+    List<Reminder> getRemindersByDateRange(Long userId, LocalDate startDate, LocalDate endDate);
 
     /**
      * 获取实体相关的所有提醒
@@ -91,9 +99,9 @@ public interface ReminderService {
     /**
      * 按状态查询提醒
      *
-     * @param ownerId 所有者ID
+     * @param userId 用户ID
      * @param status   状态
      * @return 提醒列表
      */
-    List<Reminder> getRemindersByStatus(Long ownerId, String status);
+    List<Reminder> getRemindersByStatus(Long userId, String status);
 } 

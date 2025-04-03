@@ -39,6 +39,12 @@ public interface EntityTagService extends IService<EntityTag> {
     void removeEntityTags(Long entityId);
 
     /**
+     * 删除标签的所有关联
+     * @param tagId 标签ID
+     */
+    void removeByTagId(Long tagId);
+
+    /**
      * 获取已标记指定标签的实体ID列表
      * @param tagId 标签ID
      * @return 实体ID列表
