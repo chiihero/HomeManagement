@@ -1,20 +1,20 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <div class="title-container">
-        <h3 class="title">家庭物品管理系统</h3>
+      <div class="title-container text-center mb-medium">
+        <h3 class="title text-primary m-0 fw-bold">家庭物品管理系统</h3>
       </div>
       
       <el-form 
         ref="loginFormRef" 
         :model="loginForm" 
         :rules="loginRules" 
-        class="login-form" 
+        class="login-form w-100" 
         autocomplete="on" 
         label-position="left"
       >
-        <div class="form-header">
-          <h3 class="form-title">用户登录</h3>
+        <div class="text-center mb-medium">
+          <h3 class="form-title m-0">用户登录</h3>
         </div>
         
         <el-form-item prop="username">
@@ -43,7 +43,7 @@
           >
             <template #suffix>
               <el-icon 
-                class="password-toggle" 
+                class="pointer" 
                 @click="passwordVisible = !passwordVisible"
               >
                 <View v-if="passwordVisible" />
@@ -53,7 +53,7 @@
           </el-input>
         </el-form-item>
         
-        <div class="form-options">
+        <div class="flex justify-between align-center mb-medium">
           <el-checkbox v-model="loginForm.rememberMe">记住我</el-checkbox>
           <el-button type="text" @click="goToForgotPassword">忘记密码？</el-button>
         </div>
@@ -61,14 +61,14 @@
         <el-button 
           :loading="loading" 
           type="primary" 
-          class="login-button" 
+          class="w-100 mb-medium" 
           @click="handleLogin"
         >
           登录
         </el-button>
         
-        <div class="register-link">
-          <span>没有账号？</span>
+        <div class="text-center">
+          <span class="text-secondary">没有账号？</span>
           <router-link to="/register">
             <el-button type="text">立即注册</el-button>
           </router-link>
@@ -193,68 +193,29 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f2f5;
-  /* background-image: url('@/assets/images/login-bg.jpg'); */
-  background-size: cover;
-  background-position: center;
+  background-color: var(--bg-color);
 }
 
 .login-card {
   width: 400px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-medium);
+  background: var(--bg-color-card);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow);
   backdrop-filter: blur(10px);
-}
-
-.title-container {
-  text-align: center;
-  margin-bottom: 30px;
 }
 
 .title {
   font-size: 26px;
-  color: #409EFF;
-  margin: 0;
-  font-weight: bold;
-}
-
-.login-form {
-  width: 100%;
-}
-
-.form-header {
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 .form-title {
   font-size: 18px;
-  color: #303133;
-  margin: 0;
+  color: var(--text-color-primary);
   font-weight: 500;
 }
 
-.password-toggle {
+.pointer {
   cursor: pointer;
-}
-
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.login-button {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.register-link {
-  text-align: center;
-  font-size: 14px;
-  color: #606266;
 }
 </style> 

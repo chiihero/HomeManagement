@@ -1,19 +1,19 @@
 <template>
   <div class="register-container">
     <div class="register-card">
-      <div class="title-container">
-        <h3 class="title">家庭物品管理系统</h3>
+      <div class="title-container text-center mb-medium">
+        <h3 class="title text-primary m-0">家庭物品管理系统</h3>
       </div>
       
       <el-form 
         ref="registerFormRef" 
         :model="registerForm" 
         :rules="registerRules" 
-        class="register-form" 
+        class="register-form w-100" 
         label-position="left"
       >
-        <div class="form-header">
-          <h3 class="form-title">用户注册</h3>
+        <div class="text-center mb-medium">
+          <h3 class="form-title m-0">用户注册</h3>
         </div>
         
         <el-form-item prop="username">
@@ -41,7 +41,7 @@
           >
             <template #suffix>
               <el-icon 
-                class="password-toggle" 
+                class="pointer" 
                 @click="passwordVisible = !passwordVisible"
               >
                 <View v-if="passwordVisible" />
@@ -60,7 +60,7 @@
           >
             <template #suffix>
               <el-icon 
-                class="password-toggle" 
+                class="pointer" 
                 @click="confirmPasswordVisible = !confirmPasswordVisible"
               >
                 <View v-if="confirmPasswordVisible" />
@@ -82,14 +82,14 @@
         <el-button 
           :loading="loading" 
           type="primary" 
-          class="register-button" 
+          class="w-100 mb-medium" 
           @click="handleRegister"
         >
           注册
         </el-button>
         
-        <div class="login-link">
-          <span>已有账号？</span>
+        <div class="text-center">
+          <span class="text-secondary">已有账号？</span>
           <router-link to="/login">
             <el-button type="text">返回登录</el-button>
           </router-link>
@@ -276,86 +276,54 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f2f5;
-  /* background-image: url('@/assets/images/login-bg.jpg'); */
-  background-size: cover;
-  background-position: center;
+  background-color: var(--bg-color);
 }
 
 .register-card {
   width: 400px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-medium);
+  background: var(--bg-color-card);
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--box-shadow);
   backdrop-filter: blur(10px);
-}
-
-.title-container {
-  text-align: center;
-  margin-bottom: 30px;
 }
 
 .title {
   font-size: 26px;
-  color: #409EFF;
-  margin: 0;
-  font-weight: bold;
-}
-
-.register-form {
-  width: 100%;
-}
-
-.form-header {
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 .form-title {
   font-size: 18px;
-  color: #303133;
-  margin: 0;
+  color: var(--text-color-primary);
   font-weight: 500;
 }
 
-.password-toggle {
+.pointer {
   cursor: pointer;
-}
-
-.register-button {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.login-link {
-  text-align: center;
-  font-size: 14px;
-  color: #606266;
 }
 
 .terms-content {
   max-height: 400px;
   overflow-y: auto;
-  padding: 0 20px;
+  padding: 0 var(--spacing-medium);
 }
 
 .terms-content h4 {
   font-size: 16px;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-base);
 }
 
 .terms-content p {
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-small);
   line-height: 1.6;
 }
 
 .terms-content ul {
-  padding-left: 20px;
+  padding-left: var(--spacing-medium);
 }
 
 .terms-content li {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-mini);
   line-height: 1.6;
 }
 </style> 

@@ -68,7 +68,6 @@ declare module 'vue' {
     Line: typeof import('./src/components/charts/Line.vue')['default']
     Pie: typeof import('./src/components/charts/Pie.vue')['default']
     Radar: typeof import('./src/components/charts/Radar.vue')['default']
-    ResponsiveLayout: typeof import('./src/components/ResponsiveLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SidebarItem: typeof import('./src/components/layout/SidebarItem.vue')['default']

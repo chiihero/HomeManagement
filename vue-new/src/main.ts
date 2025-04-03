@@ -7,7 +7,7 @@ import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import './assets/styles/main.css'
+import './assets/styles/index.css'
 import { useAuthStore } from './store/modules/auth'
 import { useThemeStore } from './store/modules/theme'
 

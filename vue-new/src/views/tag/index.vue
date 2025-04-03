@@ -1,8 +1,8 @@
 <template>
-  <div class="tag-container">
-    <div class="tag-header">
-      <h1 class="page-title">标签管理</h1>
-      <div class="action-buttons">
+  <div class="page-container">
+    <div class="page-header mb-base">
+      <h1 class="page-title m-0">标签管理</h1>
+      <div>
         <el-button type="primary" @click="openTagForm(null)">
           <el-icon><Plus /></el-icon>添加标签
         </el-button>
@@ -10,13 +10,13 @@
     </div>
     
     <!-- 表格 -->
-    <el-card class="table-card">
+    <el-card shadow="hover">
       <el-table
         v-loading="loading"
         :data="tagList"
         border
         stripe
-        style="width: 100%"
+        class="w-100"
       >
         <el-table-column type="index" width="50" />
         <el-table-column prop="name" label="标签名称" min-width="150">
@@ -30,7 +30,7 @@
         </el-table-column>
         <el-table-column prop="color" label="颜色" width="100">
           <template #default="{ row }">
-            <div class="color-box" :style="{ backgroundColor: row.color }"></div>
+            <div class="color-box rounded-small" :style="{ backgroundColor: row.color }"></div>
           </template>
         </el-table-column>
         <el-table-column prop="entityCount" label="使用数量" width="120" />
@@ -61,7 +61,7 @@
       </el-table>
       
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div class="mt-medium flex justify-end">
         <el-pagination
           v-model:current-page="pagination.current"
           v-model:page-size="pagination.size"
@@ -94,7 +94,7 @@
         </el-form-item>
         <el-form-item label="标签颜色" prop="color">
           <el-color-picker v-model="tagForm.color" show-alpha></el-color-picker>
-          <div class="color-preview" :style="{ backgroundColor: tagForm.color }"></div>
+          <div class="color-preview rounded-small ml-small" :style="{ backgroundColor: tagForm.color }"></div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -403,69 +403,29 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.tag-container {
-  padding: 0;
-  width: 100%;
-}
-
-.tag-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: 500;
-  margin: 0;
-}
-
-.table-card {
-  margin-bottom: 16px;
-}
-
 .color-box {
   width: 20px;
   height: 20px;
-  border-radius: 4px;
   display: inline-block;
 }
 
 .color-preview {
   width: 80px;
   height: 30px;
-  border-radius: 4px;
-  margin-left: 12px;
   display: inline-block;
   vertical-align: middle;
 }
 
-.pagination-container {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* 添加响应式设计 */
+/* 响应式设计 */
 @media screen and (max-width: 768px) {
-  .tag-header {
+  .page-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: var(--spacing-small);
   }
   
-  .action-buttons {
-    width: 100%;
-  }
-  
-  .pagination-container {
+  .el-pagination {
     justify-content: center;
-  }
-  
-  .el-table {
-    width: 100%;
-    overflow-x: auto;
   }
 }
 

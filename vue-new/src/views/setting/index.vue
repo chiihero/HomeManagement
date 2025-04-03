@@ -1,14 +1,14 @@
 <template>
-  <div class="setting-container">
-    <div class="setting-header">
-      <h1 class="page-title">系统设置</h1>
+  <div class="page-container">
+    <div class="page-header mb-base">
+      <h1 class="page-title m-0">系统设置</h1>
     </div>
     
-    <el-tabs v-model="activeTab" class="setting-tabs">
+    <el-tabs v-model="activeTab" class="mb-medium">
       <el-tab-pane label="个人信息" name="profile">
-        <el-card class="setting-card">
+        <el-card shadow="hover" class="mb-medium">
           <template #header>
-            <div class="card-header">
+            <div class="flex justify-between align-center">
               <span>个人信息设置</span>
             </div>
           </template>
@@ -18,7 +18,7 @@
             :model="profileForm"
             :rules="profileRules"
             label-width="100px"
-            class="setting-form"
+            class="form-container"
           >
             <el-form-item label="用户名" prop="username">
               <el-input v-model="profileForm.username" disabled />
@@ -57,9 +57,9 @@
       </el-tab-pane>
       
       <el-tab-pane label="修改密码" name="password">
-        <el-card class="setting-card">
+        <el-card shadow="hover" class="mb-medium">
           <template #header>
-            <div class="card-header">
+            <div class="flex justify-between align-center">
               <span>修改密码</span>
             </div>
           </template>
@@ -69,7 +69,7 @@
             :model="passwordForm"
             :rules="passwordRules"
             label-width="120px"
-            class="setting-form"
+            class="form-container"
           >
             <el-form-item label="当前密码" prop="oldPassword">
               <el-input 
@@ -103,9 +103,9 @@
       </el-tab-pane>
       
       <el-tab-pane label="通知设置" name="notification">
-        <el-card class="setting-card">
+        <el-card shadow="hover" class="mb-medium">
           <template #header>
-            <div class="card-header">
+            <div class="flex justify-between align-center">
               <span>通知设置</span>
             </div>
           </template>
@@ -114,7 +114,7 @@
             ref="notificationFormRef"
             :model="notificationForm"
             label-width="120px"
-            class="setting-form"
+            class="form-container"
           >
             <el-form-item label="邮件通知">
               <el-switch
@@ -122,7 +122,7 @@
                 active-text="开启"
                 inactive-text="关闭"
               />
-              <div class="form-item-description">开启后，系统会通过邮件发送重要通知。</div>
+              <div class="form-hint text-secondary mt-mini">开启后，系统会通过邮件发送重要通知。</div>
             </el-form-item>
             
             <el-form-item label="到期提醒">
@@ -131,7 +131,7 @@
                 active-text="开启"
                 inactive-text="关闭"
               />
-              <div class="form-item-description">开启后，物品即将到期时会收到提醒。</div>
+              <div class="form-hint text-secondary mt-mini">开启后，物品即将到期时会收到提醒。</div>
             </el-form-item>
             
             <el-form-item label="提前提醒天数">
@@ -142,7 +142,7 @@
                 <el-option :value="15" label="15天" />
                 <el-option :value="30" label="30天" />
               </el-select>
-              <div class="form-item-description">设置物品到期前多少天开始提醒。</div>
+              <div class="form-hint text-secondary mt-mini">设置物品到期前多少天开始提醒。</div>
             </el-form-item>
             
             <el-form-item>
@@ -153,9 +153,9 @@
       </el-tab-pane>
       
       <el-tab-pane label="系统信息" name="system">
-        <el-card class="setting-card">
+        <el-card shadow="hover">
           <template #header>
-            <div class="card-header">
+            <div class="flex justify-between align-center">
               <span>系统信息</span>
             </div>
           </template>
@@ -374,49 +374,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.setting-container {
-  padding: 16px;
-}
-
-.setting-header {
-  margin-bottom: 16px;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: 500;
-  margin: 0;
-}
-
-.setting-tabs {
-  margin-bottom: 16px;
-}
-
-.setting-card {
-  margin-bottom: 16px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.setting-form {
-  max-width: 500px;
-}
-
-.form-item-description {
+.form-hint {
   font-size: 12px;
-  color: #909399;
   line-height: 1.5;
-  margin-top: 4px;
 }
 
 .avatar-uploader {
   text-align: center;
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius-base);
   cursor: pointer;
   overflow: hidden;
   width: 100px;
@@ -424,16 +390,16 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: border-color 0.3s;
+  transition: border-color var(--transition-time);
 }
 
 .avatar-uploader:hover {
-  border-color: #409EFF;
+  border-color: var(--primary-color);
 }
 
 .avatar-uploader-icon {
   font-size: 28px;
-  color: #8c939d;
+  color: var(--text-color-secondary);
   width: 100%;
   height: 100%;
   display: flex;

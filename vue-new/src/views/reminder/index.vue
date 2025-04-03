@@ -1,11 +1,11 @@
 <template>
-  <div class="reminder-manage">
-    <div class="header">
-      <h2>物品提醒管理</h2>
+  <div class="page-container">
+    <div class="page-header mb-base">
+      <h2 class="page-title m-0">物品提醒管理</h2>
       <el-button type="primary" @click="handleAdd">新增提醒</el-button>
     </div>
 
-    <el-card class="search-card">
+    <el-card shadow="hover" class="mb-medium">
       <el-form :model="searchForm" ref="searchFormRef" label-width="80px" inline>
         <el-form-item label="物品名称">
           <el-input v-model="searchForm.itemName" placeholder="请输入物品名称" clearable />
@@ -43,11 +43,11 @@
       </el-form>
     </el-card>
 
-    <el-card class="table-card">
+    <el-card shadow="hover">
       <el-table
         v-loading="loading"
         :data="reminderList"
-        style="width: 100%"
+        class="w-100"
         border
       >
         <el-table-column type="index" label="序号" width="60" />
@@ -98,7 +98,7 @@
         </el-table-column>
       </el-table>
 
-      <div class="pagination">
+      <div class="mt-medium flex justify-end">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -204,193 +204,232 @@ import { useAuthStore } from '@/store/modules/auth'
 
 // 状态和数据
 const loading = ref(false)
+const dialogVisible = ref(false)
+const dialogTitle = ref('新增提醒')
+const itemsLoading = ref(false)
+const currentId = ref<number | null>(null)
 const reminderList = ref<Reminder[]>([])
+const entityOptions = ref<Entity[]>([])
+
+// 分页
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+
+// 表单引用
+const searchFormRef = ref<FormInstance>()
+const reminderFormRef = ref<FormInstance>()
+
+// 用户信息
 const authStore = useAuthStore()
+const userId = ref(authStore.currentUser?.id || 0)
 
 // 搜索表单
-const searchFormRef = ref<FormInstance>()
 const searchForm = reactive<ReminderQueryParams>({
   itemName: '',
   type: '',
   status: '',
-  dateRange: []
+  dateRange: ['', ''],
+  userId: authStore.currentUser?.id || 0
 })
 
-// 添加/编辑表单
-const reminderFormRef = ref<FormInstance>()
-const dialogVisible = ref(false)
-const dialogTitle = ref('新增提醒')
-const itemsLoading = ref(false)
-const entityOptions = ref<Entity[]>([])
+// 提醒表单
 const reminderForm = reactive({
-  id: '',
-  itemId: '',
+  id: undefined as number | undefined,
+  itemId: undefined as string | undefined,
+  itemName: '',
+  userId: userId.value,
   type: 'EXPIRATION',
   reminderDate: '',
-  daysInAdvance: 3,
+  status: 'PENDING',
   content: '',
   notificationMethods: ['SYSTEM'],
+  daysInAdvance: 7,
   isRecurring: false,
   recurringCycle: 'MONTHLY'
 })
 
-// 表单验证规则
+// 表单校验规则
 const rules = reactive<FormRules>({
-  itemId: [{ required: true, message: '请选择物品', trigger: 'change' }],
-  type: [{ required: true, message: '请选择提醒类型', trigger: 'change' }],
-  reminderDate: [{ required: true, message: '请选择提醒日期', trigger: 'change' }],
-  daysInAdvance: [{ required: true, message: '请输入提前提醒天数', trigger: 'blur' }],
-  content: [{ required: true, message: '请输入提醒内容', trigger: 'blur' }],
-  notificationMethods: [{ required: true, message: '请选择至少一种通知方式', trigger: 'change' }],
-  recurringCycle: [{ required: true, message: '请选择重复周期', trigger: 'change' }]
+  itemId: [
+    { required: true, message: '请选择物品', trigger: 'change' }
+  ],
+  type: [
+    { required: true, message: '请选择提醒类型', trigger: 'change' }
+  ],
+  reminderDate: [
+    { required: true, message: '请选择提醒日期', trigger: 'change' }
+  ],
+  content: [
+    { required: true, message: '请输入提醒内容', trigger: 'blur' }
+  ],
+  notificationMethods: [
+    { required: true, message: '请选择至少一种通知方式', trigger: 'change' }
+  ],
+  recurringCycle: [
+    { required: true, message: '请选择重复周期', trigger: 'change' }
+  ]
 })
 
-// 默认日期范围为最近30天
+// 初始化
 onMounted(() => {
-  // 默认设置日期范围为当前日期和未来30天
-  const today = moment().format('YYYY-MM-DD')
-  const future30Days = moment().add(30, 'days').format('YYYY-MM-DD')
-  searchForm.dateRange = [today, future30Days]
-  fetchReminderList()
+  // loadReminderList()
 })
 
-// 获取提醒列表
-const fetchReminderList = async () => {
+// 加载提醒列表
+const loadReminderList = async () => {
   loading.value = true
   try {
-    const userId = authStore.currentUser?.id || 1 // 从store中获取当前用户ID
+    const params = {
+      itemName: searchForm.itemName,
+      type: searchForm.type,
+      status: searchForm.status,
+      startDate: searchForm.dateRange && searchForm.dateRange[0] ? searchForm.dateRange[0] : null,
+      endDate: searchForm.dateRange && searchForm.dateRange[1] ? searchForm.dateRange[1] : null,
+      userId: searchForm.userId,
+      pageNum: currentPage.value,
+      pageSize: pageSize.value
+    }
     
-    let reminders: Reminder[] = []
-    
-    if (searchForm.dateRange && searchForm.dateRange.length === 2) {
-      // 使用日期范围查询
-      const startDate = searchForm.dateRange[0]
-      const endDate = searchForm.dateRange[1]
-      
-      const { data } = await getRemindersByDateRange(userId, startDate, endDate)
-      reminders = data || []
+    const response = await getRemindersByDateRange(params.userId || 0, params.startDate || '', params.endDate || '')
+    if (response.code === 200) {
+      if (Array.isArray(response.data)) {
+        reminderList.value = response.data
+        total.value = response.data.length
+      } else {
+        console.error('返回数据格式错误')
+        reminderList.value = []
+        total.value = 0
+      }
     } else {
-      // 无日期范围时，默认查询状态
-
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setMonth(startDate.getMonth() + 1);
-      const data = await getRemindersByDateRange(userId,startDate.toISOString().split('T')[0] ,endDate.toISOString().split('T')[0])
-      reminders = data.data || []
+      ElMessage.error(response.message || '加载提醒列表失败')
     }
-    
-    // 过滤处理其他查询条件
-    if (searchForm.itemName) {
-      reminders = reminders.filter(item => 
-        item.itemName?.toLowerCase().includes(searchForm.itemName.toLowerCase())
-      )
-    }
-    
-    if (searchForm.type && !searchForm.dateRange) {
-      reminders = reminders.filter(item => item.type === searchForm.type)
-    }
-    
-    if (searchForm.status && !searchForm.dateRange) {
-      reminders = reminders.filter(item => item.status === searchForm.status)
-    }
-    
-    // 手动分页处理
-    total.value = Array.isArray(reminders) ? reminders.length : 0
-    const startIndex = (currentPage.value - 1) * pageSize.value
-    const endIndex = startIndex + pageSize.value
-    reminderList.value = Array.isArray(reminders) ? reminders.slice(startIndex, endIndex) : []
   } catch (error) {
-    console.error('获取提醒列表失败', error)
-    ElMessage.error('获取提醒列表失败')
+    console.error('加载提醒列表失败', error)
+    ElMessage.error('加载提醒列表失败')
   } finally {
     loading.value = false
-  }
-}
-
-// 搜索物品
-const searchItems = async (query: string) => {
-  if (query) {
-    itemsLoading.value = true
-    try {
-      const { data } = await searchEntities({ 
-        keyword: query, 
-        userId: authStore.currentUser?.id || 1 // 添加userId参数
-      })
-      entityOptions.value = data
-    } catch (error) {
-      console.error('搜索物品失败', error)
-    } finally {
-      itemsLoading.value = false
-    }
-  } else {
-    entityOptions.value = []
   }
 }
 
 // 搜索
 const handleSearch = () => {
   currentPage.value = 1
-  fetchReminderList()
+  loadReminderList()
 }
 
 // 重置搜索表单
 const resetSearchForm = () => {
-  // 重置为默认日期范围
-  const today = moment().format('YYYY-MM-DD')
-  const future30Days = moment().add(30, 'days').format('YYYY-MM-DD')
-  searchForm.itemName = ''
-  searchForm.type = ''
-  searchForm.status = ''
-  searchForm.dateRange = [today, future30Days]
-  
   if (searchFormRef.value) {
     searchFormRef.value.resetFields()
+    handleSearch()
   }
-  
-  currentPage.value = 1
-  fetchReminderList()
 }
 
-// 添加提醒
+// 分页大小变化
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
+  loadReminderList()
+}
+
+// 页码变化
+const handleCurrentChange = (page: number) => {
+  currentPage.value = page
+  loadReminderList()
+}
+
+// 搜索物品
+const searchItems = async (query: string) => {
+  if (query.length < 1) return
+  
+  itemsLoading.value = true
+  try {
+    const response = await searchEntities({ 
+      keyword: query, 
+      userId: userId.value
+    })
+    if (response.code === 200) {
+      entityOptions.value = response.data || []
+    } else {
+      entityOptions.value = []
+    }
+  } catch (error) {
+    console.error('搜索物品失败', error)
+    entityOptions.value = []
+  } finally {
+    itemsLoading.value = false
+  }
+}
+
+// 新增提醒
 const handleAdd = () => {
   dialogTitle.value = '新增提醒'
-  Object.assign(reminderForm, {
-    id: '',
-    itemId: '',
-    type: 'EXPIRATION',
-    reminderDate: moment().add(30, 'days').format('YYYY-MM-DD'),
-    daysInAdvance: 3,
-    content: '',
-    notificationMethods: ['SYSTEM'],
-    isRecurring: false,
-    recurringCycle: 'MONTHLY'
-  })
+  currentId.value = null
+  resetReminderForm()
   dialogVisible.value = true
 }
 
 // 编辑提醒
 const handleEdit = async (row: Reminder) => {
   dialogTitle.value = '编辑提醒'
+  currentId.value = row.id ? Number(row.id) : null
+  
   try {
-    const { data } = await getReminderDetail(row.id)
-    Object.assign(reminderForm, {
-      id: data.id,
-      itemId: data.itemId,
-      type: data.type,
-      reminderDate: data.reminderDate,
-      daysInAdvance: data.daysInAdvance,
-      content: data.content,
-      notificationMethods: data.notificationMethods,
-      isRecurring: data.isRecurring,
-      recurringCycle: data.recurringCycle || 'MONTHLY'
-    })
-    dialogVisible.value = true
+    const response = await getReminderDetail(String(row.id))
+    if (response.code === 200) {
+      const reminderData = response.data
+      
+      // 重置表单后再赋值
+      resetReminderForm()
+      
+      // 填充表单数据
+      reminderForm.itemId = reminderData.itemId
+      reminderForm.itemName = reminderData.itemName
+      reminderForm.type = reminderData.type || 'EXPIRATION'
+      reminderForm.reminderDate = reminderData.reminderDate || ''
+      reminderForm.status = reminderData.status || 'PENDING'
+      reminderForm.content = reminderData.content || ''
+      reminderForm.notificationMethods = reminderData.notificationMethods || ['SYSTEM']
+      reminderForm.daysInAdvance = reminderData.daysInAdvance || 7
+      reminderForm.isRecurring = reminderData.isRecurring || false
+      reminderForm.recurringCycle = reminderData.recurringCycle || 'MONTHLY'
+      
+      // 如果有物品信息，添加到选项中
+      if (reminderData.itemId && reminderData.itemName) {
+        entityOptions.value = [{
+          id: reminderData.itemId,
+          name: reminderData.itemName
+        } as Entity]
+      }
+      
+      dialogVisible.value = true
+    } else {
+      ElMessage.error(response.message || '获取提醒详情失败')
+    }
   } catch (error) {
     console.error('获取提醒详情失败', error)
     ElMessage.error('获取提醒详情失败')
+  }
+}
+
+// 重置提醒表单
+const resetReminderForm = () => {
+  reminderForm.id = undefined
+  reminderForm.itemId = undefined
+  reminderForm.itemName = ''
+  reminderForm.userId = userId.value
+  reminderForm.type = 'EXPIRATION'
+  reminderForm.reminderDate = ''
+  reminderForm.status = 'PENDING'
+  reminderForm.content = ''
+  reminderForm.notificationMethods = ['SYSTEM']
+  reminderForm.daysInAdvance = 7
+  reminderForm.isRecurring = false
+  reminderForm.recurringCycle = 'MONTHLY'
+  
+  // 重置表单验证
+  if (reminderFormRef.value) {
+    reminderFormRef.value.resetFields()
   }
 }
 
@@ -398,94 +437,82 @@ const handleEdit = async (row: Reminder) => {
 const submitForm = async () => {
   if (!reminderFormRef.value) return
   
-  await reminderFormRef.value.validate(async (valid) => {
+  await reminderFormRef.value.validate(async (valid: boolean) => {
     if (valid) {
       try {
-        const formData = {
-          id: reminderForm.id,
-          itemId: reminderForm.itemId,
-          type: reminderForm.type,
-          reminderDate: reminderForm.reminderDate,
-          daysInAdvance: reminderForm.daysInAdvance,
-          content: reminderForm.content,
-          notificationMethods: reminderForm.notificationMethods,
-          isRecurring: reminderForm.isRecurring,
-          recurringCycle: reminderForm.isRecurring ? reminderForm.recurringCycle : null
+        let response
+        const submitData = {
+          ...reminderForm,
+          id: currentId.value
         }
         
-        if (reminderForm.id) {
-          await updateReminder(formData)
-          ElMessage.success('更新提醒成功')
+        if (currentId.value) {
+          // 编辑提醒
+          response = await updateReminder({
+            id: String(currentId.value),
+            ...submitData
+          })
         } else {
-          await addReminder(formData)
-          ElMessage.success('添加提醒成功')
+          // 新增提醒
+          response = await addReminder(submitData)
         }
-        dialogVisible.value = false
-        fetchReminderList()
+        
+        if (response.code === 200) {
+          ElMessage.success(currentId.value ? '编辑成功' : '添加成功')
+          dialogVisible.value = false
+          loadReminderList()
+        } else {
+          ElMessage.error(response.message || (currentId.value ? '编辑失败' : '添加失败'))
+        }
       } catch (error) {
-        console.error('保存提醒失败', error)
-        ElMessage.error('保存提醒失败')
+        console.error('提交表单失败', error)
+        ElMessage.error('操作失败')
       }
     }
   })
 }
 
-// 标记完成
-const handleComplete = (row: Reminder) => {
-  ElMessageBox.confirm(`确定将"${row.itemName}"的提醒标记为已完成吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    try {
-      await completeReminder(row.id)
-      ElMessage.success('操作成功')
-      fetchReminderList()
-    } catch (error) {
-      console.error('操作失败', error)
-      ElMessage.error('操作失败')
-    }
-  }).catch(() => {})
-}
-
 // 删除提醒
 const handleDelete = (row: Reminder) => {
-  ElMessageBox.confirm(`确定删除"${row.itemName}"的提醒吗？`, '提示', {
+  ElMessageBox.confirm('确定要删除这条提醒吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
     try {
-      await deleteReminder(row.id)
-      ElMessage.success('删除成功')
-      fetchReminderList()
+      const response = await deleteReminder(String(row.id))
+      if (response.code === 200) {
+        ElMessage.success('删除成功')
+        loadReminderList()
+      } else {
+        ElMessage.error(response.message || '删除失败')
+      }
     } catch (error) {
-      console.error('删除失败', error)
+      console.error('删除提醒失败', error)
       ElMessage.error('删除失败')
     }
-  }).catch(() => {})
+  }).catch(() => {
+    // 取消删除，不做任何处理
+  })
 }
 
-// 分页相关方法
-const handleSizeChange = (size: number) => {
-  pageSize.value = size
-  fetchReminderList()
+// 标记完成
+const handleComplete = async (row: Reminder) => {
+  try {
+    const response = await completeReminder(String(row.id))
+    if (response.code === 200) {
+      ElMessage.success('操作成功')
+      loadReminderList()
+    } else {
+      ElMessage.error(response.message || '操作失败')
+    }
+  } catch (error) {
+    console.error('标记完成失败', error)
+    ElMessage.error('操作失败')
+  }
 }
 
-const handleCurrentChange = (page: number) => {
-  currentPage.value = page
-  fetchReminderList()
-}
-
-// 工具方法
-const formatDate = (date: string) => {
-  return date ? moment(date).format('YYYY-MM-DD') : '-'
-}
-
-const formatDateTime = (datetime: string) => {
-  return datetime ? moment(datetime).format('YYYY-MM-DD HH:mm') : '-'
-}
-
+// 获取提醒类型文本
 const getReminderTypeText = (type: string) => {
   switch (type) {
     case 'EXPIRATION': return '到期提醒'
@@ -496,6 +523,7 @@ const getReminderTypeText = (type: string) => {
   }
 }
 
+// 获取提醒类型颜色
 const getReminderTypeColor = (type: string) => {
   switch (type) {
     case 'EXPIRATION': return 'danger'
@@ -506,6 +534,7 @@ const getReminderTypeColor = (type: string) => {
   }
 }
 
+// 获取提醒状态文本
 const getReminderStatusText = (status: string) => {
   switch (status) {
     case 'PENDING': return '待提醒'
@@ -516,6 +545,7 @@ const getReminderStatusText = (status: string) => {
   }
 }
 
+// 获取提醒状态颜色
 const getReminderStatusColor = (status: string) => {
   switch (status) {
     case 'PENDING': return 'warning'
@@ -525,44 +555,14 @@ const getReminderStatusColor = (status: string) => {
     default: return ''
   }
 }
-</script>
 
-<style scoped>
-.reminder-manage {
-  padding: 0;
+// 格式化日期
+const formatDate = (date: string) => {
+  return date ? moment(date).format('YYYY-MM-DD') : '-'
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+// 格式化日期时间
+const formatDateTime = (dateTime: string) => {
+  return dateTime ? moment(dateTime).format('YYYY-MM-DD HH:mm') : '-'
 }
-
-.search-card {
-  margin-bottom: 16px;
-}
-
-.table-card {
-  margin-bottom: 16px;
-}
-
-.pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* 添加响应式支持 */
-@media screen and (max-width: 767px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .pagination {
-    justify-content: center;
-  }
-}
-</style> 
+</script> 
