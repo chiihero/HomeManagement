@@ -1,6 +1,7 @@
 package com.chii.homemanagement.controller;
 
-import com.chii.homemanagement.entity.ResponseInfo;
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.SystemSetting;
 import com.chii.homemanagement.entity.User;
 import com.chii.homemanagement.service.SystemSettingService;
@@ -42,14 +43,14 @@ public class SettingController {
      */
     @GetMapping("/system")
     @Operation(summary = "获取系统设置", description = "获取系统参数设置")
-    public ResponseInfo<Map<String, Object>> getSystemSettings(HttpSession session) {
+    public ApiResponse<Map<String, Object>> getSystemSettings(HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
 
         Map<String, Object> settings = systemSettingService.getSystemSettingsAsMap();
-        return ResponseInfo.successResponse(settings);
+        return ApiResponse.success(settings);
     }
 
     /**
@@ -57,15 +58,15 @@ public class SettingController {
      */
     @PutMapping("/system")
     @Operation(summary = "更新系统设置", description = "更新系统参数设置")
-    public ResponseInfo<Boolean> updateSystemSettings(@RequestBody Map<String, Object> params, HttpSession session) {
+    public ApiResponse<Boolean> updateSystemSettings(@RequestBody Map<String, Object> params, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
 
         List<SystemSetting> settings = new ArrayList<>();
@@ -78,7 +79,7 @@ public class SettingController {
         
         systemSettingService.saveSystemSettings(settings, currentUser.getId());
         
-        return ResponseInfo.successResponse(true);
+        return ApiResponse.success(true);
     }
     
     /**
@@ -86,20 +87,20 @@ public class SettingController {
      */
     @PostMapping("/system/init")
     @Operation(summary = "初始化默认系统设置", description = "初始化默认的系统参数设置")
-    public ResponseInfo<Boolean> initSystemSettings(HttpSession session) {
+    public ApiResponse<Boolean> initSystemSettings(HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         systemSettingService.initDefaultSystemSettings(currentUser.getId());
         
-        return ResponseInfo.successResponse(true);
+        return ApiResponse.success(true);
     }
     
     /**
@@ -107,20 +108,20 @@ public class SettingController {
      */
     @DeleteMapping("/system/{key}")
     @Operation(summary = "删除系统设置", description = "删除指定的系统参数设置")
-    public ResponseInfo<Boolean> deleteSystemSetting(@PathVariable("key") String key, HttpSession session) {
+    public ApiResponse<Boolean> deleteSystemSetting(@PathVariable("key") String key, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         systemSettingService.deleteSystemSetting(key);
         
-        return ResponseInfo.successResponse(true);
+        return ApiResponse.success(true);
     }
     
     /**
@@ -128,20 +129,20 @@ public class SettingController {
      */
     @PostMapping("/logo")
     @Operation(summary = "上传系统Logo", description = "上传系统Logo图片")
-    public ResponseInfo<Map<String, String>> uploadSystemLogo(@RequestParam("file") MultipartFile file, HttpSession session) {
+    public ApiResponse<Map<String, String>> uploadSystemLogo(@RequestParam("file") MultipartFile file, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
 
         // 检查文件是否为空
         if (file.isEmpty()) {
-            return ResponseInfo.errorResponse("请选择要上传的文件");
+            return ApiResponse.error(ErrorCode.PARAM_NOT_VALID.getCode(), "请选择要上传的文件");
         }
 
         try {
@@ -174,9 +175,9 @@ public class SettingController {
             Map<String, String> result = new HashMap<>();
             result.put("url", logoUrl);
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (IOException e) {
-            return ResponseInfo.errorResponse("Logo上传失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.FILE_UPLOAD_ERROR.getCode(), "Logo上传失败: " + e.getMessage());
         }
     }
     
@@ -185,15 +186,15 @@ public class SettingController {
      */
     @PostMapping("/backup")
     @Operation(summary = "创建系统备份", description = "创建系统数据备份")
-    public ResponseInfo<Map<String, Object>> createBackup(@RequestBody(required = false) Map<String, String> params, HttpSession session) {
+    public ApiResponse<Map<String, Object>> createBackup(@RequestBody(required = false) Map<String, String> params, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         try {
@@ -208,9 +209,9 @@ public class SettingController {
             result.put("createdAt", System.currentTimeMillis());
             result.put("notes", notes);
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("创建备份失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "创建备份失败: " + e.getMessage());
         }
     }
     
@@ -219,15 +220,15 @@ public class SettingController {
      */
     @GetMapping("/backup")
     @Operation(summary = "获取备份列表", description = "获取系统备份文件列表")
-    public ResponseInfo<List<Map<String, Object>>> getBackups(HttpSession session) {
+    public ApiResponse<List<Map<String, Object>>> getBackups(HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         try {
@@ -246,16 +247,16 @@ public class SettingController {
             Map<String, Object> backup2 = new HashMap<>();
             backup2.put("id", 2);
             backup2.put("filename", "backup_20230102120000.zip");
-            backup2.put("size", 1024 * 512);
+            backup2.put("size", 2 * 1024 * 1024);
             backup2.put("createdAt", System.currentTimeMillis());
             backup2.put("notes", "自动备份");
             
             result.add(backup1);
             result.add(backup2);
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("获取备份列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取备份列表失败: " + e.getMessage());
         }
     }
     
@@ -264,24 +265,25 @@ public class SettingController {
      */
     @PostMapping("/backup/{id}/restore")
     @Operation(summary = "恢复备份", description = "从指定备份恢复系统数据")
-    public ResponseInfo<Boolean> restoreBackup(@PathVariable("id") Integer id, HttpSession session) {
+    public ApiResponse<Boolean> restoreBackup(@PathVariable("id") Integer id, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         try {
             // TODO: 实现恢复备份逻辑
-            // backupService.restoreBackup(id);
+            // boolean success = backupService.restoreBackup(id);
+            boolean success = true; // 模拟成功
             
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(success);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("恢复备份失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "恢复备份失败: " + e.getMessage());
         }
     }
     
@@ -290,24 +292,25 @@ public class SettingController {
      */
     @DeleteMapping("/backup/{id}")
     @Operation(summary = "删除备份", description = "删除指定的系统备份")
-    public ResponseInfo<Boolean> deleteBackup(@PathVariable("id") Integer id, HttpSession session) {
+    public ApiResponse<Boolean> deleteBackup(@PathVariable("id") Integer id, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         try {
             // TODO: 实现删除备份逻辑
-            // backupService.deleteBackup(id);
+            // boolean success = backupService.deleteBackup(id);
+            boolean success = true; // 模拟成功
             
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(success);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("删除备份失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除备份失败: " + e.getMessage());
         }
     }
     
@@ -316,22 +319,25 @@ public class SettingController {
      */
     @GetMapping("/export")
     @Operation(summary = "导出数据", description = "导出系统数据")
-    public ResponseInfo<byte[]> exportData(@RequestParam(value = "type", defaultValue = "json") String type, HttpSession session) {
+    public ApiResponse<byte[]> exportData(@RequestParam(value = "type", defaultValue = "json") String type, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
+        }
+        
+        // 检查是否有管理员权限
+        if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         try {
-            // TODO: 实现导出数据逻辑
-            // byte[] data = exportService.exportData(type, currentUser.getId());
+            // TODO: 实现数据导出逻辑
+            // byte[] exportedData = exportService.exportData(type);
+            byte[] exportedData = "模拟导出数据".getBytes(); // 模拟导出数据
             
-            // 示例数据
-            byte[] data = new byte[1024];
-            
-            return ResponseInfo.successResponse(data);
+            return ApiResponse.success(exportedData);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("导出数据失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "导出数据失败: " + e.getMessage());
         }
     }
     
@@ -340,29 +346,30 @@ public class SettingController {
      */
     @PostMapping("/import")
     @Operation(summary = "导入数据", description = "导入系统数据")
-    public ResponseInfo<Boolean> importData(@RequestParam("file") MultipartFile file, HttpSession session) {
+    public ApiResponse<Boolean> importData(@RequestParam("file") MultipartFile file, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), ErrorCode.USER_NOT_LOGIN.getMessage());
         }
         
         // 检查是否有管理员权限
         if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
-            return ResponseInfo.errorResponse("没有权限执行此操作");
+            return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
         }
         
         // 检查文件是否为空
         if (file.isEmpty()) {
-            return ResponseInfo.errorResponse("请选择要导入的文件");
+            return ApiResponse.error(ErrorCode.PARAM_NOT_VALID.getCode(), "请选择要导入的文件");
         }
         
         try {
-            // TODO: 实现导入数据逻辑
-            // importService.importData(file.getInputStream(), currentUser.getId());
+            // TODO: 实现数据导入逻辑
+            // boolean success = importService.importData(file);
+            boolean success = true; // 模拟成功
             
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(success);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("导入数据失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "导入数据失败: " + e.getMessage());
         }
     }
 } 

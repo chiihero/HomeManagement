@@ -73,7 +73,7 @@ export const uploadUserAvatar = (file: File) => {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
-  }).then(res => res.data);
+  });
 }
 
 // 删除用户头像

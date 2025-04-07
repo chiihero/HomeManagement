@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chii.homemanagement.entity.EntityMaintenance;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.ResultMap;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +24,7 @@ public interface EntityMaintenanceMapper extends BaseMapper<EntityMaintenance> {
      * @param entityId 实体ID
      * @return 维护记录列表
      */
+    @Select("SELECT * FROM entity_maintenance WHERE entity_id = #{entityId} ORDER BY maintenance_date DESC")
     List<EntityMaintenance> findByEntityId(@Param("entityId") Long entityId);
 
     /**
@@ -29,6 +34,7 @@ public interface EntityMaintenanceMapper extends BaseMapper<EntityMaintenance> {
      * @param endDate   结束日期
      * @return 维护记录列表
      */
+    @Select("SELECT * FROM entity_maintenance WHERE maintenance_date >= #{startDate} AND maintenance_date <= #{endDate} ORDER BY maintenance_date DESC")
     List<EntityMaintenance> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     /**
@@ -37,6 +43,7 @@ public interface EntityMaintenanceMapper extends BaseMapper<EntityMaintenance> {
      * @param result 维护结果
      * @return 维护记录列表
      */
+    @Select("SELECT * FROM entity_maintenance WHERE result = #{result} ORDER BY maintenance_date DESC")
     List<EntityMaintenance> findByResult(@Param("result") String result);
     
     /**
@@ -45,5 +52,6 @@ public interface EntityMaintenanceMapper extends BaseMapper<EntityMaintenance> {
      * @param maintenanceType 维护类型
      * @return 维护记录列表
      */
+    @Select("SELECT * FROM entity_maintenance WHERE maintenance_type = #{maintenanceType} ORDER BY maintenance_date DESC")
     List<EntityMaintenance> findByMaintenanceType(@Param("maintenanceType") String maintenanceType);
 } 

@@ -1,6 +1,7 @@
 package com.chii.homemanagement.controller;
 
-import com.chii.homemanagement.entity.ResponseInfo;
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.Tag;
 import com.chii.homemanagement.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,14 +32,14 @@ public class TagController {
      */
     @GetMapping
     @Operation(summary = "获取标签列表", description = "根据用户ID获取所有标签")
-    public ResponseInfo<List<Tag>> getTags(@RequestParam(value = "userId", required = false) Long userId) {
+    public ApiResponse<List<Tag>> getTags(@RequestParam(value = "userId", required = false) Long userId) {
         if (userId != null) {
             // 如果提供了userId，返回对应所有者的标签
             List<Tag> tags = tagService.getTagsByUserId(userId);
-            return ResponseInfo.successResponse(tags);
+            return ApiResponse.success(tags);
         } else {
             // 如果没有提供userId，返回错误信息
-            return ResponseInfo.errorResponse("需要提供userId参数");
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "需要提供userId参数");
         }
     }
 
@@ -51,9 +52,9 @@ public class TagController {
      */
     @GetMapping("/item/{itemId}")
     @Operation(summary = "获取物品标签", description = "根据物品ID获取标签")
-    public ResponseInfo<List<Tag>> getTagsByItemId(@PathVariable(value = "itemId") Long itemId) {
+    public ApiResponse<List<Tag>> getTagsByItemId(@PathVariable(value = "itemId") Long itemId) {
         List<Tag> tags = tagService.getTagsByItemId(itemId);
-        return ResponseInfo.successResponse(tags);
+        return ApiResponse.success(tags);
     }
 
     /**
@@ -64,7 +65,7 @@ public class TagController {
      */
     @PostMapping
     @Operation(summary = "创建标签", description = "创建新标签")
-    public ResponseInfo<Tag> addTag(@Validated @RequestBody Tag tag) {
+    public ApiResponse<Tag> addTag(@Validated @RequestBody Tag tag) {
         // 设置创建者ID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -78,9 +79,9 @@ public class TagController {
         
         Long tagId = tagService.addTag(tag);
         if (tagId != null && tagId > 0) {
-            return ResponseInfo.successResponse(tag);
+            return ApiResponse.success(tag);
         } else {
-            return ResponseInfo.errorResponse("添加标签失败");
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "添加标签失败");
         }
     }
 
@@ -93,13 +94,13 @@ public class TagController {
      */
     @PutMapping("/{id}")
     @Operation(summary = "更新标签", description = "更新标签信息")
-    public ResponseInfo<Boolean> updateTag(@PathVariable(value = "id") Long id, @Validated @RequestBody Tag tag) {
+    public ApiResponse<Tag> updateTag(@PathVariable(value = "id") Long id, @Validated @RequestBody Tag tag) {
         tag.setId(id);
         boolean success = tagService.updateTag(tag);
         if (success) {
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(tag);
         } else {
-            return ResponseInfo.errorResponse("更新标签失败");
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新标签失败");
         }
     }
 
@@ -111,12 +112,12 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除标签", description = "根据ID删除标签")
-    public ResponseInfo<Boolean> deleteTag(@PathVariable(value = "id") Long id) {
+    public ApiResponse<Boolean> deleteTag(@PathVariable(value = "id") Long id) {
         boolean success = tagService.deleteTag(id);
         if (success) {
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(true);
         } else {
-            return ResponseInfo.errorResponse("删除标签失败");
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除标签失败");
         }
     }
 
@@ -129,12 +130,12 @@ public class TagController {
      */
     @PostMapping("/item/{itemId}")
     @Operation(summary = "设置物品标签", description = "设置物品的标签关联")
-    public ResponseInfo<Boolean> setItemTags(@PathVariable(value = "itemId") Long itemId, @RequestBody List<Long> tagIds) {
+    public ApiResponse<Boolean> setItemTags(@PathVariable(value = "itemId") Long itemId, @RequestBody List<Long> tagIds) {
         boolean success = tagService.setItemTags(itemId, tagIds);
         if (success) {
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(true);
         } else {
-            return ResponseInfo.errorResponse("设置物品标签失败");
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "设置物品标签失败");
         }
     }
     

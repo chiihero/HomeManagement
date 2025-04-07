@@ -28,7 +28,6 @@
             :show-file-list="false"
             :on-success="handleLogoSuccess"
             :before-upload="beforeLogoUpload"
-            :headers="uploadHeaders"
           >
             <img v-if="systemForm.logo" :src="systemForm.logo" class="avatar" />
             <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
@@ -62,7 +61,6 @@ import { defineComponent, ref, reactive, onMounted } from 'vue';
 import { ElMessage, ElLoading } from 'element-plus';
 import type { FormInstance } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
-import { getToken } from '@/utils/auth';
 import { 
   getSystemSettings,
   updateSystemSettings
@@ -79,9 +77,7 @@ export default defineComponent({
     
     // 上传相关配置
     const uploadUrl = import.meta.env.VITE_API_URL + '/api/system/logo';
-    const uploadHeaders = {
-      Authorization: 'Bearer ' + getToken()
-    };
+
     
     // 系统设置表单
     const systemForm = reactive({
@@ -100,14 +96,14 @@ export default defineComponent({
         });
         
         const res = await getSystemSettings();
-        if (res.data && res.data.code === 200) {
-          const settings = res.data.data;
+        if (res.data && res.code === 200) {
+          const settings = res.data;
           systemForm.systemName = settings.systemName || '';
           systemForm.logo = settings.logo || '';
           systemForm.description = settings.description || '';
           systemForm.version = settings.version || '1.0.0';
         } else {
-          ElMessage.error(res.data.message || '获取系统设置失败');
+          ElMessage.error(res.msg || '获取系统设置失败');
         }
         
         loadingInstance.close();
@@ -127,10 +123,10 @@ export default defineComponent({
           description: systemForm.description
         });
         
-        if (res.data && res.data.code === 200) {
+        if (res.data && res.code === 200) {
           ElMessage.success('系统设置保存成功');
         } else {
-          ElMessage.error(res.data.message || '保存失败');
+          ElMessage.error(res.msg || '保存失败');
         }
       } catch (error) {
         console.error('保存系统设置失败', error);
@@ -174,7 +170,6 @@ export default defineComponent({
       loading,
       systemForm,
       uploadUrl,
-      uploadHeaders,
       saveSystemSettings,
       handleLogoSuccess,
       beforeLogoUpload

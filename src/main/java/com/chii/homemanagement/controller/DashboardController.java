@@ -1,7 +1,8 @@
 package com.chii.homemanagement.controller;
 
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.Entity;
-import com.chii.homemanagement.entity.ResponseInfo;
 import com.chii.homemanagement.entity.Tag;
 import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.ReminderService;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 @io.swagger.v3.oas.annotations.tags.Tag(name = "仪表盘管理", description = "仪表盘数据接口")
 @Slf4j
 @RequiredArgsConstructor
-public class DashboardApiController {
+public class DashboardController {
 
     private final EntityService entityService;
     private final ReminderService reminderService;
@@ -43,7 +44,7 @@ public class DashboardApiController {
      */
     @GetMapping("/statistics")
     @Operation(summary = "获取仪表盘统计数据", description = "获取仪表盘展示所需的统计数据")
-    public ResponseInfo<Map<String, Object>> getDashboardStatistics(@RequestParam Long userId) {
+    public ApiResponse<Map<String, Object>> getDashboardStatistics(@RequestParam Long userId) {
         try {
             log.info("获取仪表盘统计数据: userId={}", userId);
             Map<String, Object> result = new HashMap<>();
@@ -107,10 +108,10 @@ public class DashboardApiController {
             result.put("categoryData", categoryData);
             result.put("statusData", statusData);
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (Exception e) {
             log.error("获取仪表盘统计数据异常", e);
-            return ResponseInfo.errorResponse("获取统计数据失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取统计数据失败: " + e.getMessage());
         }
     }
 
@@ -122,16 +123,16 @@ public class DashboardApiController {
      */
     @GetMapping("/recent-entities")
     @Operation(summary = "获取最近添加的实体", description = "获取最近添加的实体数据")
-    public ResponseInfo<List<Entity>> getRecentEntities(
+    public ApiResponse<List<Entity>> getRecentEntities(
             @RequestParam(defaultValue = "5") Integer limit,
             @RequestParam Long userId) {
         try {
             // 这里需要实现获取最近添加实体的逻辑
             List<Entity> recentEntities = entityService.getRecentEntities(userId, limit);
-            return ResponseInfo.successResponse(recentEntities);
+            return ApiResponse.success(recentEntities);
         } catch (Exception e) {
             log.error("获取最近添加的实体异常", e);
-            return ResponseInfo.errorResponse("获取数据失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取数据失败: " + e.getMessage());
         }
     }
 
@@ -143,16 +144,16 @@ public class DashboardApiController {
      */
     @GetMapping("/recent-reminders")
     @Operation(summary = "获取最近的提醒", description = "获取最近的提醒数据")
-    public ResponseInfo<List<Object>> getRecentReminders(
+    public ApiResponse<List<Object>> getRecentReminders(
             @RequestParam(defaultValue = "5") Integer limit,
             @RequestParam Long userId) {
         try {
             // 这里需要实现获取最近提醒的逻辑
             List<Object> recentReminders = reminderService.getRecentReminders(userId, limit);
-            return ResponseInfo.successResponse(recentReminders);
+            return ApiResponse.success(recentReminders);
         } catch (Exception e) {
             log.error("获取最近的提醒异常", e);
-            return ResponseInfo.errorResponse("获取数据失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取数据失败: " + e.getMessage());
         }
     }
 } 

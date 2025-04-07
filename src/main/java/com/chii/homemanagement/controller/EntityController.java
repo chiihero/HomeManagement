@@ -7,6 +7,8 @@ import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.EntityTagService;
 import com.chii.homemanagement.service.EntityImageService;
 import com.chii.homemanagement.service.FileStorageService;
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,7 @@ public class EntityController {
 
     @GetMapping("/page")
     @Operation(summary = "分页查询实体列表", description = "根据条件分页查询实体列表")
-    public ResponseInfo<IPage<Entity>> pageEntities(
+    public ApiResponse<IPage<Entity>> pageEntities(
             @Parameter(description = "当前页码") @RequestParam(value = "current", defaultValue = "1") Integer current,
             @Parameter(description = "每页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
             @Parameter(description = "名称") @RequestParam(value = "name", required = false) String name,
@@ -77,16 +79,16 @@ public class EntityController {
             // 调用服务层方法
             IPage<Entity> result = entityService.pageEntities(page, entity, userId);
 
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (Exception e) {
             log.error("分页查询实体列表异常: ", e);
-            return ResponseInfo.errorResponse("查询失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "查询失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "查询实体详情", description = "根据ID查询实体详情")
-    public ResponseInfo<Entity> getEntityDetail(
+    public ApiResponse<Entity> getEntityDetail(
             @Parameter(description = "实体ID") @PathVariable(value = "id") Long id) {
 
         try {
@@ -94,19 +96,19 @@ public class EntityController {
             Entity entity = entityService.getEntityDetail(id);
             
             if (entity == null) {
-                return ResponseInfo.errorResponse("未找到实体");
+                return ApiResponse.error(ErrorCode.DATA_NOT_EXIST.getCode(), "未找到实体");
             }
             
-            return ResponseInfo.successResponse(entity);
+            return ApiResponse.success(entity);
         } catch (Exception e) {
             log.error("查询实体详情异常: id={}", id, e);
-            return ResponseInfo.errorResponse("查询实体详情失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "查询实体详情失败: " + e.getMessage());
         }
     }
 
     @PostMapping
     @Operation(summary = "新增实体", description = "新增实体信息，图片上传请使用 EntityImageController 的上传接口")
-    public ResponseInfo<Entity> addEntity(
+    public ApiResponse<Entity> addEntity(
             @RequestBody Entity entity) {
         try {
             log.info("新增实体: {}", entity.getName());
@@ -125,19 +127,19 @@ public class EntityController {
             }
             
             if (result) {
-                return ResponseInfo.successResponse(entity);
+                return ApiResponse.success(entity);
             } else {
-                return ResponseInfo.errorResponse("新增实体失败");
+                return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "新增实体失败");
             }
         } catch (Exception e) {
             log.error("新增实体异常: ", e);
-            return ResponseInfo.errorResponse("新增实体失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "新增实体失败: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "更新实体", description = "更新实体信息，图片上传请使用 EntityImageController 的上传接口")
-    public ResponseInfo<Boolean> updateEntity(
+    public ApiResponse<Boolean> updateEntity(
             @Parameter(description = "实体ID") @PathVariable(value = "id") Long id,
             @RequestBody Entity entity) {
         
@@ -154,19 +156,19 @@ public class EntityController {
             }
             
             if (result) {
-                return ResponseInfo.successResponse(true);
+                return ApiResponse.success(true);
             } else {
-                return ResponseInfo.errorResponse("更新实体失败");
+                return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新实体失败");
             }
         } catch (Exception e) {
             log.error("更新实体异常: id={}", id, e);
-            return ResponseInfo.errorResponse("更新实体失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新实体失败: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "删除实体", description = "根据ID删除实体")
-    public ResponseInfo<Boolean> deleteEntity(
+    public ApiResponse<Boolean> deleteEntity(
             @Parameter(description = "实体ID") @PathVariable(value = "id") Long id) {
         
         try {
@@ -178,19 +180,19 @@ public class EntityController {
             boolean result = entityService.deleteEntity(id);
             
             if (result) {
-                return ResponseInfo.successResponse(true);
+                return ApiResponse.success(true);
             } else {
-                return ResponseInfo.errorResponse("删除实体失败");
+                return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除实体失败");
             }
         } catch (Exception e) {
             log.error("删除实体异常: id={}", id, e);
-            return ResponseInfo.errorResponse("删除实体失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除实体失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/tree")
     @Operation(summary = "获取实体树", description = "获取所有者下的实体树结构")
-    public ResponseInfo<List<Entity>> getEntityTree(
+    public ApiResponse<List<Entity>> getEntityTree(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
 
         try {
@@ -199,10 +201,10 @@ public class EntityController {
             log.info("获取到实体树，根节点数量: {}, 总节点数量: {}", 
                     tree.size(), 
                     countTotalNodes(tree));
-            return ResponseInfo.successResponse(tree);
+            return ApiResponse.success(tree);
         } catch (Exception e) {
             log.error("获取实体树异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("获取实体树失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取实体树失败: " + e.getMessage());
         }
     }
 
@@ -226,101 +228,101 @@ public class EntityController {
 
     @GetMapping("/list/by-parent")
     @Operation(summary = "获取子实体列表", description = "获取指定父实体下的子实体列表")
-    public ResponseInfo<List<Entity>> listChildEntities(
+    public ApiResponse<List<Entity>> listChildEntities(
             @Parameter(description = "父实体ID") @RequestParam(value = "parentId") Long parentId,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("获取子实体列表: parentId={}, userId={}", parentId, userId);
             List<Entity> entities = entityService.listChildEntities(parentId, userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("获取子实体列表异常: parentId={}, userId={}", parentId, userId, e);
-            return ResponseInfo.errorResponse("获取子实体列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取子实体列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/by-user")
     @Operation(summary = "获取用户使用的物品列表", description = "获取指定用户使用的物品列表")
-    public ResponseInfo<List<Entity>> listEntitiesByUser(
+    public ApiResponse<List<Entity>> listEntitiesByUser(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("获取用户使用的物品列表: userId={}", userId);
             List<Entity> entities = entityService.listEntitiesByUser(userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("获取用户使用的物品列表异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("获取用户物品列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取用户物品列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/by-status")
     @Operation(summary = "根据状态获取物品列表", description = "获取指定状态的物品列表")
-    public ResponseInfo<List<Entity>> listEntitiesByStatus(
+    public ApiResponse<List<Entity>> listEntitiesByStatus(
             @Parameter(description = "状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出") @RequestParam(value = "status") String status,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("根据状态获取物品列表: status={}, userId={}", status, userId);
             List<Entity> entities = entityService.listEntitiesByStatus(status, userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("根据状态获取物品列表异常: status={}, userId={}", status, userId, e);
-            return ResponseInfo.errorResponse("获取物品列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取物品列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/expiring")
     @Operation(summary = "获取即将过保的物品列表", description = "获取未来指定天数内即将过保的物品列表")
-    public ResponseInfo<List<Entity>> listExpiringEntities(
+    public ApiResponse<List<Entity>> listExpiringEntities(
             @Parameter(description = "天数") @RequestParam(value = "days", defaultValue = "30") Integer days,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("获取即将过保的物品列表: days={}, userId={}", days, userId);
             List<Entity> entities = entityService.listExpiringEntities(days, userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("获取即将过保的物品列表异常: days={}, userId={}", days, userId, e);
-            return ResponseInfo.errorResponse("获取即将过保物品列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取即将过保物品列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/expired")
     @Operation(summary = "获取已过保的物品列表", description = "获取已过保的物品列表")
-    public ResponseInfo<List<Entity>> listExpiredEntities(
+    public ApiResponse<List<Entity>> listExpiredEntities(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("获取已过保的物品列表: userId={}", userId);
             List<Entity> entities = entityService.listExpiredEntities(userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("获取已过保的物品列表异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("获取已过保物品列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取已过保物品列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/by-tag")
     @Operation(summary = "根据标签获取实体列表", description = "获取具有指定标签的实体列表")
-    public ResponseInfo<List<Entity>> listEntitiesByTag(
+    public ApiResponse<List<Entity>> listEntitiesByTag(
             @Parameter(description = "标签ID") @RequestParam(value = "tagId") Long tagId,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("根据标签获取实体列表: tagId={}, userId={}", tagId, userId);
             List<Entity> entities = entityService.listEntitiesByTag(tagId, userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("根据标签获取实体列表异常: tagId={}, userId={}", tagId, userId, e);
-            return ResponseInfo.errorResponse("获取实体列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取实体列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/by-date-range")
     @Operation(summary = "根据购买日期范围获取物品列表", description = "获取指定购买日期范围内的物品列表")
-    public ResponseInfo<List<Entity>> listEntitiesByPurchaseDateRange(
+    public ApiResponse<List<Entity>> listEntitiesByPurchaseDateRange(
             @Parameter(description = "开始日期") @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @Parameter(description = "结束日期") @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
@@ -328,16 +330,16 @@ public class EntityController {
         try {
             log.info("根据购买日期范围获取物品列表: startDate={}, endDate={}, userId={}", startDate, endDate, userId);
             List<Entity> entities = entityService.listEntitiesByPurchaseDateRange(startDate, endDate, userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("根据购买日期范围获取物品列表异常: startDate={}, endDate={}, userId={}", startDate, endDate, userId, e);
-            return ResponseInfo.errorResponse("获取物品列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取物品列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/list/by-price-range")
     @Operation(summary = "根据价格范围获取物品列表", description = "获取指定价格范围内的物品列表")
-    public ResponseInfo<List<Entity>> listEntitiesByPriceRange(
+    public ApiResponse<List<Entity>> listEntitiesByPriceRange(
             @Parameter(description = "最小价格") @RequestParam(value = "minPrice", required = false) Double minPrice,
             @Parameter(description = "最大价格") @RequestParam(value = "maxPrice", required = false) Double maxPrice,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
@@ -345,91 +347,91 @@ public class EntityController {
         try {
             log.info("根据价格范围获取物品列表: minPrice={}, maxPrice={}, userId={}", minPrice, maxPrice, userId);
             List<Entity> entities = entityService.listEntitiesByPriceRange(minPrice, maxPrice, userId);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("根据价格范围获取物品列表异常: minPrice={}, maxPrice={}, userId={}", minPrice, maxPrice, userId, e);
-            return ResponseInfo.errorResponse("获取物品列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取物品列表失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/stat/by-parent")
     @Operation(summary = "根据父实体统计子实体", description = "根据父实体统计子实体数量和价值")
-    public ResponseInfo<List<Object>> statEntitiesByParent(
+    public ApiResponse<List<Object>> statEntitiesByParent(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("根据父实体统计子实体: userId={}", userId);
             List<Object> stats = entityService.statEntitiesByParent(userId);
-            return ResponseInfo.successResponse(stats);
+            return ApiResponse.success(stats);
         } catch (Exception e) {
             log.error("根据父实体统计子实体异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/stat/by-tag")
     @Operation(summary = "根据标签统计物品", description = "根据标签统计物品数量和价值")
-    public ResponseInfo<List<Object>> statEntitiesByTag(
+    public ApiResponse<List<Object>> statEntitiesByTag(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("根据标签统计物品: userId={}", userId);
             List<Object> stats = entityService.statEntitiesByTag(userId);
-            return ResponseInfo.successResponse(stats);
+            return ApiResponse.success(stats);
         } catch (Exception e) {
             log.error("根据标签统计物品异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/stat/by-usage-frequency")
     @Operation(summary = "根据使用频率统计物品", description = "根据使用频率统计物品数量")
-    public ResponseInfo<List<Object>> statEntitiesByUsageFrequency(
+    public ApiResponse<List<Object>> statEntitiesByUsageFrequency(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("根据使用频率统计物品: userId={}", userId);
             List<Object> stats = entityService.statEntitiesByUsageFrequency(userId);
-            return ResponseInfo.successResponse(stats);
+            return ApiResponse.success(stats);
         } catch (Exception e) {
             log.error("根据使用频率统计物品异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/sum-value")
     @Operation(summary = "统计物品总价值", description = "统计所有者物品总价值")
-    public ResponseInfo<Double> sumEntitiesValue(
+    public ApiResponse<Double> sumEntitiesValue(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
             log.info("统计物品总价值: userId={}", userId);
             double totalValue = entityService.sumEntitiesValue(userId);
-            return ResponseInfo.successResponse(totalValue);
+            return ApiResponse.success(totalValue);
         } catch (Exception e) {
             log.error("统计物品总价值异常: userId={}", userId, e);
-            return ResponseInfo.errorResponse("统计失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/{id}/tags")
     @Operation(summary = "获取实体的标签", description = "获取实体的标签列表")
-    public ResponseInfo<List<Tag>> getEntityTags(
+    public ApiResponse<List<Tag>> getEntityTags(
             @Parameter(description = "实体ID") @PathVariable(value = "id") Long id) {
         
         try {
             log.info("获取实体的标签: id={}", id);
             List<Tag> tags = entityTagService.getTagsByEntityId(id);
-            return ResponseInfo.successResponse(tags);
+            return ApiResponse.success(tags);
         } catch (Exception e) {
             log.error("获取实体的标签异常: id={}", id, e);
-            return ResponseInfo.errorResponse("获取标签失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取标签失败: " + e.getMessage());
         }
     }
 
     @GetMapping("/recent")
     @Operation(summary = "获取最近添加的实体列表", description = "获取指定天数内添加的实体列表")
-    public ResponseInfo<List<Entity>> getRecentEntities(
+    public ApiResponse<List<Entity>> getRecentEntities(
             @Parameter(description = "天数") @RequestParam(value = "days", defaultValue = "7") Integer days,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
@@ -437,10 +439,10 @@ public class EntityController {
             log.info("获取最近添加的实体列表: days={}, userId={}", days, userId);
             
             List<Entity> entities = entityService.getRecentEntitiesByDays(userId, days);
-            return ResponseInfo.successResponse(entities);
+            return ApiResponse.success(entities);
         } catch (Exception e) {
             log.error("获取最近添加的实体列表异常: days={}, userId={}", days, userId, e);
-            return ResponseInfo.errorResponse("获取最近添加的实体列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取最近添加的实体列表失败: " + e.getMessage());
         }
     }
 } 

@@ -25,9 +25,8 @@ spring:
 #          password: qsyy
 
 
-mybatis-plus:
-  #  config-location: classpath:mybatis/mybatis-config.xml
-  mapper-locations: classpath:mapper/*.xml
+# mybatis-plus:
+#   mapper-locations: classpath:mapper/*.xml
 
 # JWT 配置
 jwt:

@@ -56,14 +56,12 @@ export interface UserNotificationSettings {
 
 // 获取系统设置
 export const getSystemSettings = () => {
-  return http.get<ResponseResult<SystemSettings>>('/settings/system')
-    .then(res => res.data);
+  return http.get('/settings/system');
 }
 
 // 更新系统设置
 export const updateSystemSettings = (data: Partial<SystemSettings>) => {
-  return http.put<ResponseResult<SystemSettings>>('/settings/system', data)
-    .then(res => res.data);
+  return http.put('/settings/system', data);
 }
 
 // 获取用户设置
@@ -78,49 +76,43 @@ export const updateUserSetting = (key: string, value: string) => {
 
 // 创建备份
 export const createBackup = (notes?: string) => {
-  return http.post<ResponseResult<BackupInfo>>('/settings/backup', { notes })
-    .then(res => res.data);
+  return http.post('/settings/backup', { notes });
 }
 
 // 获取备份列表
 export const getBackups = () => {
-  return http.get<ResponseResult<BackupInfo[]>>('/settings/backup')
-    .then(res => res.data);
+  return http.get('/settings/backup');
 }
 
 // 恢复备份
 export const restoreBackup = (id: number) => {
-  return http.post<ResponseResult<null>>(`/settings/backup/${id}/restore`)
-    .then(res => res.data);
+  return http.post(`/settings/backup/${id}/restore`);
 }
 
 // 删除备份
 export const deleteBackup = (id: number) => {
-  return http.delete<ResponseResult<null>>(`/settings/backup/${id}`)
-    .then(res => res.data);
+  return http.delete<ResponseResult<null>>(`/settings/backup/${id}`);
 }
 
 // 下载备份
 export const downloadBackup = (id: number) => {
-  return http.get(`/settings/backup/${id}/download`, { responseType: 'blob' })
-    .then(res => res.data);
+  return http.get(`/settings/backup/${id}/download`, { responseType: 'blob' });
 }
 
 // 导入数据
 export const importData = (file: File) => {
   const formData = new FormData()
   formData.append('file', file)
-  return http.post<ResponseResult<null>>('/settings/import', formData, {
+  return http.post('/settings/import', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
-  }).then(res => res.data);
+  });
 }
 
 // 导出数据
 export const exportData = (type: 'json' | 'csv' | 'excel' = 'json') => {
-  return http.get(`/settings/export?type=${type}`, { responseType: 'blob' })
-    .then(res => res.data);
+  return http.get(`/settings/export?type=${type}`, { responseType: 'blob' });
 }
 
 // 更新用户通知设置
@@ -133,9 +125,9 @@ export const uploadSystemLogo = (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
   
-  return http.post<ResponseResult<{ url: string }>>('/settings/logo', formData, {
+  return http.post('/settings/logo', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
-  }).then(res => res.data);
+  });
 } 

@@ -1,7 +1,8 @@
 package com.chii.homemanagement.controller;
 
 import com.chii.homemanagement.entity.EntityImage;
-import com.chii.homemanagement.entity.ResponseInfo;
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.service.EntityImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,22 +34,23 @@ public class EntityImageController {
 
     @GetMapping("/entity/{entityId}")
     @Operation(summary = "获取实体的图片列表", description = "获取实体的所有图片信息")
-    public ResponseInfo<List<EntityImage>> getEntityImages(
-            @Parameter(description = "实体ID") @PathVariable(value = "entityId") Long entityId) {
+    public ApiResponse<List<EntityImage>> getEntityImages(
+            @Parameter(description = "实体ID") @PathVariable(value = "entityId") Long entityId,
+            @RequestParam(required = false) String type) {
         
         try {
             log.info("获取实体图片列表: entityId={}", entityId);
-            List<EntityImage> images = entityImageService.getImagesByEntityId(entityId);
-            return ResponseInfo.successResponse(images);
+            List<EntityImage> images = entityImageService.getEntityImages(entityId, type);
+            return ApiResponse.success(images);
         } catch (Exception e) {
             log.error("获取实体图片列表异常: entityId={}", entityId, e);
-            return ResponseInfo.errorResponse("获取图片列表失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取图片列表失败: " + e.getMessage());
         }
     }
 
     @PostMapping("/upload")
     @Operation(summary = "上传图片", description = "上传图片并保存到数据库")
-    public ResponseInfo<EntityImage> uploadImage(
+    public ApiResponse<EntityImage> uploadImage(
             @Parameter(description = "实体ID") @RequestParam(value = "entityId") Long entityId,
             @Parameter(description = "图片") @RequestParam(value = "image") MultipartFile image,
             @Parameter(description = "图片类型") @RequestParam(value = "imageType", required = false, defaultValue = "normal") String imageType) {
@@ -58,16 +60,16 @@ public class EntityImageController {
             
             EntityImage entityImage = entityImageService.saveEntityImageWithData(entityId, image, imageType);
             
-            return ResponseInfo.successResponse(entityImage);
+            return ApiResponse.success(entityImage);
         } catch (Exception e) {
             log.error("上传图片异常: entityId={}", entityId, e);
-            return ResponseInfo.errorResponse("上传图片失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.FILE_UPLOAD_ERROR.getCode(), "上传图片失败: " + e.getMessage());
         }
     }
     
     @PostMapping("/entity/{entityId}")
     @Operation(summary = "上传图片", description = "上传图片到数据库")
-    public ResponseInfo<EntityImage> uploadEntityImage(
+    public ApiResponse<EntityImage> uploadEntityImage(
             @Parameter(description = "实体ID") @PathVariable(value = "entityId") Long entityId,
             @Parameter(description = "图片") @RequestParam(value = "image") MultipartFile image,
             @Parameter(description = "图片类型") @RequestParam(value = "imageType", required = false, defaultValue = "normal") String imageType) {
@@ -77,10 +79,10 @@ public class EntityImageController {
             
             EntityImage entityImage = entityImageService.saveEntityImageWithData(entityId, image, imageType);
             
-            return ResponseInfo.successResponse(entityImage);
+            return ApiResponse.success(entityImage);
         } catch (Exception e) {
             log.error("上传实体图片异常: entityId={}", entityId, e);
-            return ResponseInfo.errorResponse("上传图片失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.FILE_UPLOAD_ERROR.getCode(), "上传图片失败: " + e.getMessage());
         }
     }
 
@@ -126,7 +128,7 @@ public class EntityImageController {
     
     @GetMapping("/info/{imageId}")
     @Operation(summary = "获取图片信息", description = "根据图片ID获取图片元数据信息，不包含二进制数据")
-    public ResponseInfo<EntityImage> getImageInfo(
+    public ApiResponse<EntityImage> getImageInfo(
             @Parameter(description = "图片ID") @PathVariable(value = "imageId") Long imageId) {
         
         try {
@@ -135,19 +137,19 @@ public class EntityImageController {
             EntityImage image = entityImageService.getById(imageId);
             
             if (image == null) {
-                return ResponseInfo.errorResponse("图片不存在");
+                return ApiResponse.error(ErrorCode.DATA_NOT_EXIST.getCode(), "图片不存在");
             }
             
-            return ResponseInfo.successResponse(image);
+            return ApiResponse.success(image);
         } catch (Exception e) {
             log.error("获取图片信息异常: imageId={}", imageId, e);
-            return ResponseInfo.errorResponse("获取图片信息失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取图片信息失败: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/{imageId}")
     @Operation(summary = "删除图片", description = "根据图片ID删除图片")
-    public ResponseInfo<Boolean> deleteImage(
+    public ApiResponse<Boolean> deleteImage(
             @Parameter(description = "图片ID") @PathVariable(value = "imageId") Long imageId) {
         
         try {
@@ -157,20 +159,21 @@ public class EntityImageController {
             boolean result = entityImageService.removeById(imageId);
             
             if (result) {
-                return ResponseInfo.successResponse(true);
+                return ApiResponse.success(true);
             } else {
-                return ResponseInfo.errorResponse("删除图片失败");
+                return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除图片失败");
             }
         } catch (Exception e) {
             log.error("删除图片异常: imageId={}", imageId, e);
-            return ResponseInfo.errorResponse("删除图片失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除图片失败: " + e.getMessage());
         }
     }
     
     @DeleteMapping("/entity/{entityId}")
     @Operation(summary = "删除实体的所有图片", description = "删除指定实体的所有图片")
-    public ResponseInfo<Boolean> deleteEntityImages(
-            @Parameter(description = "实体ID") @PathVariable(value = "entityId") Long entityId) {
+    public ApiResponse<Boolean> deleteEntityImages(
+            @Parameter(description = "实体ID") @PathVariable(value = "entityId") Long entityId,
+            @RequestParam(required = false) String type) {
         
         try {
             log.info("删除实体的所有图片: entityId={}", entityId);
@@ -178,10 +181,10 @@ public class EntityImageController {
             // 删除数据库记录
             boolean result = entityImageService.deleteByEntityId(entityId);
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (Exception e) {
             log.error("删除实体图片异常: entityId={}", entityId, e);
-            return ResponseInfo.errorResponse("删除实体图片失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除实体图片失败: " + e.getMessage());
         }
     }
 } 

@@ -1,7 +1,8 @@
 package com.chii.homemanagement.controller;
 
-import com.chii.homemanagement.entity.ResponseInfo;
-import com.chii.homemanagement.entity.ResultCode;
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
+
 import com.chii.homemanagement.entity.SystemSetting;
 import com.chii.homemanagement.entity.User;
 import com.chii.homemanagement.service.SystemSettingService;
@@ -48,7 +49,7 @@ public class UserController {
      */
     @GetMapping("/current")
     @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息")
-    public ResponseInfo<User> getCurrentUser(HttpSession session) {
+    public ApiResponse<User> getCurrentUser(HttpSession session) {
         // 从session中获取用户
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -69,10 +70,10 @@ public class UserController {
         }
 
         if (user == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
-        return ResponseInfo.successResponse(user);
+        return ApiResponse.success(user);
     }
 
     /**
@@ -80,14 +81,14 @@ public class UserController {
      */
     @PostMapping("/info")
     @Operation(summary = "获取当前用户基本信息", description = "获取当前登录用户的基本信息，用于导航栏显示和认证检查")
-    public ResponseInfo<Map<String, Object>> getUserInfo() {
+    public ApiResponse<Map<String, Object>> getUserInfo() {
         try {
             // 获取当前认证用户
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             
             if (authentication == null || !authentication.isAuthenticated() || 
                 "anonymousUser".equals(authentication.getPrincipal())) {
-                return ResponseInfo.response(ResultCode.USER_NOT_LOGIN);
+                return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
             }
             
             // 获取用户名
@@ -96,7 +97,7 @@ public class UserController {
             // 获取用户实体信息
             User user = userService.getUserByUsername(username);
             if (user == null) {
-                return ResponseInfo.response(ResultCode.USER_ACCOUNT_NOT_EXIST);
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
             
             // 准备返回数据
@@ -109,9 +110,9 @@ public class UserController {
             userInfo.put("role", user.getRole());
             userInfo.put("status", user.getStatus());
             
-            return ResponseInfo.successResponse(userInfo);
+            return ApiResponse.success(userInfo);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("获取用户信息失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取用户信息失败: " + e.getMessage());
         }
     }
 
@@ -120,10 +121,10 @@ public class UserController {
      */
     @PutMapping("/profile")
     @Operation(summary = "更新个人资料", description = "更新当前登录用户的个人资料")
-    public ResponseInfo<User> updateProfile(@RequestBody User userParam, HttpSession session) {
+    public ApiResponse<User> updateProfile(@RequestBody User userParam, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         // 更新个人资料
@@ -142,9 +143,9 @@ public class UserController {
             session.setAttribute("user", updatedUser);
             // 清除密码
             updatedUser.setPassword(null);
-            return ResponseInfo.successResponse(updatedUser);
+            return ApiResponse.success(updatedUser);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("更新个人资料失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新个人资料失败: " + e.getMessage());
         }
     }
 
@@ -153,22 +154,22 @@ public class UserController {
      */
     @PutMapping("/password")
     @Operation(summary = "更新密码", description = "更新当前登录用户的密码")
-    public ResponseInfo<Boolean> updatePassword(@RequestBody Map<String, String> params, HttpSession session) {
+    public ApiResponse<Boolean> updatePassword(@RequestBody Map<String, String> params, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         String currentPassword = params.get("currentPassword");
         String newPassword = params.get("newPassword");
 
         if (currentPassword == null || newPassword == null) {
-            return ResponseInfo.errorResponse("当前密码和新密码不能为空");
+            return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "当前密码和新密码不能为空");
         }
 
         // 验证当前密码
         if (!userService.validatePassword(currentUser.getUsername(), currentPassword)) {
-            return ResponseInfo.errorResponse("当前密码不正确");
+            return ApiResponse.error(ErrorCode.USER_CREDENTIALS_ERROR.getCode(), "当前密码不正确");
         }
 
         // 更新密码
@@ -179,9 +180,9 @@ public class UserController {
 
         try {
             userService.updateUser(user);
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(true);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("更新密码失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新密码失败: " + e.getMessage());
         }
     }
 
@@ -190,15 +191,15 @@ public class UserController {
      */
     @PostMapping("/avatar")
     @Operation(summary = "上传头像", description = "上传当前登录用户的头像")
-    public ResponseInfo<Map<String, String>> uploadAvatar(@RequestParam("file") MultipartFile file, HttpSession session) {
+    public ApiResponse<Map<String, String>> uploadAvatar(@RequestParam("file") MultipartFile file, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         // 检查文件是否为空
         if (file.isEmpty()) {
-            return ResponseInfo.errorResponse("请选择要上传的文件");
+            return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "请选择要上传的文件");
         }
 
         try {
@@ -234,9 +235,9 @@ public class UserController {
             Map<String, String> result = new HashMap<>();
             result.put("url", avatarUrl);
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (IOException e) {
-            return ResponseInfo.errorResponse("头像上传失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "头像上传失败: " + e.getMessage());
         }
     }
 
@@ -245,10 +246,10 @@ public class UserController {
      */
     @DeleteMapping("/avatar")
     @Operation(summary = "删除头像", description = "删除当前登录用户的头像")
-    public ResponseInfo<Boolean> deleteAvatar(HttpSession session) {
+    public ApiResponse<Boolean> deleteAvatar(HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         // 更新用户信息，清空头像URL
@@ -262,9 +263,9 @@ public class UserController {
             // 更新session中的用户信息
             User updatedUser = userService.getUserById(currentUser.getId());
             session.setAttribute("user", updatedUser);
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(true);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("删除头像失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除头像失败: " + e.getMessage());
         }
     }
 
@@ -273,10 +274,10 @@ public class UserController {
      */
     @PutMapping("/notifications")
     @Operation(summary = "更新通知设置", description = "更新当前登录用户的通知设置")
-    public ResponseInfo<Boolean> updateNotifications(@RequestBody Map<String, Object> params, HttpSession session) {
+    public ApiResponse<Boolean> updateNotifications(@RequestBody Map<String, Object> params, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         try {
@@ -307,9 +308,9 @@ public class UserController {
                 systemSettingService.saveUserSetting(reminderDaysSetting, currentUser.getId());
             }
             
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(true);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("更新通知设置失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新通知设置失败: " + e.getMessage());
         }
     }
     
@@ -318,10 +319,10 @@ public class UserController {
      */
     @GetMapping("/notifications")
     @Operation(summary = "获取用户通知设置", description = "获取当前登录用户的通知设置")
-    public ResponseInfo<Map<String, Object>> getNotifications(HttpSession session) {
+    public ApiResponse<Map<String, Object>> getNotifications(HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
         
         try {
@@ -333,9 +334,9 @@ public class UserController {
             result.put("expirationReminder", userSettings.getOrDefault("expiration_reminder", "true"));
             result.put("reminderDays", userSettings.getOrDefault("reminder_days", "7"));
             
-            return ResponseInfo.successResponse(result);
+            return ApiResponse.success(result);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("获取通知设置失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取通知设置失败: " + e.getMessage());
         }
     }
     
@@ -344,14 +345,14 @@ public class UserController {
      */
     @GetMapping("/settings")
     @Operation(summary = "获取用户个人设置", description = "获取当前登录用户的个人设置")
-    public ResponseInfo<Map<String, Object>> getUserSettings(HttpSession session) {
+    public ApiResponse<Map<String, Object>> getUserSettings(HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         Map<String, Object> settings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
-        return ResponseInfo.successResponse(settings);
+        return ApiResponse.success(settings);
     }
     
     /**
@@ -359,10 +360,10 @@ public class UserController {
      */
     @PutMapping("/settings")
     @Operation(summary = "更新用户个人设置", description = "更新当前用户的个人设置")
-    public ResponseInfo<Boolean> updateUserSettings(@RequestBody Map<String, Object> params, HttpSession session) {
+    public ApiResponse<Boolean> updateUserSettings(@RequestBody Map<String, Object> params, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
         try {
@@ -375,9 +376,9 @@ public class UserController {
                 systemSettingService.saveUserSetting(setting, currentUser.getId());
             }
             
-            return ResponseInfo.successResponse(true);
+            return ApiResponse.success(true);
         } catch (Exception e) {
-            return ResponseInfo.errorResponse("更新用户设置失败: " + e.getMessage());
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新用户设置失败: " + e.getMessage());
         }
     }
     
@@ -386,14 +387,14 @@ public class UserController {
      */
     @DeleteMapping("/settings/{key}")
     @Operation(summary = "删除用户个人设置", description = "删除当前用户的指定个人设置")
-    public ResponseInfo<Boolean> deleteUserSetting(@PathVariable("key") String key, HttpSession session) {
+    public ApiResponse<Boolean> deleteUserSetting(@PathVariable("key") String key, HttpSession session) {
         User currentUser = (User) session.getAttribute("user");
         if (currentUser == null) {
-            return ResponseInfo.errorResponse("未登录或登录已过期");
+            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
         
         systemSettingService.deleteUserSetting(key, currentUser.getId());
         
-        return ResponseInfo.successResponse(true);
+        return ApiResponse.success(true);
     }
 } 

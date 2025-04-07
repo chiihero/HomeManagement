@@ -46,4 +46,12 @@ public interface EntityImageService extends IService<EntityImage> {
      * @return 图片实体对象
      */
     EntityImage getImageWithData(Long imageId);
+
+    /**
+     * 获取实体的图片列表
+     * @param entityId 实体ID
+     * @param type 图片类型（可选）
+     * @return 图片列表
+     */
+    List<EntityImage> getEntityImages(Long entityId, String type);
 } 

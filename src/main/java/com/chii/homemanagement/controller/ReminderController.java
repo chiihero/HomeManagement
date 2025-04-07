@@ -1,7 +1,8 @@
 package com.chii.homemanagement.controller;
 
 import com.chii.homemanagement.entity.Reminder;
-import com.chii.homemanagement.entity.ResponseInfo;
+import com.chii.homemanagement.common.ApiResponse;
+import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.service.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,91 +25,90 @@ public class ReminderController {
      * 创建提醒
      */
     @PostMapping
-    public ResponseInfo<Reminder> createReminder(@RequestBody Reminder reminder) {
-        return ResponseInfo.successResponse(reminderService.createReminder(reminder));
+    public ApiResponse<Reminder> createReminder(@RequestBody Reminder reminder) {
+        return ApiResponse.success(reminderService.createReminder(reminder));
     }
 
     /**
      * 更新提醒
      */
     @PutMapping("/{id}")
-    public ResponseInfo<Reminder> updateReminder(@PathVariable Long id, @RequestBody Reminder reminder) {
+    public ApiResponse<Reminder> updateReminder(@PathVariable Long id, @RequestBody Reminder reminder) {
         reminder.setId(id);
-        return ResponseInfo.successResponse(reminderService.updateReminder(reminder));
+        return ApiResponse.success(reminderService.updateReminder(reminder));
     }
 
     /**
      * 删除提醒
      */
     @DeleteMapping("/{id}")
-    public ResponseInfo<Boolean> deleteReminder(@PathVariable Long id) {
-        return ResponseInfo.successResponse(reminderService.deleteReminder(id));
+    public ApiResponse<Boolean> deleteReminder(@PathVariable Long id) {
+        return ApiResponse.success(reminderService.deleteReminder(id));
     }
 
     /**
      * 获取提醒详情
      */
     @GetMapping("/{id}")
-    public ResponseInfo<Reminder> getReminder(@PathVariable Long id) {
-        return ResponseInfo.successResponse(reminderService.getReminder(id));
+    public ApiResponse<Reminder> getReminder(@PathVariable Long id) {
+        return ApiResponse.success(reminderService.getReminder(id));
     }
 
     /**
      * 获取当天提醒
      */
     @GetMapping("/today")
-    public ResponseInfo<List<Reminder>> getTodayReminders(@RequestParam Long userId) {
-        return ResponseInfo.successResponse(reminderService.getTodayReminders(userId));
+    public ApiResponse<List<Reminder>> getTodayReminders(@RequestParam Long userId) {
+        return ApiResponse.success(reminderService.getTodayReminders(userId));
     }
 
     /**
      * 获取日期范围内的提醒
      */
     @GetMapping("/date-range")
-    public ResponseInfo<List<Reminder>> getRemindersByDateRange(
+    public ApiResponse<List<Reminder>> getRemindersByDateRange(
             @RequestParam Long userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByDateRange(userId, startDate, endDate));
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        return ApiResponse.success(reminderService.getRemindersByDateRange(userId, startDate, endDate));
     }
 
     /**
      * 获取物品相关的提醒
      */
     @GetMapping("/entity/{entityId}")
-    public ResponseInfo<List<Reminder>> getRemindersByItemId(@PathVariable Long entityId) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByEntityId(entityId));
+    public ApiResponse<List<Reminder>> getRemindersByItemId(@PathVariable Long entityId) {
+        return ApiResponse.success(reminderService.getRemindersByEntityId(entityId));
     }
 
     /**
      * 根据物品信息生成提醒
      */
     @PostMapping("/generate/{itemId}")
-    public ResponseInfo<Void> generateRemindersForItem(@PathVariable Long itemId) {
+    public ApiResponse<Void> generateRemindersForItem(@PathVariable Long itemId) {
         reminderService.generateRemindersForItem(itemId);
-        return ResponseInfo.successResponse();
+        return ApiResponse.success();
     }
 
     /**
      * 获取指定状态的提醒
      */
     @GetMapping("/status")
-    public ResponseInfo<List<Reminder>> getRemindersByStatus(
+    public ApiResponse<List<Reminder>> getRemindersByStatus(
             @RequestParam Long userId,
             @RequestParam String status) {
-        return ResponseInfo.successResponse(reminderService.getRemindersByStatus(userId, status));
+        return ApiResponse.success(reminderService.getRemindersByStatus(userId, status));
     }
 
     /**
      * 处理提醒（标记为已处理）
      */
     @PutMapping("/{id}/process")
-    public ResponseInfo<Reminder> processReminder(@PathVariable Long id) {
+    public ApiResponse<Reminder> processReminder(@PathVariable Long id) {
         Reminder reminder = reminderService.getReminder(id);
-        if (reminder != null) {
-            reminder.setStatus("processed");
-            return ResponseInfo.successResponse(reminderService.updateReminder(reminder));
+        if (reminder == null) {
+            return ApiResponse.error(ErrorCode.DATA_NOT_EXIST.getCode(), "提醒不存在");
         }
-        return ResponseInfo.errorResponse("提醒不存在");
+        return ApiResponse.success(reminderService.updateReminder(reminder));
     }
 } 

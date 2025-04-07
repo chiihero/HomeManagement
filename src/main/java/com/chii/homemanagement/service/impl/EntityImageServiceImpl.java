@@ -84,4 +84,22 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
         
         return getById(imageId);
     }
+    
+    @Override
+    public List<EntityImage> getEntityImages(Long entityId, String type) {
+        if (entityId == null) {
+            return null;
+        }
+        
+        LambdaQueryWrapper<EntityImage> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(EntityImage::getEntityId, entityId);
+        
+        if (type != null && !type.isEmpty()) {
+            queryWrapper.eq(EntityImage::getImageType, type);
+        }
+        
+        queryWrapper.orderByAsc(EntityImage::getSortOrder);
+        
+        return list(queryWrapper);
+    }
 } 

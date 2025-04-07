@@ -2,7 +2,7 @@ package com.chii.homemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.chii.homemanagement.entity.ResultCode;
+import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.User;
 import com.chii.homemanagement.exception.BusinessException;
 import com.chii.homemanagement.mapper.UserMapper;
@@ -76,7 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User createUser(User user) {
 //        if (!user.getPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) {
-//            throw new BusinessException(String.valueOf(ResultCode.PARAM_NOT_VALID), "密码需8位以上且包含字母数字");
+//            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "密码需8位以上且包含字母数字");
 //        }
         // 加密密码
         user.setPassword(passwordEncoder.encode(user.getPassword()));
