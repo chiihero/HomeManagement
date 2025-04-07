@@ -427,57 +427,6 @@ public class EntityController {
         }
     }
 
-    /**
-     * 从各种类型的标签对象中提取标签ID
-     * 
-     * @param tags 标签对象列表
-     * @return 标签ID列表
-     */
-    private List<Long> extractTagIds(List<?> tags) {
-        if (tags == null || tags.isEmpty()) {
-            return Collections.emptyList();
-        }
-        
-        List<Long> tagIds = new ArrayList<>();
-        
-        for (Object tag : tags) {
-            if (tag == null) {
-                continue;
-            }
-            
-            try {
-                if (tag instanceof Long) {
-                    tagIds.add((Long) tag);
-                } else if (tag instanceof Integer) {
-                    tagIds.add(Long.valueOf((Integer) tag));
-                } else if (tag instanceof Map) {
-                    // 如果是Map形式，尝试获取id字段
-                    Object idObj = ((Map<?, ?>) tag).get("id");
-                    if (idObj != null) {
-                        if (idObj instanceof Long) {
-                            tagIds.add((Long) idObj);
-                        } else if (idObj instanceof Integer) {
-                            tagIds.add(Long.valueOf((Integer) idObj));
-                        } else if (idObj instanceof String) {
-                            tagIds.add(Long.valueOf((String) idObj));
-                        } else if (idObj instanceof Number) {
-                            tagIds.add(((Number) idObj).longValue());
-                        }
-                    }
-                } else if (tag instanceof Tag) {
-                    tagIds.add(((Tag) tag).getId());
-                }
-            } catch (Exception e) {
-                log.warn("解析标签ID异常: {}", tag, e);
-            }
-        }
-        
-        return tagIds.stream()
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(java.util.stream.Collectors.toList());
-    }
-
     @GetMapping("/recent")
     @Operation(summary = "获取最近添加的实体列表", description = "获取指定天数内添加的实体列表")
     public ResponseInfo<List<Entity>> getRecentEntities(

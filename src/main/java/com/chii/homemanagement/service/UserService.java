@@ -71,4 +71,36 @@ public interface UserService extends UserDetailsService {
      * @return 是否正确
      */
     boolean validatePassword(String username, String password);
+    
+    /**
+     * 根据邮箱获取用户
+     *
+     * @param email 用户邮箱
+     * @return 用户对象
+     */
+    User getUserByEmail(String email);
+    
+    /**
+     * 生成密码重置令牌
+     *
+     * @param user 用户对象
+     * @return 重置令牌
+     */
+    String generatePasswordResetToken(User user);
+    
+    /**
+     * 验证密码重置令牌
+     *
+     * @param token 重置令牌
+     * @return 用户对象，如令牌无效则返回null
+     */
+    User validatePasswordResetToken(String token);
+    
+    /**
+     * 重置用户密码
+     *
+     * @param user 用户对象
+     * @param newPassword 新密码
+     */
+    void resetPassword(User user, String newPassword);
 } 

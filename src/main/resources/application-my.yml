@@ -17,7 +17,7 @@ spring:
       datasource:
         master: # 主数据源
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://192.168.123.4:3306/home?useUnicode=true&characterEncoding=utf8
+          url: jdbc:mysql://192.168.123.4:33060/home?useUnicode=true&characterEncoding=utf8
           username: home
           password: chenliji1.home
 #          url: jdbc:mysql://100.100.100.5:3306/home?useUnicode=true&characterEncoding=utf8

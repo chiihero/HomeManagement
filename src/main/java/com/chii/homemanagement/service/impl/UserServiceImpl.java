@@ -7,6 +7,7 @@ import com.chii.homemanagement.entity.User;
 import com.chii.homemanagement.exception.BusinessException;
 import com.chii.homemanagement.mapper.UserMapper;
 import com.chii.homemanagement.service.UserService;
+import com.chii.homemanagement.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * 用户服务实现类
@@ -28,6 +35,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
+    
+    // 密码重置令牌有效期（24小时）
+    private static final long PASSWORD_RESET_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
 
     @Autowired
     public UserServiceImpl(@Lazy PasswordEncoder passwordEncoder) {
@@ -108,5 +121,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 使用passwordEncoder验证密码
         return passwordEncoder.matches(password, user.getPassword());
+    }
+    
+    @Override
+    public User getUserByEmail(String email) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getEmail, email);
+        return getOne(queryWrapper);
+    }
+    
+    @Override
+    public String generatePasswordResetToken(User user) {
+        // 使用JWT创建密码重置令牌，设置特殊的claims
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "password_reset");
+        claims.put("userId", user.getId().toString());
+        claims.put("id", UUID.randomUUID().toString()); // 确保令牌唯一性
+        
+        // 使用generateToken方法，该方法会使用JwtUtil中的doGenerateToken
+        return jwtUtil.generateToken(user.getUsername());
+    }
+    
+    @Override
+    public User validatePasswordResetToken(String token) {
+        try {
+            // 尝试从令牌中获取用户名，如果令牌已过期或无效，这将抛出异常
+            String username = jwtUtil.getUsernameFromToken(token);
+            
+            // 如果能成功获取用户名，则令牌有效，返回对应的用户
+            User user = getUserByUsername(username);
+            if (user == null) {
+                return null;
+            }
+            
+            // 验证令牌是否已过期，通过比较过期时间和当前时间
+            Date expiration = jwtUtil.getExpirationDateFromToken(token);
+            if (expiration.before(new Date())) {
+                return null;
+            }
+            
+            return user;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public void resetPassword(User user, String newPassword) {
+        // 加密新密码
+        user.setPassword(passwordEncoder.encode(newPassword));
+        // 更新用户信息
+        updateById(user);
     }
 } 
