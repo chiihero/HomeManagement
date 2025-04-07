@@ -1,13 +1,22 @@
 <template>
-  <div class="entity-container">
-    <div class="entity-header">
-      <h1 class="page-title">物品搜索</h1>
-      <div class="action-buttons">
+  <div class="bg-gray-50 min-h-screen p-4 md:p-6">
+    <!-- 头部 -->
+    <el-card class="mb-6 border-0 shadow-sm">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
+          <el-icon class="mr-2 text-primary"><Search /></el-icon>物品搜索
+        </h1>
       </div>
-    </div>
+    </el-card>
+    
     <!-- 搜索条件 -->
-    <el-card class="search-card">
-      <el-form :model="searchForm" label-width="100px" class="search-form" @submit.prevent>
+    <el-card class="mb-6 border-0 shadow-sm">
+      <template #header>
+        <div class="flex items-center">
+          <span class="text-gray-700 font-medium">搜索条件</span>
+        </div>
+      </template>
+      <el-form :model="searchForm" label-width="100px" @submit.prevent>
         <el-row :gutter="20">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="名称">
@@ -16,7 +25,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="类型">
-              <el-select v-model="searchForm.type" placeholder="请选择类型" clearable style="width: 100%;">
+              <el-select v-model="searchForm.type" placeholder="请选择类型" clearable class="w-full">
                 <el-option label="物品" value="item"></el-option>
                 <el-option label="空间" value="space"></el-option>
               </el-select>
@@ -24,7 +33,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="状态">
-              <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 100%;">
+              <el-select v-model="searchForm.status" placeholder="请选择状态" clearable class="w-full">
                 <el-option label="正常" value="normal"></el-option>
                 <el-option label="损坏" value="damaged"></el-option>
                 <el-option label="丢弃" value="discarded"></el-option>
@@ -33,7 +42,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="使用频率">
-              <el-select v-model="searchForm.usageFrequency" placeholder="请选择使用频率" clearable style="width: 100%;">
+              <el-select v-model="searchForm.usageFrequency" placeholder="请选择使用频率" clearable class="w-full">
                 <el-option label="高" value="high"></el-option>
                 <el-option label="中" value="medium"></el-option>
                 <el-option label="低" value="low"></el-option>
@@ -43,7 +52,7 @@
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="所在空间">
-              <el-select v-model="searchForm.parentId" placeholder="请选择所在空间" clearable style="width: 100%;">
+              <el-select v-model="searchForm.parentId" placeholder="请选择所在空间" clearable class="w-full">
                 <el-option
                   v-for="space in spaceList"
                   :key="space.id"
@@ -54,44 +63,51 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item class="action-buttons">
-          <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>搜索
+        <div class="flex justify-end">
+          <el-button type="primary" class="mr-2" @click="handleSearch">
+            <el-icon class="mr-1"><Search /></el-icon>搜索
           </el-button>
           <el-button @click="resetSearch">
-            <el-icon><Refresh /></el-icon>重置
+            <el-icon class="mr-1"><Refresh /></el-icon>重置
           </el-button>
-        </el-form-item>
+        </div>
       </el-form>
     </el-card>
     
     <!-- 表格 -->
-    <el-card class="table-card">
+    <el-card class="border-0 shadow-sm">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-700 font-medium">物品列表</span>
+          <div class="text-sm text-gray-500">共 {{ pagination.total }} 项</div>
+        </div>
+      </template>
+      
       <el-table
         v-loading="loading"
         :data="entityList"
         border
         stripe
-        style="width: 100%"
+        class="w-full"
         @row-click="handleRowClick"
       >
         <el-table-column type="index" width="50" />
         <el-table-column prop="name" label="名称" min-width="150" show-overflow-tooltip>
           <template #default="{ row }">
-            <div class="entity-name">
+            <div class="flex items-center">
               <el-image 
                 v-if="row.images && row.images[0]" 
                 :src="row.images[0].imagePath" 
                 fit="cover"
-                class="entity-image"
+                class="w-8 h-8 rounded mr-2 object-cover"
               >
                 <template #error>
-                  <div class="image-placeholder">
+                  <div class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400">
                     <el-icon><Picture /></el-icon>
                   </div>
                 </template>
               </el-image>
-              <div class="entity-image-placeholder" v-else>
+              <div v-else class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400">
                 <el-icon><Document /></el-icon>
               </div>
               <span>{{ row.name }}</span>
@@ -100,7 +116,7 @@
         </el-table-column>
         <el-table-column prop="type" label="类型" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.type === 'item' ? 'success' : 'primary'">
+            <el-tag :type="row.type === 'item' ? 'success' : 'primary'" size="small">
               {{ row.type === 'item' ? '物品' : '空间' }}
             </el-tag>
           </template>
@@ -113,7 +129,7 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)">
+            <el-tag :type="getStatusType(row.status)" size="small">
               {{ getStatusText(row.status) }}
             </el-tag>
           </template>
@@ -125,16 +141,17 @@
         </el-table-column>
         <el-table-column prop="tags" label="标签" min-width="160" show-overflow-tooltip>
           <template #default="{ row }">
-            <el-tag 
-              v-for="tag in row.tags" 
-              :key="tag.id" 
-              :style="{ backgroundColor: tag.color, color: getContrastColor(tag.color) }"
-              size="small"
-              class="tag-item"
-            >
-              {{ tag.name }}
-            </el-tag>
-            <span v-if="!row.tags || row.tags.length === 0">-</span>
+            <div class="flex flex-wrap gap-1">
+              <el-tag 
+                v-for="tag in row.tags" 
+                :key="tag.id" 
+                :style="{ backgroundColor: tag.color, color: getContrastColor(tag.color) }"
+                size="small"
+              >
+                {{ tag.name }}
+              </el-tag>
+              <span v-if="!row.tags || row.tags.length === 0" class="text-gray-400">-</span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column prop="expirationDate" label="过保日期" width="120">
@@ -144,11 +161,11 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="{ row }">
-            <el-button type="primary" link>
-              <el-icon><View /></el-icon>查看
+            <el-button type="primary" link size="small">
+              <el-icon class="mr-1"><View /></el-icon>查看
             </el-button>
-            <el-button type="primary" link >
-              <el-icon><Edit /></el-icon>编辑
+            <el-button type="primary" link size="small">
+              <el-icon class="mr-1"><Edit /></el-icon>编辑
             </el-button>
             <el-popconfirm 
               title="确定删除此实体吗？" 
@@ -156,8 +173,8 @@
               cancel-button-text="取消"
             >
               <template #reference>
-                <el-button type="danger" link @click.stop>
-                  <el-icon><Delete /></el-icon>删除
+                <el-button type="danger" link size="small" @click.stop>
+                  <el-icon class="mr-1"><Delete /></el-icon>删除
                 </el-button>
               </template>
             </el-popconfirm>
@@ -166,7 +183,7 @@
       </el-table>
       
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div class="flex justify-end mt-4">
         <el-pagination
           v-model:current-page="pagination.current"
           v-model:page-size="pagination.size"
@@ -188,7 +205,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useAuthStore } from '@/store/modules/auth';
 import { 
-  pageEntities,
+  getEntities as pageEntities,
   getEntitiesByUser,
 } from '@/api/entity';
 import { Entity,Tag } from '@/types/entity';

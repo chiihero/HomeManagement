@@ -1,55 +1,36 @@
 <template>
-  <div class="entity-tree">
-    <el-card shadow="hover" class="h-full">
-      <template #header>
-        <div class="flex justify-between items-center">
-          <span>物品结构</span>
-          <el-input
-            v-model="filterText"
-            placeholder="搜索物品"
-            clearable
-            class="w-200px"
-          >
-            <template #prefix>
-              <el-icon><Search /></el-icon>
-            </template>
-          </el-input>
+  <div class="w-full h-full">
+    <el-skeleton :rows="5" animated v-if="loading" />
+    <el-empty v-else-if="!treeData.length" description="暂无物品数据" />
+    <el-tree
+      v-else
+      ref="treeRef"
+      :data="treeData"
+      :props="defaultProps"
+      :filter-node-method="filterNode"
+      node-key="id"
+      highlight-current
+      :expand-on-click-node="false"
+      @node-click="handleNodeClick"
+      class="h-full overflow-auto"
+    >
+      <template #default="{ node, data }">
+        <div class="flex justify-between items-center w-full py-1">
+          <div class="flex items-center">
+            <el-icon v-if="data.children && data.children.length" class="mr-2 text-blue-500">
+              <Folder />
+            </el-icon>
+            <el-icon v-else class="mr-2 text-gray-500">
+              <Document />
+            </el-icon>
+            <span class="text-sm">{{ node.label }}</span>
+          </div>
+          <el-tag size="small" :type="getStatusType(data.status)" class="ml-2">
+            {{ getStatusText(data.status) }}
+          </el-tag>
         </div>
       </template>
-      
-      <el-skeleton :rows="5" animated v-if="loading" />
-      <el-empty v-else-if="!treeData.length" description="暂无物品数据" />
-      <el-tree
-        v-else
-        ref="treeRef"
-        :data="treeData"
-        :props="defaultProps"
-        :filter-node-method="filterNode"
-        node-key="id"
-        highlight-current
-        :expand-on-click-node="false"
-        @node-click="handleNodeClick"
-      >
-        <template #default="{ node, data }">
-          <div class="custom-tree-node">
-            <div class="node-content">
-              <el-icon v-if="data.children && data.children.length" class="mr-1">
-                <Folder />
-              </el-icon>
-              <el-icon v-else class="mr-1">
-                <Document />
-              </el-icon>
-              <span>{{ node.label }}</span>
-            </div>
-            <div class="node-actions">
-              <el-tag size="small" :type="getStatusType(data.status)">
-                {{ getStatusText(data.status) }}
-              </el-tag>
-            </div>
-          </div>
-        </template>
-      </el-tree>
-    </el-card>
+    </el-tree>
   </div>
 </template>
 
@@ -117,40 +98,16 @@ const getStatusText = (status: string) => {
 </script>
 
 <style scoped>
-.entity-tree {
-  width: 300px;
-  height: 100%;
+:deep(.el-tree-node__content) {
+  height: auto;
+  padding: 4px 0;
 }
 
-.h-full {
-  height: 100%;
+:deep(.el-tree-node__content:hover) {
+  background-color: var(--el-fill-color-light);
 }
 
-.w-200px {
-  width: 200px;
-}
-
-.custom-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
-}
-
-.node-content {
-  display: flex;
-  align-items: center;
-}
-
-.node-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mr-1 {
-  margin-right: 4px;
+:deep(.el-tree-node.is-current > .el-tree-node__content) {
+  background-color: var(--el-color-primary-light-9);
 }
 </style> 

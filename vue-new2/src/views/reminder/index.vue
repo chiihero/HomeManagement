@@ -1,140 +1,178 @@
 <template>
-  <div class="reminder-container">
+  <div class="bg-gray-50 min-h-screen p-4 md:p-6">
     <!-- 头部 -->
-    <div class="header">
-      <h2>提醒事项管理</h2>
-      <el-button type="primary" @click="openAddForm">添加提醒</el-button>
-    </div>
+    <el-card class="mb-6 border-0 shadow-sm">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
+          <el-icon class="mr-2 text-primary"><AlarmClock /></el-icon>提醒事项管理
+        </h1>
+        <el-button type="primary" @click="openAddForm" class="flex items-center gap-2">
+          <el-icon><Plus /></el-icon>添加提醒
+        </el-button>
+      </div>
+    </el-card>
 
     <!-- 搜索表单 -->
-    <el-form :model="searchForm" inline class="search-form">
-      <el-form-item label="物品名称">
-        <el-input v-model="searchForm.itemName" placeholder="请输入物品名称" clearable />
-      </el-form-item>
-      <el-form-item label="提醒类型">
-        <el-select v-model="searchForm.type" placeholder="请选择提醒类型" clearable>
-          <el-option
-            v-for="type in reminderTypes"
-            :key="type.value"
-            :label="type.label"
-            :value="type.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="状态">
-        <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
-          <el-option
-            v-for="status in reminderStatuses"
-            :key="status.value"
-            :label="status.label"
-            :value="status.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="提醒日期">
-        <el-date-picker
-          v-model="searchForm.dateRange"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="YYYY-MM-DD"
-          @change="handleDateRangeChange"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="loadReminders(searchForm)">搜索</el-button>
-        <el-button @click="resetSearchForm">重置</el-button>
-      </el-form-item>
-    </el-form>
+    <el-card class="mb-6 border-0 shadow-sm">
+      <template #header>
+        <div class="flex items-center">
+          <span class="text-gray-700 font-medium">搜索条件</span>
+        </div>
+      </template>
+      <el-form :model="searchForm" inline @submit.prevent>
+        <div class="flex flex-wrap gap-4">
+          <el-form-item label="物品名称">
+            <el-input v-model="searchForm.itemName" placeholder="请输入物品名称" clearable />
+          </el-form-item>
+          <el-form-item label="提醒类型">
+            <el-select v-model="searchForm.type" placeholder="请选择提醒类型" clearable>
+              <el-option
+                v-for="type in reminderTypes"
+                :key="type.value"
+                :label="type.label"
+                :value="type.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
+              <el-option
+                v-for="status in reminderStatuses"
+                :key="status.value"
+                :label="status.label"
+                :value="status.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="提醒日期">
+            <el-date-picker
+              v-model="searchForm.dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="YYYY-MM-DD"
+              @change="handleDateRangeChange"
+            />
+          </el-form-item>
+          <div class="flex items-center ml-auto">
+            <el-button type="primary" class="mr-2" @click="loadReminders(searchForm)">
+              <el-icon class="mr-1"><Search /></el-icon>搜索
+            </el-button>
+            <el-button @click="resetSearchForm">
+              <el-icon class="mr-1"><Refresh /></el-icon>重置
+            </el-button>
+          </div>
+        </div>
+      </el-form>
+    </el-card>
 
     <!-- 提醒列表 -->
-    <el-table
-      v-loading="loading"
-      :data="reminderList"
-      border
-      style="width: 100%"
-    >
-      <el-table-column prop="itemName" label="物品名称" min-width="120" />
-      <el-table-column prop="type" label="提醒类型" width="100">
-        <template #default="{ row }">
-          {{ getReminderTypeLabel(row.type) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="reminderDate" label="提醒日期" width="120" />
-      <el-table-column prop="status" label="状态" width="100">
-        <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status)">
-            {{ getStatusLabel(row.status) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="content" label="提醒内容" min-width="200" />
-      <el-table-column prop="notificationMethods" label="通知方式" width="120">
-        <template #default="{ row }">
-          <el-tag
-            v-for="method in row.notificationMethods"
-            :key="method"
-            size="small"
-            class="mr-1"
-          >
-            {{ getNotificationMethodLabel(method) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="{ row }">
-          <el-button
-            v-if="row.status === 'PENDING'"
-            type="primary"
-            link
-            @click="openEditForm(row.id)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            v-if="row.status === 'PENDING'"
-            type="success"
-            link
-            @click="handleComplete(row.id)"
-          >
-            完成
-          </el-button>
-          <el-button
-            type="danger"
-            link
-            @click="handleDelete(row.id)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-card class="border-0 shadow-sm">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-700 font-medium">提醒列表</span>
+          <div class="text-sm text-gray-500">共 {{ total }} 项</div>
+        </div>
+      </template>
+      <el-table
+        v-loading="loading"
+        :data="reminderList"
+        border
+        class="w-full"
+      >
+        <el-table-column prop="itemName" label="物品名称" min-width="120" />
+        <el-table-column prop="type" label="提醒类型" width="100">
+          <template #default="{ row }">
+            <el-tag size="small" :type="getTypeColor(row.type)">
+              {{ getReminderTypeLabel(row.type) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="reminderDate" label="提醒日期" width="120" />
+        <el-table-column prop="status" label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag size="small" :type="getStatusType(row.status)">
+              {{ getStatusLabel(row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="content" label="提醒内容" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="notificationMethods" label="通知方式" width="120">
+          <template #default="{ row }">
+            <div class="flex flex-wrap gap-1">
+              <el-tag
+                v-for="method in row.notificationMethods"
+                :key="method"
+                size="small"
+                effect="plain"
+              >
+                {{ getNotificationMethodLabel(method) }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" fixed="right">
+          <template #default="{ row }">
+            <el-button
+              v-if="row.status === 'PENDING'"
+              type="primary"
+              link
+              size="small"
+              @click="openEditForm(row.id)"
+            >
+              <el-icon class="mr-1"><Edit /></el-icon>编辑
+            </el-button>
+            <el-button
+              v-if="row.status === 'PENDING'"
+              type="success"
+              link
+              size="small"
+              @click="handleComplete(row.id)"
+            >
+              <el-icon class="mr-1"><Check /></el-icon>完成
+            </el-button>
+            <el-button
+              type="danger"
+              link
+              size="small"
+              @click="handleDelete(row.id)"
+            >
+              <el-icon class="mr-1"><Delete /></el-icon>删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination">
-      <el-pagination
-        v-model:current-page="searchForm.page"
-        v-model:page-size="searchForm.size"
-        :total="total"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handlePageChange"
-      />
-    </div>
+      <!-- 分页 -->
+      <div class="flex justify-end mt-4">
+        <el-pagination
+          v-model:current-page="searchForm.page"
+          v-model:page-size="searchForm.size"
+          :total="total"
+          :page-sizes="[10, 20, 50, 100]"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handlePageChange"
+        />
+      </div>
+    </el-card>
 
     <!-- 添加/编辑对话框 -->
     <el-dialog
       v-model="dialogVisible"
       :title="isAdding ? '添加提醒' : '编辑提醒'"
       width="600px"
+      destroy-on-close
     >
       <el-form
         ref="reminderFormRef"
         :model="reminderForm"
         :rules="rules"
         label-width="100px"
+        status-icon
+        class="max-w-3xl mx-auto"
       >
         <el-form-item label="物品" prop="itemId">
           <el-select
@@ -144,7 +182,7 @@
             :remote-method="searchItems"
             :loading="itemLoading"
             placeholder="请选择物品"
-            style="width: 100%"
+            class="w-full"
           >
             <el-option
               v-for="item in itemOptions"
@@ -155,7 +193,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="提醒类型" prop="type">
-          <el-select v-model="reminderForm.type" placeholder="请选择提醒类型">
+          <el-select v-model="reminderForm.type" placeholder="请选择提醒类型" class="w-full">
             <el-option
               v-for="type in reminderTypes"
               :key="type.value"
@@ -170,7 +208,7 @@
             type="date"
             placeholder="请选择提醒日期"
             value-format="YYYY-MM-DD"
-            style="width: 100%"
+            class="w-full"
           />
         </el-form-item>
         <el-form-item label="提醒内容" prop="content">
@@ -183,45 +221,54 @@
         </el-form-item>
         <el-form-item label="通知方式" prop="notificationMethods">
           <el-checkbox-group v-model="reminderForm.notificationMethods">
-            <el-checkbox
-              v-for="method in notificationMethods"
-              :key="method.value"
-              :label="method.value"
-            >
-              {{ method.label }}
-            </el-checkbox>
+            <div class="flex flex-wrap gap-3">
+              <el-checkbox
+                v-for="method in notificationMethods"
+                :key="method.value"
+                :label="method.value"
+              >
+                {{ method.label }}
+              </el-checkbox>
+            </div>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="提前提醒" prop="daysInAdvance">
-          <el-input-number
-            v-model="reminderForm.daysInAdvance"
-            :min="1"
-            :max="30"
-          />
-          <span class="ml-2">天</span>
+          <div class="flex items-center">
+            <el-input-number
+              v-model="reminderForm.daysInAdvance"
+              :min="1"
+              :max="30"
+              class="w-32"
+            />
+            <span class="ml-2 text-gray-600">天</span>
+          </div>
         </el-form-item>
         <el-form-item label="重复提醒">
-          <el-switch v-model="reminderForm.isRecurring" />
-          <el-select
-            v-if="reminderForm.isRecurring"
-            v-model="reminderForm.recurringCycle"
-            class="ml-2"
-            placeholder="请选择重复周期"
-          >
-            <el-option
-              v-for="cycle in recurringCycles"
-              :key="cycle.value"
-              :label="cycle.label"
-              :value="cycle.value"
-            />
-          </el-select>
+          <div class="flex items-center gap-2">
+            <el-switch v-model="reminderForm.isRecurring" />
+            <el-select
+              v-if="reminderForm.isRecurring"
+              v-model="reminderForm.recurringCycle"
+              placeholder="请选择重复周期"
+              class="w-40"
+            >
+              <el-option
+                v-for="cycle in recurringCycles"
+                :key="cycle.value"
+                :label="cycle.label"
+                :value="cycle.value"
+              />
+            </el-select>
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="cancelEdit">取消</el-button>
-        <el-button type="primary" @click="handleSave" :loading="saving">
-          确定
-        </el-button>
+        <div class="flex justify-end gap-2">
+          <el-button @click="cancelEdit">取消</el-button>
+          <el-button type="primary" @click="handleSave" :loading="saving">
+            确定
+          </el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -234,9 +281,9 @@ import { useReminderForm } from './composables/useReminderForm'
 import { useReminderSearch } from './composables/useReminderSearch'
 import { ReminderType, ReminderStatus, NotificationMethod, RecurringCycle } from '@/types/reminder'
 import { searchItems as searchItemsApi } from '@/api/reminder'
+import { Plus, Search, Refresh, Edit, Delete, Check, AlarmClock } from '@element-plus/icons-vue'
 
 defineOptions({
-  // name 作为一种规范最好必须写上并且和路由的name保持一致
   name: "Reminder"
 });
 
@@ -350,6 +397,20 @@ const getStatusType = (status: ReminderStatus) => {
   }
 }
 
+// 获取提醒类型颜色
+const getTypeColor = (type: ReminderType) => {
+  switch (type) {
+    case 'EXPIRATION':
+      return 'danger'
+    case 'MAINTENANCE':
+      return 'warning'
+    case 'CUSTOM':
+      return 'primary'
+    default:
+      return 'info'
+  }
+}
+
 // 获取通知方式标签
 const getNotificationMethodLabel = (method: NotificationMethod) => {
   return notificationMethods.find(item => item.value === method)?.label || method
@@ -376,35 +437,4 @@ const dialogVisible = computed<boolean>({
 onMounted(() => {
   loadReminders(searchForm)
 })
-</script>
-
-<style scoped>
-.reminder-container {
-  padding: 20px;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.search-form {
-  margin-bottom: 20px;
-}
-
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.mr-1 {
-  margin-right: 4px;
-}
-
-.ml-2 {
-  margin-left: 8px;
-}
-</style> 
+</script> 

@@ -1,152 +1,178 @@
 <template>
-  <div class="entity-form">
-    <el-card shadow="hover" class="h-full">
-      <template #header>
-        <div class="flex justify-between items-center">
-          <span>{{ isEditing ? '编辑物品' : '添加物品' }}</span>
-          <div class="actions">
-            <el-button @click="handleCancel">取消</el-button>
-            <el-button type="primary" @click="handleSubmit" :loading="saving">保存</el-button>
-          </div>
-        </div>
-      </template>
+  <div class="w-full">
+    <el-form
+      ref="formRef"
+      :model="form"
+      :rules="rules"
+      label-width="100px"
+      class="max-w-3xl mx-auto"
+      status-icon
+    >
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="form.name" placeholder="请输入物品名称" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="类型" prop="type">
+            <el-input v-model="form.type" placeholder="请输入物品类型" />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="100px"
-        class="form-content"
-      >
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入物品名称" />
-        </el-form-item>
-
-        <el-form-item label="类型" prop="type">
-          <el-input v-model="form.type" placeholder="请输入物品类型" />
-        </el-form-item>
-
-        <el-form-item label="父级物品" prop="parentId">
-          <el-tree-select
-            v-model="form.parentId"
-            :data="treeData"
-            :props="{ label: 'name', value: 'id' }"
-            placeholder="请选择父级物品"
-            clearable
-            check-strictly
-          />
-        </el-form-item>
-
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态">
-            <el-option label="可用" value="AVAILABLE" />
-            <el-option label="使用中" value="IN_USE" />
-            <el-option label="维护中" value="MAINTENANCE" />
-            <el-option label="已处置" value="DISPOSED" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="位置" prop="location">
-          <el-input v-model="form.location" placeholder="请输入物品位置" />
-        </el-form-item>
-
-        <el-form-item label="价格" prop="price">
-          <el-input-number
-            v-model="form.price"
-            :precision="2"
-            :step="0.1"
-            :min="0"
-            placeholder="请输入价格"
-          />
-        </el-form-item>
-
-        <el-form-item label="购买日期" prop="purchaseDate">
-          <el-date-picker
-            v-model="form.purchaseDate"
-            type="date"
-            placeholder="请选择购买日期"
-            value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
-
-        <el-form-item label="保修期" prop="warrantyPeriod">
-          <el-input-number
-            v-model="form.warrantyPeriod"
-            :min="0"
-            :max="120"
-            placeholder="请输入保修期（月）"
-          />
-        </el-form-item>
-
-        <el-form-item label="描述" prop="description">
-          <el-input
-            v-model="form.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入物品描述"
-          />
-        </el-form-item>
-
-        <el-form-item label="标签" prop="tags">
-          <el-select
-            v-model="form.tags"
-            multiple
-            filterable
-            allow-create
-            default-first-option
-            placeholder="请选择或输入标签"
-          >
-            <el-option
-              v-for="tag in existingTags"
-              :key="tag"
-              :label="tag"
-              :value="tag"
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="父级物品" prop="parentId">
+            <el-tree-select
+              v-model="form.parentId"
+              :data="treeData"
+              :props="{ label: 'name', value: 'id' }"
+              placeholder="请选择父级物品"
+              clearable
+              check-strictly
+              class="w-full"
             />
-          </el-select>
-        </el-form-item>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="状态" prop="status">
+            <el-select v-model="form.status" placeholder="请选择状态" class="w-full">
+              <el-option label="可用" value="AVAILABLE" />
+              <el-option label="使用中" value="IN_USE" />
+              <el-option label="维护中" value="MAINTENANCE" />
+              <el-option label="已处置" value="DISPOSED" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-        <el-form-item label="图片" prop="images">
-          <el-upload
-            v-model:file-list="imageList"
-            action="/api/upload"
-            list-type="picture-card"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :before-upload="beforeImageUpload"
-          >
-            <el-icon><Plus /></el-icon>
-          </el-upload>
-          <el-dialog v-model="dialogVisible">
-            <img w-full :src="dialogImageUrl" alt="Preview Image" />
-          </el-dialog>
-        </el-form-item>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="位置" prop="location">
+            <el-input v-model="form.location" placeholder="请输入物品位置" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="价格" prop="price">
+            <el-input-number
+              v-model="form.price"
+              :precision="2"
+              :step="0.1"
+              :min="0"
+              placeholder="请输入价格"
+              class="w-full"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
-        <el-form-item label="附件" prop="attachments">
-          <el-upload
-            v-model:file-list="attachmentList"
-            action="/api/upload"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-upload="beforeAttachmentUpload"
-          >
-            <el-button type="primary">点击上传</el-button>
-            <template #tip>
-              <div class="el-upload__tip">
-                支持任意文件类型，单个文件不超过10MB
-              </div>
-            </template>
-          </el-upload>
-        </el-form-item>
-      </el-form>
-    </el-card>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="购买日期" prop="purchaseDate">
+            <el-date-picker
+              v-model="form.purchaseDate"
+              type="date"
+              placeholder="请选择购买日期"
+              value-format="YYYY-MM-DD"
+              class="w-full"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="保修期" prop="warrantyPeriod">
+            <el-input-number
+              v-model="form.warrantyPeriod"
+              :min="0"
+              :max="120"
+              placeholder="请输入保修期（月）"
+              class="w-full"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-form-item label="描述" prop="description">
+        <el-input
+          v-model="form.description"
+          type="textarea"
+          :rows="3"
+          placeholder="请输入物品描述"
+        />
+      </el-form-item>
+
+      <el-form-item label="标签" prop="tags">
+        <el-select
+          v-model="form.tags"
+          multiple
+          filterable
+          allow-create
+          default-first-option
+          placeholder="请选择或输入标签"
+          class="w-full"
+        >
+          <el-option
+            v-for="tag in existingTags"
+            :key="tag"
+            :label="tag"
+            :value="tag"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-divider content-position="left">图片与附件</el-divider>
+
+      <el-form-item label="图片" prop="images">
+        <el-upload
+          v-model:file-list="imageList"
+          action="/api/upload"
+          list-type="picture-card"
+          :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove"
+          :before-upload="beforeImageUpload"
+        >
+          <el-icon><Plus /></el-icon>
+        </el-upload>
+        <el-dialog v-model="dialogVisible" append-to-body>
+          <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
+        </el-dialog>
+      </el-form-item>
+
+      <el-form-item label="附件" prop="attachments">
+        <el-upload
+          v-model:file-list="attachmentList"
+          action="/api/upload"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-upload="beforeAttachmentUpload"
+        >
+          <el-button type="primary">
+            <el-icon class="mr-1"><Upload /></el-icon>上传附件
+          </el-button>
+          <template #tip>
+            <div class="text-xs text-gray-500 mt-2">
+              支持任意文件类型，单个文件不超过10MB
+            </div>
+          </template>
+        </el-upload>
+      </el-form-item>
+
+      <el-form-item class="mt-8">
+        <div class="flex justify-end gap-4">
+          <el-button @click="handleCancel">取消</el-button>
+          <el-button type="primary" @click="handleSubmit" :loading="saving">保存</el-button>
+        </div>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Plus } from '@element-plus/icons-vue'
+import { ref, watch } from 'vue'
+import { Plus, Upload } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import type { FormInstance, UploadProps, UploadFile } from 'element-plus'
-import type { Entity, EntityFormData } from '@/types/entity'
+import type { Entity, EntityFormData, EntityStatus } from '@/types/entity'
 
 interface Props {
   entity: Entity | null
@@ -171,9 +197,9 @@ const attachmentList = ref<UploadFile[]>([])
 // 表单数据
 const form = ref<EntityFormData>({
   name: '',
-  type: '',
+  type: 'item',
   parentId: '',
-  status: 'AVAILABLE',
+  status: 'AVAILABLE' as EntityStatus,
   location: '',
   price: 0,
   purchaseDate: '',
@@ -283,38 +309,43 @@ const handleCancel = () => {
 // 监听实体变化
 watch(() => props.entity, (newEntity) => {
   if (newEntity) {
+    // 确保表单数据类型正确
     form.value = {
-      name: newEntity.name,
-      type: newEntity.type,
-      parentId: newEntity.parentId,
-      status: newEntity.status,
-      location: newEntity.location,
-      price: newEntity.price,
-      purchaseDate: newEntity.purchaseDate,
-      warrantyPeriod: newEntity.warrantyPeriod,
-      description: newEntity.description,
-      tags: newEntity.tags || [],
-      images: newEntity.images || [],
-      attachments: newEntity.attachments || []
+      name: newEntity.name || '',
+      type: newEntity.type || 'item',
+      parentId: newEntity.parentId || '',
+      status: (newEntity.status as unknown) as EntityStatus || 'AVAILABLE' as EntityStatus,
+      location: (newEntity as any).location || '',
+      price: newEntity.price || 0,
+      purchaseDate: newEntity.purchaseDate || '',
+      warrantyPeriod: newEntity.warrantyPeriod || 0,
+      description: newEntity.description || '',
+      tags: ((newEntity.tags || []) as any) || [],
+      images: ((newEntity.images || []) as any) || [],
+      attachments: ((newEntity as any).attachments || [])
     }
     
     // 更新图片和附件列表
-    imageList.value = newEntity.images?.map(url => ({
-      name: url.split('/').pop() || '',
-      url
+    imageList.value = (newEntity.images as any)?.map((url: string) => ({
+      name: typeof url === 'string' ? url.split('/').pop() || '' : '',
+      url,
+      uid: Date.now() + Math.random(),
+      status: 'success'
     })) || []
     
-    attachmentList.value = newEntity.attachments?.map(attachment => ({
+    attachmentList.value = ((newEntity as any).attachments || []).map((attachment: any) => ({
       name: attachment.name,
-      url: attachment.url
-    })) || []
+      url: attachment.url,
+      uid: Date.now() + Math.random(),
+      status: 'success'
+    }))
   } else {
     // 重置表单
     form.value = {
       name: '',
-      type: '',
+      type: 'item',
       parentId: '',
-      status: 'AVAILABLE',
+      status: 'AVAILABLE' as EntityStatus,
       location: '',
       price: 0,
       purchaseDate: '',
@@ -328,27 +359,4 @@ watch(() => props.entity, (newEntity) => {
     attachmentList.value = []
   }
 }, { immediate: true })
-</script>
-
-<style scoped>
-.entity-form {
-  flex: 1;
-  height: 100%;
-  margin-left: 16px;
-}
-
-.h-full {
-  height: 100%;
-}
-
-.form-content {
-  padding: 16px;
-  max-width: 800px;
-}
-
-.el-upload__tip {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 8px;
-}
-</style> 
+</script> 
