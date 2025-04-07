@@ -130,7 +130,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from 'vue';
+import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { Check, Close } from '@element-plus/icons-vue';
 import { useEntityForm } from '../composables/useEntityForm';
 import LocationSelector from './LocationSelector.vue';
@@ -179,6 +179,11 @@ export default defineComponent({
         Object.assign(entityForm, props.modelValue);
       }
     };
+    
+    // 添加对modelValue的watch
+    watch(() => props.modelValue, () => {
+      updateForm();
+    }, { deep: true });
     
     // 处理保存
     const handleSave = () => {

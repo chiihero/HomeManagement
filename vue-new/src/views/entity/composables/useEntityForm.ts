@@ -86,14 +86,14 @@ export function useEntityForm() {
       entityClassification: 'item',
       specification: entity.specification || '',
       price: entity.price,
-      purchaseDate: (entity as any).purchaseDate || '',
-      expirationDate: (entity as any).expirationDate || '',
-      status: (entity as any).status || 'normal',
-      usageFrequency: (entity as any).usageFrequency || 'medium',
+      purchaseDate: entity.purchaseDate ? moment(entity.purchaseDate).format('YYYY-MM-DD') : '',
+      expirationDate: entity.warrantyEndDate ? moment(entity.warrantyEndDate).format('YYYY-MM-DD') : '',
+      status: entity.status || 'normal',
+      usageFrequency: entity.usageFrequency || 'medium',
       parentId: entity.parentId ? String(entity.parentId) : '0',
       tags: entity.tags ? entity.tags.map(tag => tag.id) : [],
       description: entity.description || '',
-      images: (entity as any).images || [],
+      images: entity.images || [],
       userId: entity.userId || authStore.currentUser?.id
     });
   };
