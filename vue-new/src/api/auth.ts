@@ -1,5 +1,5 @@
 import http from './http';
-import { User, LoginRequest, RegisterRequest, ChangePasswordRequest } from '@/types/user';
+import { RegisterRequest } from '@/types/user';
 import { ResponseResult } from '@/types/entity';
 
 // 登录响应数据类型
@@ -24,32 +24,25 @@ export function login(username: string, password: string, rememberMe: boolean = 
     username,
     password,
     rememberMe
-  });
+  }).then(res => res.data);
 }
 
 // 注册
-export function register(data: RegisterRequest): Promise<ResponseResult<User>> {
-  return http.post<ResponseResult<User>>('/auth/register', data);
+export function register(data: RegisterRequest): Promise<ResponseResult<boolean>> {
+  return http.post<ResponseResult<boolean>>('/auth/register', data)
+    .then(res => res.data);
 }
 
 // 退出登录
 export function logout(): Promise<ResponseResult<null>> {
-  return http.post<ResponseResult<null>>('/auth/logout');
-}
-
-// 获取当前用户信息
-export function getUserInfo(): Promise<ResponseResult<Record<string, any>>> {
-  return http.post<ResponseResult<Record<string, any>>>('/auth/info');
-}
-
-// 修改密码
-export function changePassword(data: ChangePasswordRequest) {
-  return http.post<ResponseResult<boolean>>('/auth/change-password', data);
+  return http.post<ResponseResult<null>>('/auth/logout')
+    .then(res => res.data);
 }
 
 // 发送忘记密码邮件
 export function forgotPassword(email: string): Promise<ResponseResult<boolean>> {
-  return http.post<ResponseResult<boolean>>('/auth/forgot-password', { email });
+  return http.post<ResponseResult<boolean>>('/auth/forgot-password', { email })
+    .then(res => res.data);
 }
 
 // 重置密码
@@ -57,25 +50,12 @@ export function resetPassword(token: string, newPassword: string): Promise<Respo
   return http.post<ResponseResult<boolean>>('/auth/reset-password', {
     token,
     newPassword
-  });
-}
-
-// 更新用户信息
-export function updateUserInfo(data: Partial<User>): Promise<ResponseResult<User>> {
-  return http.post<ResponseResult<User>>('/auth/update-info', data);
-}
-
-// 上传用户头像
-export function uploadAvatar(file: File) {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  return http.post<ResponseResult<{ avatarUrl: string }>>('/auth/upload-avatar', formData);
+  }).then(res => res.data);
 }
 
 // 刷新Token
 export function refreshToken(refreshTokenValue: string): Promise<ResponseResult<RefreshTokenResponse>> {
   return http.post<ResponseResult<RefreshTokenResponse>>('/auth/refresh-token', { 
     refreshToken: refreshTokenValue 
-  });
-} 
+  }).then(res => res.data);
+}

@@ -30,8 +30,8 @@ const lazyLoad = (componentPath: string) => {
     return () => import('../views/tag/index.vue');
   } else if (componentPath === 'views/reminder/index.vue') {
     return () => import('../views/reminder/index.vue');
-  } else if (componentPath === 'views/setting/index.vue') {
-    return () => import('../views/setting/index.vue');
+  } else if (componentPath === 'views/settings/index.vue') {
+    return () => import('../views/settings/index.vue');
   } else if (componentPath === 'components/layout/Layout.vue') {
     return () => import('../components/layout/Layout.vue');
   } else {
@@ -81,7 +81,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'settings',
         name: 'Settings',
-        component: lazyLoad('views/setting/index.vue'),
+        component: lazyLoad('views/settings/index.vue'),
         meta: { title: '系统设置', icon: 'Setting', requiresAuth: true }
       },
     ]
@@ -104,6 +104,48 @@ const routes: Array<RouteRecordRaw> = [
     name: 'NotFound',
     component: lazyLoad('views/error/404.vue'),
     meta: { title: '404', hideInMenu: true }
+  },
+  {
+    path: '/settings',
+    component: lazyLoad('components/layout/Layout.vue'),
+    meta: {
+      title: '设置',
+      icon: 'Setting'
+    },
+    children: [
+      {
+        path: '',
+        name: 'Setting',
+        component: () => import('@/views/settings/index.vue'),
+        meta: {
+          title: '设置'
+        }
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/settings/profile.vue'),
+        meta: {
+          title: '个人资料'
+        }
+      },
+      {
+        path: 'notification',
+        name: 'Notification',
+        component: () => import('@/views/settings/notification.vue'),
+        meta: {
+          title: '通知设置'
+        }
+      },
+      {
+        path: 'system',
+        name: 'System',
+        component: () => import('@/views/settings/system.vue'),
+        meta: {
+          title: '系统设置'
+        }
+      }
+    ]
   }
 ]
 

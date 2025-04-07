@@ -65,8 +65,13 @@ const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
+  },
+  withCredentials: true,
+  // 增加CORS相关配置
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN'
 });
 
 // 请求拦截器

@@ -120,48 +120,6 @@ public class AuthController {
     }
     
     /**
-     * 获取当前登录用户信息
-     *
-     * @return 当前用户信息
-     */
-    @PostMapping("/info")
-    @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息")
-    public ResponseInfo<Map<String, Object>> getUserInfo() {
-        try {
-            // 获取当前认证用户
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            
-            if (authentication == null || !authentication.isAuthenticated() || 
-                "anonymousUser".equals(authentication.getPrincipal())) {
-                return ResponseInfo.response(ResultCode.USER_NOT_LOGIN);
-            }
-            
-            // 获取用户名
-            String username = authentication.getName();
-            
-            // 获取用户实体信息
-            User user = userService.getUserByUsername(username);
-            if (user == null) {
-                return ResponseInfo.response(ResultCode.USER_ACCOUNT_NOT_EXIST);
-            }
-            
-            // 准备返回数据
-            Map<String, Object> userInfo = new HashMap<>();
-            userInfo.put("id", user.getId());
-            userInfo.put("username", user.getUsername());
-            userInfo.put("email", user.getEmail());
-            userInfo.put("phone", user.getPhone());
-            userInfo.put("avatar", user.getAvatar());
-            userInfo.put("role", user.getRole());
-            userInfo.put("status", user.getStatus());
-            
-            return ResponseInfo.successResponse(userInfo);
-        } catch (Exception e) {
-            return ResponseInfo.errorResponse("获取用户信息失败: " + e.getMessage());
-        }
-    }
-    
-    /**
      * 用户登出
      *
      * @return 登出结果
@@ -221,6 +179,111 @@ public class AuthController {
             return ResponseInfo.successResponse(responseData);
         } catch (Exception e) {
             return ResponseInfo.errorResponse("刷新令牌失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 用户注册
+     *
+     * @param registerRequest 注册请求参数
+     * @return 注册结果
+     */
+    @PostMapping("/register")
+    @Operation(summary = "用户注册", description = "用户注册接口")
+    public ResponseInfo<Boolean> register(@RequestBody Map<String, String> registerRequest) {
+        String username = registerRequest.get("username");
+        String password = registerRequest.get("password");
+        String email = registerRequest.get("email");
+        
+        if (username == null || password == null || email == null) {
+            return ResponseInfo.response(ResultCode.PARAM_NOT_COMPLETE);
+        }
+        
+        try {
+            // 检查用户名是否已存在
+            User existingUser = userService.getUserByUsername(username);
+            if (existingUser != null) {
+                return ResponseInfo.errorResponse("用户名已存在");
+            }
+            
+            // 创建用户
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password); // Service层会处理密码加密
+            user.setEmail(email);
+            user.setRole("USER"); // 默认角色
+            user.setStatus("ACTIVE"); // 默认状态
+            user.setCreateTime(LocalDateTime.now());
+            
+            userService.createUser(user);
+            
+            return ResponseInfo.successResponse(true);
+        } catch (Exception e) {
+            return ResponseInfo.errorResponse("注册失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 忘记密码发送邮件
+     *
+     * @param emailRequest 包含邮箱的请求
+     * @return 操作结果
+     */
+    @PostMapping("/forgot-password")
+    @Operation(summary = "忘记密码", description = "发送重置密码邮件")
+    public ResponseInfo<Boolean> forgotPassword(@RequestBody Map<String, String> emailRequest) {
+        String email = emailRequest.get("email");
+        
+        if (email == null || email.isEmpty()) {
+            return ResponseInfo.response(ResultCode.PARAM_NOT_COMPLETE);
+        }
+        
+        try {
+            User user = userService.getUserByEmail(email);
+            if (user == null) {
+                // 出于安全考虑，即使用户不存在也返回成功
+                return ResponseInfo.successResponse(true);
+            }
+            
+            // TODO: 生成重置令牌并发送邮件
+            String resetToken = userService.generatePasswordResetToken(user);
+            // emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
+            
+            return ResponseInfo.successResponse(true);
+        } catch (Exception e) {
+            return ResponseInfo.errorResponse("发送重置密码邮件失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 重置密码
+     *
+     * @param resetRequest 包含重置令牌和新密码的请求
+     * @return 操作结果
+     */
+    @PostMapping("/reset-password")
+    @Operation(summary = "重置密码", description = "使用重置令牌重置密码")
+    public ResponseInfo<Boolean> resetPassword(@RequestBody Map<String, String> resetRequest) {
+        String token = resetRequest.get("token");
+        String newPassword = resetRequest.get("newPassword");
+        
+        if (token == null || newPassword == null) {
+            return ResponseInfo.response(ResultCode.PARAM_NOT_COMPLETE);
+        }
+        
+        try {
+            // 验证重置令牌
+            User user = userService.validatePasswordResetToken(token);
+            if (user == null) {
+                return ResponseInfo.errorResponse("无效的重置令牌或令牌已过期");
+            }
+            
+            // 更新密码
+            userService.resetPassword(user, newPassword);
+            
+            return ResponseInfo.successResponse(true);
+        } catch (Exception e) {
+            return ResponseInfo.errorResponse("重置密码失败: " + e.getMessage());
         }
     }
 } 

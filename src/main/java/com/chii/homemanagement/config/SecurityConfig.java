@@ -35,6 +35,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 明确允许所有OPTIONS请求
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/**", "/api/auth/**", "/css/**", "/js/**", "/img/**", "/static/**", "/webjars/**", "/uploads/**").permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -49,6 +50,8 @@ public class SecurityConfig {
                 .csrf(csrf ->
                         csrf.disable()  // 暂时禁用 CSRF 便于调试
                 )
+                // 启用CORS支持
+                .cors(cors -> cors.configure(http))
                 // 支持 X-Forwarded-* 头信息
                 .requiresChannel(channel -> 
                         channel.anyRequest().requiresInsecure()

@@ -47,7 +47,7 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     server: {
-      host: '127.0.0.1', // 允许外部访问
+      host: '0.0.0.0', // 允许外部访问
       port: parseInt(env.VITE_PORT || '3000'),
       strictPort: false, // 如果端口被占用，会自动尝试下一个可用端口
       proxy: {

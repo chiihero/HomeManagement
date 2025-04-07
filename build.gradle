@@ -36,6 +36,7 @@ repositories {
 
 dependencies {
 	dependencies { implementation fileTree(dir: 'lib', include: ['*.jar']) }
+	providedCompile 'org.springframework.boot:spring-boot-starter-tomcat:3.4.3'//版本号打死都不能省，我就是因为省版本号折腾了一个星期多
 
 	// 新增安全模块依赖
     implementation 'org.springframework.boot:spring-boot-starter-security'

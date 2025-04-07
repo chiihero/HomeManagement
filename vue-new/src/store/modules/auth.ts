@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { login, register, logout, getUserInfo, refreshToken } from '@/api/auth';
+import { login, register, logout, refreshToken } from '@/api/auth';
+import { getUserInfo } from '@/api/user';
 import { User } from '@/types/user';
 import router from '@/router';
 import { ElMessage } from 'element-plus';

@@ -7,9 +7,10 @@ export interface User {
   nickname?: string;
   phone?: string;
   role: string;
-  status: string; // 状态：0-禁用，1-启用
-  createTime?: string;
-  updateTime?: string;
+  enabled: boolean;
+  lastLoginTime?: string;
+  createdTime: string;
+  updatedTime?: string;
 }
 
 // 用户登录请求参数
@@ -43,5 +44,5 @@ export interface UserQueryParams {
   username?: string;
   email?: string;
   role?: string;
-  status?: string;
+  enabled?: boolean;
 } 

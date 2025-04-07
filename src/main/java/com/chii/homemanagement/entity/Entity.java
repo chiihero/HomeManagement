@@ -103,7 +103,7 @@ public class Entity {
      * 使用频率：daily-每天，weekly-每周，monthly-每月，rarely-很少
      */
     @Pattern(regexp = "daily|weekly|monthly|rarely", message = "使用频率只能是每天、每周、每月或很少")
-    @Schema(description = "使用频率", allowableValues = {"daily", "weekly", "monthly", "rarely"})
+    @Schema(description = "使用频率")
     private String usageFrequency;
 
     /**
@@ -167,7 +167,7 @@ public class Entity {
      * 状态：normal-正常，damaged-损坏，discarded-丢弃
      */
     @Pattern(regexp = "normal|damaged|discarded", message = "状态只能是正常、损坏或丢弃")
-    @Schema(description = "状态", allowableValues = {"normal", "damaged", "discarded"}, defaultValue = "normal")
+    @Schema(description = "状态", defaultValue = "normal")
     private String status = "normal";
 
     /**
