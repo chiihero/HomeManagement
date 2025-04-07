@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class ApiResponse<T> {
-    private String code;
+    private Integer code;
     private String message;
     private T data;
     private long timestamp;
@@ -25,20 +25,20 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> success(T data) {
         ApiResponse<T> response = new ApiResponse<>();
-        response.setCode("200");
+        response.setCode(200);
         response.setMessage("success");
         response.setData(data);
         return response;
     }
 
-    public static <T> ApiResponse<T> error(String code, String message) {
+    public static <T> ApiResponse<T> error(Integer code, String message) {
         ApiResponse<T> response = new ApiResponse<>();
         response.setCode(code);
         response.setMessage(message);
         return response;
     }
 
-    public static <T> ApiResponse<T> error(String code, String message, T data) {
+    public static <T> ApiResponse<T> error(Integer code, String message, T data) {
         ApiResponse<T> response = new ApiResponse<>();
         response.setCode(code);
         response.setMessage(message);

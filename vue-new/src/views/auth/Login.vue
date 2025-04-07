@@ -143,7 +143,7 @@ export default defineComponent({
             );
             
             if (success) {
-              ElMessage.success('登录成功');
+              // ElMessage.success('登录成功');
               router.push('/');
             } else {
               ElMessage.error('登录失败，请检查用户名和密码');

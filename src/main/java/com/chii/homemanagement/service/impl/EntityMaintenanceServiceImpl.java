@@ -35,7 +35,7 @@ public class EntityMaintenanceServiceImpl extends ServiceImpl<EntityMaintenanceM
     public EntityMaintenance updateMaintenance(EntityMaintenance maintenance) {
         EntityMaintenance existingMaintenance = getById(maintenance.getId());
         if (existingMaintenance == null) {
-            throw new BusinessException("6002", "维护记录不存在");
+            throw new BusinessException(6002, "维护记录不存在");
         }
 
         updateById(maintenance);
@@ -47,7 +47,7 @@ public class EntityMaintenanceServiceImpl extends ServiceImpl<EntityMaintenanceM
     public boolean deleteMaintenance(Long id) {
         EntityMaintenance maintenance = getById(id);
         if (maintenance == null) {
-            throw new BusinessException("6002", "维护记录不存在");
+            throw new BusinessException(6002, "维护记录不存在");
         }
 
         return removeById(id);
@@ -57,7 +57,7 @@ public class EntityMaintenanceServiceImpl extends ServiceImpl<EntityMaintenanceM
     public EntityMaintenance getMaintenanceById(Long id) {
         EntityMaintenance maintenance = getById(id);
         if (maintenance == null) {
-            throw new BusinessException("6002", "维护记录不存在");
+            throw new BusinessException(6002, "维护记录不存在");
         }
 
         return maintenance;
