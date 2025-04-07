@@ -48,24 +48,6 @@ public class EntityImageController {
         }
     }
 
-    @PostMapping("/upload")
-    @Operation(summary = "上传图片", description = "上传图片并保存到数据库")
-    public ApiResponse<EntityImage> uploadImage(
-            @Parameter(description = "实体ID") @RequestParam(value = "entityId") Long entityId,
-            @Parameter(description = "图片") @RequestParam(value = "image") MultipartFile image,
-            @Parameter(description = "图片类型") @RequestParam(value = "imageType", required = false, defaultValue = "normal") String imageType) {
-        
-        try {
-            log.info("上传图片到数据库: entityId={}, 文件名={}, 大小={}", entityId, image.getOriginalFilename(), image.getSize());
-            
-            EntityImage entityImage = entityImageService.saveEntityImageWithData(entityId, image, imageType);
-            
-            return ApiResponse.success(entityImage);
-        } catch (Exception e) {
-            log.error("上传图片异常: entityId={}", entityId, e);
-            return ApiResponse.error(ErrorCode.FILE_UPLOAD_ERROR.getCode(), "上传图片失败: " + e.getMessage());
-        }
-    }
     
     @PostMapping("/entity/{entityId}")
     @Operation(summary = "上传图片", description = "上传图片到数据库")
