@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 *.log
+
 ### STS ###
 .apt_generated
 .classpath
@@ -40,3 +41,77 @@ out/
 /src/test/*
 *.tmp
 /demo
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Logs ###
+logs/
+*.log.*
+*.log.*
+
+### System Files ###
+.DS_Store
+Thumbs.db
+
+### Temp Files ###
+*.bak
+*.swp
+*.swo
+
+### Build Output ###
+dist/
+lib/
+out/
+classes/
+
+### IDE Specific ###
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+*.bak
+*.swp
+*.swo
+*.log
+*.log.*
+*.log.*
+
+### Node.js ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
