@@ -44,37 +44,7 @@ public class UserController {
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
-    /**
-     * 获取当前用户信息
-     */
-    @GetMapping("/current")
-    @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息")
-    public ApiResponse<User> getCurrentUser(HttpSession session) {
-        // 从session中获取用户
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()) {
-                String username = authentication.getName();
-                user = userService.getUserByUsername(username);
-                if (user != null) {
-                    // 将用户存入session
-                    session.setAttribute("user", user);
-                    // 清除密码
-                    user.setPassword(null);
-                }
-            }
-        } else {
-            // 清除密码
-            user.setPassword(null);
-        }
 
-        if (user == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
-
-        return ApiResponse.success(user);
-    }
 
     /**
      * 获取当前用户信息 (适用于前端导航栏和认证检查)

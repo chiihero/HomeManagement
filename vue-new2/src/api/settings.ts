@@ -1,73 +1,75 @@
-import  http from "@/utils/http";
-import type { ResponseResult } from '@/types/entity'
+import http from "@/utils/http";
+import type { ResponseResult } from "@/types/entity";
 
 /**
  * 系统设置接口
  */
 export interface SystemSettings {
-  id?: number
-  name: string
-  value: string
-  description?: string
-  group: string
-  type: 'string' | 'number' | 'boolean' | 'date' | 'object'
-  updatedAt?: string
-  systemName: string
-  logo: string
-  version: string
+  id?: number;
+  name: string;
+  value: string;
+  description?: string;
+  group: string;
+  type: "string" | "number" | "boolean" | "date" | "object";
+  updatedAt?: string;
+  systemName: string;
+  logo: string;
+  version: string;
 }
 
 /**
  * 用户设置接口
  */
 export interface UserSettings {
-  id?: number
-  userId: number
-  key: string
-  value: string
-  updatedAt?: string
+  id?: number;
+  userId: number;
+  key: string;
+  value: string;
+  updatedAt?: string;
 }
 
 /**
  * 备份信息接口
  */
 export interface BackupInfo {
-  id: number
-  filename: string
-  size: number
-  createdAt: string
-  notes?: string
+  id: number;
+  filename: string;
+  size: number;
+  createdAt: string;
+  notes?: string;
 }
 
 /**
  * 用户通知设置接口
  */
 export interface UserNotificationSettings {
-  emailNotification: boolean
-  expirationReminder: boolean
-  reminderDays: number
+  emailNotification: boolean;
+  expirationReminder: boolean;
+  reminderDays: number;
 }
 
 /**
  * 获取系统设置
  */
 export function getSystemSettings(): Promise<ResponseResult<SystemSettings[]>> {
-  return http.get('/settings/system')
+  return http.get("/settings/system");
 }
 
 /**
  * 更新系统设置
  * @param data 系统设置数据
  */
-export function updateSystemSettings(data: Partial<SystemSettings>): Promise<ResponseResult<SystemSettings>> {
-  return http.put('/settings/system', data)
+export function updateSystemSettings(
+  data: Partial<SystemSettings>
+): Promise<ResponseResult<SystemSettings>> {
+  return http.put("/settings/system", data);
 }
 
 /**
  * 获取用户设置
  */
 export function getUserSettings(): Promise<ResponseResult<UserSettings[]>> {
-  return http.get('/settings/user')
+  return http.get("/settings/user");
 }
 
 /**
@@ -75,23 +77,28 @@ export function getUserSettings(): Promise<ResponseResult<UserSettings[]>> {
  * @param key 设置键
  * @param value 设置值
  */
-export function updateUserSetting(key: string, value: string): Promise<ResponseResult<UserSettings>> {
-  return http.put(`/settings/user/${key}`, { value })
+export function updateUserSetting(
+  key: string,
+  value: string
+): Promise<ResponseResult<UserSettings>> {
+  return http.put(`/settings/user/${key}`, { value });
 }
 
 /**
  * 创建备份
  * @param notes 备份说明
  */
-export function createBackup(notes?: string): Promise<ResponseResult<BackupInfo>> {
-  return http.post('/settings/backup', { notes })
+export function createBackup(
+  notes?: string
+): Promise<ResponseResult<BackupInfo>> {
+  return http.post("/settings/backup", { notes });
 }
 
 /**
  * 获取备份列表
  */
 export function getBackups(): Promise<ResponseResult<BackupInfo[]>> {
-  return http.get('/settings/backup')
+  return http.get("/settings/backup");
 }
 
 /**
@@ -99,7 +106,7 @@ export function getBackups(): Promise<ResponseResult<BackupInfo[]>> {
  * @param id 备份ID
  */
 export function restoreBackup(id: number): Promise<ResponseResult<boolean>> {
-  return http.post(`/settings/backup/${id}/restore`)
+  return http.post(`/settings/backup/${id}/restore`);
 }
 
 /**
@@ -107,7 +114,7 @@ export function restoreBackup(id: number): Promise<ResponseResult<boolean>> {
  * @param id 备份ID
  */
 export function deleteBackup(id: number): Promise<ResponseResult<null>> {
-  return http.delete(`/settings/backup/${id}`)
+  return http.delete(`/settings/backup/${id}`);
 }
 
 /**
@@ -115,7 +122,7 @@ export function deleteBackup(id: number): Promise<ResponseResult<null>> {
  * @param id 备份ID
  */
 export function downloadBackup(id: number): Promise<Blob> {
-  return http.get(`/settings/backup/${id}/download`, { responseType: 'blob' })
+  return http.get(`/settings/backup/${id}/download`, { responseType: "blob" });
 }
 
 /**
@@ -123,30 +130,34 @@ export function downloadBackup(id: number): Promise<Blob> {
  * @param file 导入文件
  */
 export function importData(file: File): Promise<ResponseResult<boolean>> {
-  const formData = new FormData()
-  formData.append('file', file)
-  
-  return http.post('/settings/import', formData, {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return http.post("/settings/import", formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
+      "Content-Type": "multipart/form-data"
     }
-  })
+  });
 }
 
 /**
  * 导出数据
  * @param type 导出类型
  */
-export function exportData(type: 'json' | 'csv' | 'excel' = 'json'): Promise<Blob> {
-  return http.get(`/settings/export?type=${type}`, { responseType: 'blob' })
+export function exportData(
+  type: "json" | "csv" | "excel" = "json"
+): Promise<Blob> {
+  return http.get(`/settings/export?type=${type}`, { responseType: "blob" });
 }
 
 /**
  * 更新用户通知设置
  * @param data 通知设置数据
  */
-export function updateUserNotifications(data: UserNotificationSettings): Promise<ResponseResult<UserNotificationSettings>> {
-  return http.put('/user/notifications', data)
+export function updateUserNotifications(
+  data: UserNotificationSettings
+): Promise<ResponseResult<UserNotificationSettings>> {
+  return http.put("/user/notifications", data);
 }
 
 /**
@@ -154,12 +165,12 @@ export function updateUserNotifications(data: UserNotificationSettings): Promise
  * @param file 图片文件
  */
 export function uploadSystemLogo(file: File): Promise<ResponseResult<string>> {
-  const formData = new FormData()
-  formData.append('file', file)
-  
-  return http.post('/settings/logo', formData, {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return http.post("/settings/logo", formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
+      "Content-Type": "multipart/form-data"
     }
-  })
-} 
+  });
+}

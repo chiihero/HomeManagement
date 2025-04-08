@@ -1,354 +1,27 @@
-[2025-04-07 00:11:40.829] [INFO] [File Watcher] [org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener] - Restarting due to 1 class path change (0 additions, 1 deletion, 0 modifications)
-[2025-04-07 00:11:40.835] [INFO] [Thread-5] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
-[2025-04-07 00:11:40.836] [INFO] [Thread-5] [org.springframework.boot.web.embedded.tomcat.GracefulShutdown] - Commencing graceful shutdown. Waiting for active requests to complete
-[2025-04-07 00:11:40.836] [INFO] [tomcat-shutdown] [org.apache.juli.logging.DirectJDKLog] - Pausing ProtocolHandler ["http-nio-26000"]
-[2025-04-07 00:11:40.842] [INFO] [tomcat-shutdown] [org.springframework.boot.web.embedded.tomcat.GracefulShutdown] - Graceful shutdown complete
-[2025-04-07 00:11:40.842] [INFO] [Thread-5] [org.apache.juli.logging.DirectJDKLog] - Stopping ProtocolHandler ["http-nio-26000"]
-[2025-04-07 00:11:40.844] [INFO] [Thread-5] [org.springframework.scheduling.quartz.SchedulerFactoryBean] - Shutting down Quartz Scheduler
-[2025-04-07 00:11:40.844] [INFO] [Thread-5] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
-[2025-04-07 00:11:40.844] [INFO] [Thread-5] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
-[2025-04-07 00:11:40.844] [INFO] [Thread-5] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
-[2025-04-07 00:11:40.845] [INFO] [Thread-5] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource start closing ....
-[2025-04-07 00:11:40.846] [INFO] [Thread-5] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown initiated...
-[2025-04-07 00:11:40.852] [INFO] [Thread-5] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown completed.
-[2025-04-07 00:11:40.853] [INFO] [Thread-5] [com.baomidou.dynamic.datasource.destroyer.DefaultDataSourceDestroyer] - dynamic-datasource close the datasource named [master] success,
-[2025-04-07 00:11:40.853] [INFO] [Thread-5] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource all closed success,bye
-[2025-04-07 00:11:40.956] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Starting HomeManagementApplication using Java 21.0.3 with PID 15564 (D:\Projects\JavaProject\HomeManagement\build\classes\java\main started by chii in D:\Projects\JavaProject\HomeManagement)
-[2025-04-07 00:11:40.956] [INFO] [restartedMain] [org.springframework.boot.SpringApplication] - The following 1 profile is active: "my"
-[2025-04-07 00:11:41.357] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat initialized with port 26000 (http)
-[2025-04-07 00:11:41.359] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing ProtocolHandler ["http-nio-26000"]
-[2025-04-07 00:11:41.359] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting service [Tomcat]
-[2025-04-07 00:11:41.359] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting Servlet engine: [Apache Tomcat/10.1.36]
-[2025-04-07 00:11:41.378] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring embedded WebApplicationContext
-[2025-04-07 00:11:41.378] [INFO] [restartedMain] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 420 ms
-[2025-04-07 00:11:41.402] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Starting...
-[2025-04-07 00:11:41.434] [INFO] [restartedMain] [com.zaxxer.hikari.pool.HikariPool] - master - Added connection com.mysql.cj.jdbc.ConnectionImpl@698f02aa
-[2025-04-07 00:11:41.435] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Start completed.
-[2025-04-07 00:11:41.435] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource - add a datasource named [master] success
-[2025-04-07 00:11:41.435] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource initial loaded [1] datasource,primary datasource named [master]
-[2025-04-07 00:11:41.436] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Illegal access: this web application instance has been stopped already. Could not load [mapper/]. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
-java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load [mapper/]. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
-	at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1394) ~[tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:985) ~[tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.springframework.core.io.ClassPathResource.resolveURL(ClassPathResource.java:182) ~[spring-core-6.2.3.jar:6.2.3]
-	at org.springframework.core.io.ClassPathResource.getURL(ClassPathResource.java:228) ~[spring-core-6.2.3.jar:6.2.3]
-	at org.springframework.core.io.support.PathMatchingResourcePatternResolver.findPathMatchingResources(PathMatchingResourcePatternResolver.java:701) ~[spring-core-6.2.3.jar:6.2.3]
-	at org.springframework.core.io.support.PathMatchingResourcePatternResolver.getResources(PathMatchingResourcePatternResolver.java:366) ~[spring-core-6.2.3.jar:6.2.3]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties.getResources(MybatisPlusProperties.java:132) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties.lambda$resolveMapperLocations$0(MybatisPlusProperties.java:127) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:273) ~[?:?]
-	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260) ~[?:?]
-	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616) ~[?:?]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties.resolveMapperLocations(MybatisPlusProperties.java:127) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration.sqlSessionFactory(MybatisPlusAutoConfiguration.java:192) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:645) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1361) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1191) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1664) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireByType(AbstractAutowireCapableBeanFactory.java:1527) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1436) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1664) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1445) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1664) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1445) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:211) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:174) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:169) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:154) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:87) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52) [spring-boot-3.4.3.jar:3.4.3]
-	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4467) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:317) [?:?]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java) [?:?]
-	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) [?:?]
-	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:772) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:317) [?:?]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java) [?:?]
-	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) [?:?]
-	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:415) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:437) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:520) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:222) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) [spring-context-6.2.3.jar:6.2.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) [spring-boot-3.4.3.jar:3.4.3]
-	at com.chii.homemanagement.HomeManagementApplication.main(HomeManagementApplication.java:17) [main/:?]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
-	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) [spring-boot-devtools-3.4.3.jar:3.4.3]
-[2025-04-07 00:11:41.444] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Stopping service [Tomcat]
-[2025-04-07 00:11:41.445] [WARN] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - The web application [ROOT] appears to have started a thread named [master housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
- java.base/jdk.internal.misc.Unsafe.park(Native Method)
- java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
- java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1758)
- java.base/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1182)
- java.base/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:899)
- java.base/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1070)
- java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
- java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
- java.base/java.lang.Thread.run(Thread.java:1583)
-[2025-04-07 00:11:41.446] [WARN] [restartedMain] [org.springframework.context.support.AbstractApplicationContext] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
-[2025-04-07 00:11:41.446] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource start closing ....
-[2025-04-07 00:11:41.446] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown initiated...
-[2025-04-07 00:11:41.447] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown completed.
-[2025-04-07 00:11:41.447] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.destroyer.DefaultDataSourceDestroyer] - dynamic-datasource close the datasource named [master] success,
-[2025-04-07 00:11:41.447] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource all closed success,bye
-[2025-04-07 00:11:41.449] [INFO] [restartedMain] [org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger] - 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-[2025-04-07 00:11:42.944] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Starting HomeManagementApplication using Java 21.0.3 with PID 15564 (D:\Projects\JavaProject\HomeManagement\build\classes\java\main started by chii in D:\Projects\JavaProject\HomeManagement)
-[2025-04-07 00:11:42.945] [INFO] [restartedMain] [org.springframework.boot.SpringApplication] - The following 1 profile is active: "my"
-[2025-04-07 00:11:43.284] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat initialized with port 26000 (http)
-[2025-04-07 00:11:43.285] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing ProtocolHandler ["http-nio-26000"]
-[2025-04-07 00:11:43.285] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting service [Tomcat]
-[2025-04-07 00:11:43.285] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting Servlet engine: [Apache Tomcat/10.1.36]
-[2025-04-07 00:11:43.304] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring embedded WebApplicationContext
-[2025-04-07 00:11:43.304] [INFO] [restartedMain] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 358 ms
-[2025-04-07 00:11:43.324] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Starting...
-[2025-04-07 00:11:43.353] [INFO] [restartedMain] [com.zaxxer.hikari.pool.HikariPool] - master - Added connection com.mysql.cj.jdbc.ConnectionImpl@4a0349cb
-[2025-04-07 00:11:43.353] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Start completed.
-[2025-04-07 00:11:43.353] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource - add a datasource named [master] success
-[2025-04-07 00:11:43.353] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource initial loaded [1] datasource,primary datasource named [master]
-[2025-04-07 00:11:43.355] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Illegal access: this web application instance has been stopped already. Could not load [mapper/]. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
-java.lang.IllegalStateException: Illegal access: this web application instance has been stopped already. Could not load [mapper/]. The following stack trace is thrown for debugging purposes as well as to attempt to terminate the thread which caused the illegal access.
-	at org.apache.catalina.loader.WebappClassLoaderBase.checkStateForResourceLoading(WebappClassLoaderBase.java:1394) ~[tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.loader.WebappClassLoaderBase.getResource(WebappClassLoaderBase.java:985) ~[tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.springframework.core.io.ClassPathResource.resolveURL(ClassPathResource.java:182) ~[spring-core-6.2.3.jar:6.2.3]
-	at org.springframework.core.io.ClassPathResource.getURL(ClassPathResource.java:228) ~[spring-core-6.2.3.jar:6.2.3]
-	at org.springframework.core.io.support.PathMatchingResourcePatternResolver.findPathMatchingResources(PathMatchingResourcePatternResolver.java:701) ~[spring-core-6.2.3.jar:6.2.3]
-	at org.springframework.core.io.support.PathMatchingResourcePatternResolver.getResources(PathMatchingResourcePatternResolver.java:366) ~[spring-core-6.2.3.jar:6.2.3]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties.getResources(MybatisPlusProperties.java:132) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties.lambda$resolveMapperLocations$0(MybatisPlusProperties.java:127) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at java.base/java.util.stream.ReferencePipeline$7$1.accept(ReferencePipeline.java:273) ~[?:?]
-	at java.base/java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:1024) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575) ~[?:?]
-	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260) ~[?:?]
-	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616) ~[?:?]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties.resolveMapperLocations(MybatisPlusProperties.java:127) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration.sqlSessionFactory(MybatisPlusAutoConfiguration.java:192) ~[mybatis-plus-spring-boot-autoconfigure-3.5.10.1.jar:3.5.10.1]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.lambda$instantiate$0(SimpleInstantiationStrategy.java:171) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiateWithFactoryMethod(SimpleInstantiationStrategy.java:88) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:168) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:653) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:645) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1361) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1191) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1664) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireByType(AbstractAutowireCapableBeanFactory.java:1527) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1436) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1664) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1445) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1664) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1552) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1445) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:346) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.3.jar:6.2.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:211) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:174) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:169) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:154) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:87) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245) ~[spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52) [spring-boot-3.4.3.jar:3.4.3]
-	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4467) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:317) [?:?]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java) [?:?]
-	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) [?:?]
-	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:772) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:317) [?:?]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java) [?:?]
-	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145) [?:?]
-	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:415) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:437) [tomcat-embed-core-10.1.36.jar:10.1.36]
-	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:520) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:222) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) [spring-context-6.2.3.jar:6.2.3]
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) [spring-boot-3.4.3.jar:3.4.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) [spring-boot-3.4.3.jar:3.4.3]
-	at com.chii.homemanagement.HomeManagementApplication.main(HomeManagementApplication.java:17) [main/:?]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
-	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) [spring-boot-devtools-3.4.3.jar:3.4.3]
-[2025-04-07 00:11:43.357] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Stopping service [Tomcat]
-[2025-04-07 00:11:43.358] [WARN] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - The web application [ROOT] appears to have started a thread named [master housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
- java.base/jdk.internal.misc.Unsafe.park(Native Method)
- java.base/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:269)
- java.base/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:1758)
- java.base/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1182)
- java.base/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:899)
- java.base/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1070)
- java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
- java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
- java.base/java.lang.Thread.run(Thread.java:1583)
-[2025-04-07 00:11:43.358] [WARN] [restartedMain] [org.springframework.context.support.AbstractApplicationContext] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
-[2025-04-07 00:11:43.358] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource start closing ....
-[2025-04-07 00:11:43.358] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown initiated...
-[2025-04-07 00:11:43.359] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown completed.
-[2025-04-07 00:11:43.360] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.destroyer.DefaultDataSourceDestroyer] - dynamic-datasource close the datasource named [master] success,
-[2025-04-07 00:11:43.360] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource all closed success,bye
-[2025-04-07 00:11:43.361] [INFO] [restartedMain] [org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger] - 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-[2025-04-07 00:24:35.748] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Starting HomeManagementApplication using Java 21.0.3 with PID 11624 (D:\Projects\JavaProject\HomeManagement\build\classes\java\main started by chii in D:\Projects\JavaProject\HomeManagement)
-[2025-04-07 00:24:35.752] [INFO] [restartedMain] [org.springframework.boot.SpringApplication] - The following 1 profile is active: "my"
-[2025-04-07 00:24:35.783] [INFO] [restartedMain] [org.springframework.boot.logging.DeferredLog] - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-[2025-04-07 00:24:35.784] [INFO] [restartedMain] [org.springframework.boot.logging.DeferredLog] - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-[2025-04-07 00:24:36.791] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat initialized with port 26000 (http)
-[2025-04-07 00:24:36.800] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing ProtocolHandler ["http-nio-26000"]
-[2025-04-07 00:24:36.800] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting service [Tomcat]
-[2025-04-07 00:24:36.801] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting Servlet engine: [Apache Tomcat/10.1.36]
-[2025-04-07 00:24:36.851] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring embedded WebApplicationContext
-[2025-04-07 00:24:36.851] [INFO] [restartedMain] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 1067 ms
-[2025-04-07 00:24:36.914] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Starting...
-[2025-04-07 00:24:37.147] [INFO] [restartedMain] [com.zaxxer.hikari.pool.HikariPool] - master - Added connection com.mysql.cj.jdbc.ConnectionImpl@788255c
-[2025-04-07 00:24:37.148] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Start completed.
-[2025-04-07 00:24:37.149] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource - add a datasource named [master] success
-[2025-04-07 00:24:37.149] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource initial loaded [1] datasource,primary datasource named [master]
-[2025-04-07 00:24:37.582] [INFO] [restartedMain] [com.chii.homemanagement.service.impl.FileStorageServiceImpl] - 文件存储目录初始化成功: D:\Projects\JavaProject\HomeManagement\uploads
-[2025-04-07 00:24:37.702] [INFO] [restartedMain] [org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer] - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
-[2025-04-07 00:24:37.919] [INFO] [restartedMain] [org.springframework.security.web.access.channel.ChannelProcessingFilter] - Validated configuration attributes
-[2025-04-07 00:24:37.952] [INFO] [restartedMain] [org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean] - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
-[2025-04-07 00:24:38.134] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Using default implementation for ThreadExecutor
-[2025-04-07 00:24:38.142] [INFO] [restartedMain] [org.quartz.core.SchedulerSignalerImpl] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
-[2025-04-07 00:24:38.143] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Quartz Scheduler v.2.3.2 created.
-[2025-04-07 00:24:38.143] [INFO] [restartedMain] [org.quartz.simpl.RAMJobStore] - RAMJobStore initialized.
-[2025-04-07 00:24:38.144] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+[2025-04-08 08:19:33.524] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Starting HomeManagementApplication using Java 21.0.6 with PID 169900 (D:\project\JavaProject\HomeManagement\build\classes\java\main started by Administrator in D:\project\JavaProject\HomeManagement)
+[2025-04-08 08:19:33.537] [INFO] [restartedMain] [org.springframework.boot.SpringApplication] - The following 1 profile is active: "my"
+[2025-04-08 08:19:33.584] [INFO] [restartedMain] [org.springframework.boot.logging.DeferredLog] - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+[2025-04-08 08:19:33.584] [INFO] [restartedMain] [org.springframework.boot.logging.DeferredLog] - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+[2025-04-08 08:19:34.861] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat initialized with port 26000 (http)
+[2025-04-08 08:19:34.874] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing ProtocolHandler ["http-nio-26000"]
+[2025-04-08 08:19:34.876] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting service [Tomcat]
+[2025-04-08 08:19:34.876] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting Servlet engine: [Apache Tomcat/10.1.36]
+[2025-04-08 08:19:34.928] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring embedded WebApplicationContext
+[2025-04-08 08:19:34.928] [INFO] [restartedMain] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 1341 ms
+[2025-04-08 08:19:35.005] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Starting...
+[2025-04-08 08:19:35.421] [INFO] [restartedMain] [com.zaxxer.hikari.pool.HikariPool] - master - Added connection com.mysql.cj.jdbc.ConnectionImpl@70cd5dc6
+[2025-04-08 08:19:35.422] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Start completed.
+[2025-04-08 08:19:35.423] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource - add a datasource named [master] success
+[2025-04-08 08:19:35.423] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource initial loaded [1] datasource,primary datasource named [master]
+[2025-04-08 08:19:35.905] [INFO] [restartedMain] [com.chii.homemanagement.service.impl.FileStorageServiceImpl] - 文件存储目录初始化成功: D:\project\JavaProject\HomeManagement\uploads
+[2025-04-08 08:19:36.069] [INFO] [restartedMain] [org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer] - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
+[2025-04-08 08:19:36.343] [INFO] [restartedMain] [org.springframework.security.web.access.channel.ChannelProcessingFilter] - Validated configuration attributes
+[2025-04-08 08:19:36.381] [INFO] [restartedMain] [org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean] - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+[2025-04-08 08:19:36.605] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Using default implementation for ThreadExecutor
+[2025-04-08 08:19:36.614] [INFO] [restartedMain] [org.quartz.core.SchedulerSignalerImpl] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+[2025-04-08 08:19:36.614] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Quartz Scheduler v.2.3.2 created.
+[2025-04-08 08:19:36.615] [INFO] [restartedMain] [org.quartz.simpl.RAMJobStore] - RAMJobStore initialized.
+[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
   Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
   NOT STARTED.
   Currently in standby mode.
@@ -356,18 +29,286 @@ Error starting ApplicationContext. To display the condition evaluation report re
   Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
   Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
 
-[2025-04-07 00:24:38.144] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
-[2025-04-07 00:24:38.144] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Quartz scheduler version: 2.3.2
-[2025-04-07 00:24:38.144] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@12e132ed
-[2025-04-07 00:24:38.170] [INFO] [restartedMain] [org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer] - LiveReload server is running on port 35729
-[2025-04-07 00:24:38.195] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting ProtocolHandler ["http-nio-26000"]
-[2025-04-07 00:24:38.210] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat started on port 26000 (http) with context path '/'
-[2025-04-07 00:24:38.211] [INFO] [restartedMain] [org.springframework.scheduling.quartz.SchedulerFactoryBean] - Starting Quartz Scheduler now
-[2025-04-07 00:24:38.212] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED started.
-[2025-04-07 00:24:38.222] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Started HomeManagementApplication in 2.818 seconds (process running for 3.477)
-[2025-04-07 00:24:38.269] [INFO] [restartedMain] [com.chii.homemanagement.util.DbInitializer] - 系统设置已存在，无需初始化
-[2025-04-07 00:24:40.019] [INFO] [http-nio-26000-exec-1] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-[2025-04-07 00:24:40.019] [INFO] [http-nio-26000-exec-1] [org.springframework.web.servlet.FrameworkServlet] - Initializing Servlet 'dispatcherServlet'
-[2025-04-07 00:24:40.020] [INFO] [http-nio-26000-exec-1] [org.springframework.web.servlet.FrameworkServlet] - Completed initialization in 1 ms
-[2025-04-07 00:29:31.128] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=3m23s857ms671µs500ns).
-[2025-04-07 08:42:30.316] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=7h30m47s226ms774µs800ns).
+[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Quartz scheduler version: 2.3.2
+[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@75aae0ae
+[2025-04-08 08:19:36.661] [INFO] [restartedMain] [org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer] - LiveReload server is running on port 35729
+[2025-04-08 08:19:36.689] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting ProtocolHandler ["http-nio-26000"]
+[2025-04-08 08:19:36.711] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat started on port 26000 (http) with context path '/'
+[2025-04-08 08:19:36.712] [INFO] [restartedMain] [org.springframework.scheduling.quartz.SchedulerFactoryBean] - Starting Quartz Scheduler now
+[2025-04-08 08:19:36.712] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED started.
+[2025-04-08 08:19:36.722] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Started HomeManagementApplication in 3.669 seconds (process running for 4.704)
+[2025-04-08 08:19:36.801] [INFO] [restartedMain] [com.chii.homemanagement.util.DbInitializer] - 系统设置已存在，无需初始化
+[2025-04-08 10:18:52.210] [INFO] [http-nio-26000-exec-1] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+[2025-04-08 10:18:52.211] [INFO] [http-nio-26000-exec-1] [org.springframework.web.servlet.FrameworkServlet] - Initializing Servlet 'dispatcherServlet'
+[2025-04-08 10:18:52.219] [INFO] [http-nio-26000-exec-1] [org.springframework.web.servlet.FrameworkServlet] - Completed initialization in 8 ms
+[2025-04-08 10:55:10.484] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 10:55:10.513] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 10:55:10.523] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:01:52.441] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:01:52.469] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:01:52.479] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:02:48.425] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:02:48.439] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:02:48.446] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:02:48.455] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:02:48.459] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:02:48.470] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:02:51.322] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:02:51.343] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:02:51.357] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:02:58.440] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:02:58.461] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:02:58.472] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:03:14.257] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:03:14.270] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:03:14.276] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:03:14.289] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:03:14.296] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:03:14.305] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:03:24.996] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:03:25.018] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:03:25.028] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 12:49:10.098] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 12:49:10.122] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 12:49:10.132] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 14:58:11.362] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 14:58:11.383] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 14:58:11.392] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 14:58:12.855] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 14:58:12.873] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 14:58:43.828] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 14:58:43.869] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 14:58:43.880] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 14:58:46.307] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 14:58:46.325] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:00:36.224] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:00:36.249] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:00:36.259] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:00:49.977] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:00:50.008] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:00:50.020] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:01:18.158] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:01:18.183] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:01:18.194] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:03:34.292] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:03:34.316] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:03:34.326] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:03:57.310] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:03:57.334] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:03:57.344] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:04:00.727] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:04:00.758] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:04:00.772] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:05:23.215] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:05:23.233] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:05:23.242] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:07:15.518] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:07:15.539] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:07:15.547] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:07:32.017] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:07:32.040] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:07:32.055] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:08:06.672] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:08:06.692] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:08:06.705] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:09:19.469] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:09:19.487] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:09:19.495] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:11:11.254] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:11:11.272] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:11:11.281] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:11:22.677] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:11:22.701] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:11:22.726] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:11:23.284] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:11:23.309] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:13:48.597] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:13:48.617] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:13:48.627] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:13:52.743] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:13:52.764] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:13:52.775] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:14:48.895] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:14:56.319] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.525] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=3m5s981ms926µs200ns).
+[2025-04-08 15:17:44.547] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.547] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.551] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.547] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.552] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-12] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.561] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.565] [INFO] [http-nio-26000-exec-11] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.565] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.565] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:17:44.579] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.583] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.586] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.587] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.588] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.588] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.588] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.590] [INFO] [http-nio-26000-exec-12] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.595] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.595] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.596] [INFO] [http-nio-26000-exec-11] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.596] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.596] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.599] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:17:44.603] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.604] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.605] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.605] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.605] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.607] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.607] [INFO] [http-nio-26000-exec-12] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-11] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:17:44.615] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:18:16.966] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:18:16.990] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:18:17.000] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:18:20.521] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:18:20.538] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:20:04.131] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:20:04.160] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:20:04.171] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:20:05.253] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:20:05.271] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:21:24.252] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=1m39s700ms462µs500ns).
+[2025-04-08 15:21:24.275] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:21:24.293] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:21:24.301] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:22:29.006] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:22:29.031] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:22:29.040] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:22:29.981] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:22:30.001] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:35:25.419] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:35:25.448] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:35:25.461] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:35:51.809] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:35:51.831] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:35:51.842] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:37:03.119] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:37:03.148] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:37:03.158] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:37:11.300] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:37:11.323] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:37:11.340] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:37:20.931] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:37:20.959] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:37:20.970] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:37:42.986] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:37:43.008] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:37:43.018] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:39:26.561] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:39:26.597] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:39:26.613] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:39:38.109] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:39:38.139] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:39:38.151] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:43:15.199] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:43:15.219] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:43:15.231] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:43:17.795] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:43:17.814] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:43:32.988] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:43:33.009] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:43:33.018] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:43:33.891] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:43:33.911] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:44:54.926] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:44:54.953] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:44:54.964] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:44:55.739] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:44:55.758] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:53:48.355] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:53:48.417] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:53:48.474] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:53:49.269] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:53:49.286] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:55:43.378] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:55:43.396] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:55:43.407] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:55:44.753] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:55:44.773] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:57:11.591] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:57:11.620] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:57:11.630] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:57:17.693] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:57:17.723] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:57:17.738] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:57:26.858] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:57:26.878] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:57:26.887] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:57:33.055] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:57:33.079] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:57:33.092] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:58:02.352] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:58:02.382] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:58:02.408] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:58:15.873] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:58:15.906] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:58:15.916] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:58:28.119] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:58:28.141] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:58:28.150] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:58:58.025] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:58:58.047] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:58:58.060] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:59:26.628] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:59:26.646] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:59:29.830] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 15:59:29.878] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 15:59:29.887] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 15:59:30.681] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 15:59:30.699] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:02:20.838] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
+[2025-04-08 16:02:33.279] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
+[2025-04-08 16:02:52.161] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 16:02:52.195] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:02:52.205] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 16:03:42.530] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 16:03:42.548] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:03:42.679] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
+[2025-04-08 16:04:03.864] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 16:04:03.887] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:04:03.896] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 16:05:14.390] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 16:05:14.411] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:05:14.420] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 16:05:15.647] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 16:05:15.663] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:05:28.555] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
+[2025-04-08 16:06:15.858] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 16:06:15.881] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:06:15.893] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 16:06:18.726] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 16:06:18.745] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:16:20.493] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
+[2025-04-08 16:16:21.046] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-08 16:16:21.065] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:16:21.074] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-08 16:16:25.048] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
+[2025-04-08 16:16:25.066] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-08 16:17:20.911] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
+[2025-04-08 16:21:03.101] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 新增实体: 测试2
+[2025-04-08 20:34:21.030] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+[2025-04-08 20:34:21.034] [INFO] [SpringApplicationShutdownHook] [org.springframework.boot.web.embedded.tomcat.GracefulShutdown] - Commencing graceful shutdown. Waiting for active requests to complete
+[2025-04-08 20:34:21.046] [INFO] [tomcat-shutdown] [org.springframework.boot.web.embedded.tomcat.GracefulShutdown] - Graceful shutdown complete
+[2025-04-08 20:34:21.051] [INFO] [SpringApplicationShutdownHook] [org.springframework.scheduling.quartz.SchedulerFactoryBean] - Shutting down Quartz Scheduler
+[2025-04-08 20:34:21.051] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
+[2025-04-08 20:34:21.052] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+[2025-04-08 20:34:21.052] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
+[2025-04-08 20:34:21.055] [INFO] [SpringApplicationShutdownHook] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource start closing ....
+[2025-04-08 20:34:21.059] [INFO] [SpringApplicationShutdownHook] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown initiated...
+[2025-04-08 20:34:21.140] [INFO] [SpringApplicationShutdownHook] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown completed.
+[2025-04-08 20:34:21.140] [INFO] [SpringApplicationShutdownHook] [com.baomidou.dynamic.datasource.destroyer.DefaultDataSourceDestroyer] - dynamic-datasource close the datasource named [master] success,
+[2025-04-08 20:34:21.140] [INFO] [SpringApplicationShutdownHook] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource all closed success,bye

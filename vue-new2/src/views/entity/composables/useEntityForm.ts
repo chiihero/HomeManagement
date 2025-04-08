@@ -1,6 +1,6 @@
 import { ref, reactive } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import type { Entity, EntityFormData } from '@/types/entity'
+import type { Entity, EntityFormData, EntityStatus } from '@/types/entity'
 
 export function useEntityForm() {
   // 表单引用
@@ -9,17 +9,16 @@ export function useEntityForm() {
   // 表单数据
   const entityForm = reactive<EntityFormData>({
     name: '',
-    type: '',
+    type: 'item',
     description: '',
     parentId: null,
     price: 0,
     purchaseDate: '',
     warrantyPeriod: 0,
-    status: 'AVAILABLE',
+    status: 'AVAILABLE' as EntityStatus,
     location: '',
     tags: [],
     images: [],
-    attachments: []
   })
 
   // 表单验证规则
@@ -50,13 +49,13 @@ export function useEntityForm() {
     }
     Object.assign(entityForm, {
       name: '',
-      type: '',
+      type: 'item',
       description: '',
       parentId: null,
       price: 0,
       purchaseDate: '',
       warrantyPeriod: 0,
-      status: 'AVAILABLE',
+      status: 'AVAILABLE' as EntityStatus,
       location: '',
       tags: [],
       images: [],
@@ -69,16 +68,16 @@ export function useEntityForm() {
     Object.assign(entityForm, {
       name: entity.name,
       type: entity.type,
-      description: entity.description,
-      parentId: entity.parentId,
-      price: entity.price,
-      purchaseDate: entity.purchaseDate,
-      warrantyPeriod: entity.warrantyPeriod,
-      status: entity.status,
-      location: entity.location,
-      tags: entity.tags,
-      images: entity.images,
-      attachments: entity.attachments
+      description: entity.description || '',
+      parentId: entity.parentId || null,
+      price: entity.price || 0,
+      purchaseDate: entity.purchaseDate || '',
+      warrantyPeriod: entity.warrantyPeriod || 0,
+      status: entity.status as EntityStatus,
+      location: entity.location || '',
+      tags: entity.tags || [],
+      images: entity.images || [],
+      attachments: entity.attachments || []
     })
   }
 
@@ -93,12 +92,18 @@ export function useEntityForm() {
     }
   }
 
+  // 获取表单数据
+  const getFormData = (): EntityFormData => {
+    return { ...entityForm }
+  }
+
   return {
     entityFormRef,
     entityForm,
     rules,
     resetForm,
     fillFormWithEntity,
-    validateForm
+    validateForm,
+    getFormData
   }
 } 
