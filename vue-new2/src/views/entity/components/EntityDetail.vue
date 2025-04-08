@@ -85,43 +85,15 @@
         <div class="flex flex-wrap gap-4">
           <el-image
             v-for="image in entity.images"
-            :key="image"
-            :src="image"
-            :preview-src-list="entity.images"
+            :key="image.id"
+            :src="imageUrlCache[image.id] || `/api/entity-images/${image.id}`"
+            :preview-src-list="previewImageUrls"
             fit="cover"
             class="w-28 h-28 rounded-md object-cover"
           />
           <el-empty
             v-if="!entity.images?.length"
             description="暂无图片"
-            :image-size="60"
-          />
-        </div>
-      </div>
-
-      <div class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3
-            class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
-          >
-            附件
-          </h3>
-        </div>
-        <div class="flex flex-col gap-2">
-          <el-link
-            v-for="attachment in entity.attachments"
-            :key="attachment.name"
-            type="primary"
-            :href="attachment.url"
-            target="_blank"
-            class="flex items-center"
-          >
-            <el-icon class="mr-2"><Document /></el-icon>
-            {{ attachment.name }}
-          </el-link>
-          <el-empty
-            v-if="!entity.attachments?.length"
-            description="暂无附件"
             :image-size="60"
           />
         </div>
@@ -140,9 +112,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { Document, Edit, Delete } from "@element-plus/icons-vue";
 import type { Entity } from "@/types/entity";
+import { getImageData } from "@/api/entity";
 
 interface Props {
   loading: boolean;
@@ -155,6 +128,44 @@ const emit = defineEmits<{
   (e: "edit"): void;
   (e: "delete"): void;
 }>();
+
+// 图片URL缓存
+const imageUrlCache = ref<Record<number, string>>({});
+
+// 获取图片URL
+const getImageUrl = async (imageId: number) => {
+  if (imageUrlCache.value[imageId]) {
+    return imageUrlCache.value[imageId];
+  }
+  
+  try {
+    const blob = await getImageData(imageId);
+    const url = URL.createObjectURL(blob);
+    imageUrlCache.value[imageId] = url;
+    return url;
+  } catch (error) {
+    console.error("获取图片数据失败:", error);
+    return "";
+  }
+};
+
+// 加载所有图片
+const loadAllImages = async () => {
+  if (!props.entity?.images) return;
+  
+  for (const image of props.entity.images) {
+    if (image.id) {
+      await getImageUrl(image.id);
+    }
+  }
+};
+
+// 组件挂载时加载图片
+onMounted(() => {
+  if (props.entity?.images) {
+    loadAllImages();
+  }
+});
 
 // 获取父级物品名称
 const getParentName = (parentId: string) => {
@@ -212,4 +223,15 @@ const handleEdit = () => {
 const handleDelete = () => {
   emit("delete");
 };
+
+// 预览图片URL列表
+const previewImageUrls = computed(() => {
+  if (!props.entity?.images) return [];
+  return props.entity.images.map(img => {
+    if (img.id && imageUrlCache.value[img.id]) {
+      return imageUrlCache.value[img.id];
+    }
+    return `/api/entity-images/${img.id}`;
+  });
+});
 </script>

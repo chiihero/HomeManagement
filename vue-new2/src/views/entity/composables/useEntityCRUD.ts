@@ -5,7 +5,8 @@ import {
   getEntity,
   createEntity,
   updateEntity,
-  deleteEntity
+  deleteEntity,
+  getEntityImages
 } from "@/api/entity";
 import type { Entity, EntityFormData } from "@/types/entity";
 import { useUserStore } from "@/store/modules/user";
@@ -94,12 +95,40 @@ export function useEntityCRUD() {
       const response = await getEntity(id);
       if (response.data && response.code === 200) {
         currentEntity.value = response.data;
+        // 如果实体中没有图片数据，单独加载图片
+        if (!currentEntity.value.images || currentEntity.value.images.length === 0) {
+          await loadEntityImages(id);
+        }
       }
     } catch (error) {
       console.error("Failed to load entity detail:", error);
       ElMessage.error("加载物品详情失败");
     }
   };
+  /**
+   * 单独加载实体的图片列表
+   * @param entityId 实体ID
+   */
+  const loadEntityImages = async (entityId: string) => {
+    if (!entityId) return;
+
+    loading.value = true;
+    try {
+      const response = await getEntityImages(entityId);
+
+      if (response.data) {
+        // 更新实体的图片列表
+        if (currentEntity.value) {
+          currentEntity.value.images = response.data;
+        }
+      }
+    } catch (error) {
+      console.error("加载实体图片错误:", error);
+    } finally {
+      loading.value = false;
+    }
+  };
+
 
   // 保存实体
   const saveEntity = async (formData: EntityFormData) => {
@@ -153,6 +182,10 @@ export function useEntityCRUD() {
     }
   };
 
+
+
+
+  
   return {
     loading,
     saving,

@@ -129,7 +129,7 @@
             <div class="flex items-center">
               <el-image
                 v-if="row.images && row.images[0]"
-                :src="row.images[0].imagePath"
+                :src="imageUrlCache[row.images[0].id]"
                 fit="cover"
                 class="w-8 h-8 rounded mr-2 object-cover"
               >
@@ -261,7 +261,7 @@ import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useAuthStore } from "@/store/modules/auth";
-import { getEntities as pageEntities, getEntitiesByUser } from "@/api/entity";
+import { getEntities as pageEntities, getEntitiesByUser, getImageData } from "@/api/entity";
 import { Entity, Tag } from "@/types/entity";
 import {
   Plus,
@@ -333,6 +333,33 @@ export default defineComponent({
     const isEditing = ref(false);
     const isAdding = ref(false);
 
+    // 图片URL缓存
+    const imageUrlCache = ref<Record<number, string>>({});
+    
+    // 获取图片URL
+    const getImageUrl = async (imageId: number) => {
+      if (imageUrlCache.value[imageId]) {
+        return imageUrlCache.value[imageId];
+      }
+      
+      try {
+        const blob = await getImageData(imageId);
+        const url = URL.createObjectURL(blob);
+        imageUrlCache.value[imageId] = url;
+        return url;
+      } catch (error) {
+        console.error("获取图片数据失败:", error);
+        return "";
+      }
+    };
+    
+    // 加载实体图片
+    const loadEntityImage = async (entity: Entity) => {
+      if (entity.images && entity.images[0] && entity.images[0].id) {
+        await getImageUrl(entity.images[0].id);
+      }
+    };
+
     // 加载实体列表
     const loadEntityList = async () => {
       if (!authStore.currentUser?.id) return;
@@ -349,6 +376,11 @@ export default defineComponent({
         if (response.data && response.data.records) {
           entityList.value = response.data.records;
           pagination.total = response.data.total;
+          
+          // 加载每个实体的第一张图片
+          for (const entity of entityList.value) {
+            await loadEntityImage(entity);
+          }
         }
       } catch (error) {
         console.error("加载实体列表失败:", error);
@@ -506,7 +538,8 @@ export default defineComponent({
       getContrastColor,
       isEditing,
       isAdding,
-      selectedLocationName
+      selectedLocationName,
+      imageUrlCache
     };
   }
 });

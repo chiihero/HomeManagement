@@ -147,3 +147,23 @@ export const restoreEntityVersion = (id: string, historyId: string) => {
     `/entities/${id}/restore/${historyId}`
   );
 };
+/**
+ * 获取实体的图片列表
+ * @param entityId 实体ID
+ * @param type 图片类型（可选）
+ * @returns 图片列表
+ */
+export function getEntityImages(entityId: number, type?: string) {
+  return http.get(`/entity-images/entity/${entityId}`, { params: { type } });
+};
+
+/**
+ * 获取图片数据
+ * @param imageId 图片ID
+ * @returns 图片Blob对象
+ */
+export function getImageData(imageId: number): Promise<Blob> {
+  return http.get(`/entity-images/${imageId}`, {
+    responseType: 'blob'
+  });
+}

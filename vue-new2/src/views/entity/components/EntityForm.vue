@@ -37,7 +37,11 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="状态" prop="status">
-            <el-select v-model="form.status" placeholder="请选择状态" class="w-full">
+            <el-select
+              v-model="form.status"
+              placeholder="请选择状态"
+              class="w-full"
+            >
               <el-option label="可用" value="AVAILABLE" />
               <el-option label="使用中" value="IN_USE" />
               <el-option label="维护中" value="MAINTENANCE" />
@@ -125,11 +129,12 @@
       <el-form-item label="图片" prop="images">
         <el-upload
           v-model:file-list="imageList"
-          action="/api/upload"
+          action="/api/entity-images/entity"
           list-type="picture-card"
           :on-preview="handlePictureCardPreview"
           :on-remove="handleRemove"
           :before-upload="beforeImageUpload"
+          :on-success="handleImageUploadSuccess"
         >
           <el-icon><Plus /></el-icon>
         </el-upload>
@@ -138,29 +143,12 @@
         </el-dialog>
       </el-form-item>
 
-      <el-form-item label="附件" prop="attachments">
-        <el-upload
-          v-model:file-list="attachmentList"
-          action="/api/upload"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-upload="beforeAttachmentUpload"
-        >
-          <el-button type="primary">
-            <el-icon class="mr-1"><Upload /></el-icon>上传附件
-          </el-button>
-          <template #tip>
-            <div class="text-xs text-gray-500 mt-2">
-              支持任意文件类型，单个文件不超过10MB
-            </div>
-          </template>
-        </el-upload>
-      </el-form-item>
-
       <el-form-item class="mt-8">
         <div class="flex justify-end gap-4">
           <el-button @click="handleCancel">取消</el-button>
-          <el-button type="primary" @click="handleSubmit" :loading="saving">保存</el-button>
+          <el-button type="primary" :loading="saving" @click="handleSubmit"
+            >保存</el-button
+          >
         </div>
       </el-form-item>
     </el-form>
@@ -168,195 +156,220 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { Plus, Upload } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import type { FormInstance, UploadProps, UploadFile } from 'element-plus'
-import type { Entity, EntityFormData, EntityStatus } from '@/types/entity'
+import { ref, watch } from "vue";
+import { Plus, Upload } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import type { FormInstance, UploadProps, UploadFile } from "element-plus";
+import type { Entity, EntityFormData, EntityStatus } from "@/types/entity";
+import { getImageData } from "@/api/entity";
 
 interface Props {
-  entity: Entity | null
-  treeData: Entity[]
-  existingTags: string[]
-  isEditing: boolean
-  saving: boolean
+  entity: Entity | null;
+  treeData: Entity[];
+  existingTags: string[];
+  isEditing: boolean;
+  saving: boolean;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 const emit = defineEmits<{
-  (e: 'submit', form: EntityFormData): void
-  (e: 'cancel'): void
-}>()
+  (e: "submit", form: EntityFormData): void;
+  (e: "cancel"): void;
+}>();
 
-const formRef = ref<FormInstance>()
-const dialogVisible = ref(false)
-const dialogImageUrl = ref('')
-const imageList = ref<UploadFile[]>([])
-const attachmentList = ref<UploadFile[]>([])
+const formRef = ref<FormInstance>();
+const dialogVisible = ref(false);
+const dialogImageUrl = ref("");
+const imageList = ref<UploadFile[]>([]);
+const attachmentList = ref<UploadFile[]>([]);
 
 // 表单数据
 const form = ref<EntityFormData>({
-  name: '',
-  type: 'item',
-  parentId: '',
-  status: 'AVAILABLE' as EntityStatus,
-  location: '',
+  name: "",
+  type: "item",
+  parentId: "",
+  status: "AVAILABLE" as EntityStatus,
+  location: "",
   price: 0,
-  purchaseDate: '',
+  purchaseDate: "",
   warrantyPeriod: 0,
-  description: '',
+  description: "",
   tags: [],
   images: [],
   attachments: []
-})
+});
 
 // 表单验证规则
 const rules = {
   name: [
-    { required: true, message: '请输入物品名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+    { required: true, message: "请输入物品名称", trigger: "blur" },
+    { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" }
   ],
-  type: [
-    { required: true, message: '请输入物品类型', trigger: 'blur' }
-  ],
-  status: [
-    { required: true, message: '请选择状态', trigger: 'change' }
-  ],
-  price: [
-    { required: true, message: '请输入价格', trigger: 'blur' }
-  ],
-  purchaseDate: [
-    { required: true, message: '请选择购买日期', trigger: 'change' }
-  ]
-}
+  type: [{ required: true, message: "请输入物品类型", trigger: "blur" }],
+  status: [{ required: true, message: "请选择状态", trigger: "change" }],
+  price: [{ required: true, message: "请输入价格", trigger: "blur" }],
+
+};
 
 // 处理图片预览
-const handlePictureCardPreview: UploadProps['onPreview'] = (file) => {
-  dialogImageUrl.value = file.url!
-  dialogVisible.value = true
-}
+const handlePictureCardPreview: UploadProps["onPreview"] = file => {
+  dialogImageUrl.value = file.url!;
+  dialogVisible.value = true;
+};
 
 // 处理文件预览
-const handlePreview: UploadProps['onPreview'] = (file) => {
-  window.open(file.url)
-}
+const handlePreview: UploadProps["onPreview"] = file => {
+  window.open(file.url);
+};
 
 // 处理文件移除
-const handleRemove: UploadProps['onRemove'] = (file) => {
-  if (file.raw?.type.startsWith('image/')) {
-    const index = imageList.value.findIndex(item => item.uid === file.uid)
+const handleRemove: UploadProps["onRemove"] = file => {
+  if (file.raw?.type.startsWith("image/")) {
+    const index = imageList.value.findIndex(item => item.uid === file.uid);
     if (index !== -1) {
-      imageList.value.splice(index, 1)
+      imageList.value.splice(index, 1);
     }
   } else {
-    const index = attachmentList.value.findIndex(item => item.uid === file.uid)
+    const index = attachmentList.value.findIndex(item => item.uid === file.uid);
     if (index !== -1) {
-      attachmentList.value.splice(index, 1)
+      attachmentList.value.splice(index, 1);
     }
   }
-}
+};
 
 // 图片上传前检查
-const beforeImageUpload: UploadProps['beforeUpload'] = (file) => {
-  const isImage = file.type.startsWith('image/')
-  const isLt2M = file.size / 1024 / 1024 < 2
+const beforeImageUpload: UploadProps["beforeUpload"] = file => {
+  const isImage = file.type.startsWith("image/");
+  const isLt2M = file.size / 1024 / 1024 < 2;
 
   if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
-    return false
+    ElMessage.error("只能上传图片文件!");
+    return false;
   }
   if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
-    return false
+    ElMessage.error("图片大小不能超过 2MB!");
+    return false;
   }
-  return true
-}
+  return true;
+};
 
 // 附件上传前检查
-const beforeAttachmentUpload: UploadProps['beforeUpload'] = (file) => {
-  const isLt10M = file.size / 1024 / 1024 < 10
+const beforeAttachmentUpload: UploadProps["beforeUpload"] = file => {
+  const isLt10M = file.size / 1024 / 1024 < 10;
 
   if (!isLt10M) {
-    ElMessage.error('文件大小不能超过 10MB!')
-    return false
+    ElMessage.error("文件大小不能超过 10MB!");
+    return false;
   }
-  return true
-}
+  return true;
+};
+
+// 处理图片上传成功
+const handleImageUploadSuccess = async (response: any, file: any) => {
+  if (response.code === 200 && response.data) {
+    // 保存图片ID到表单数据
+    if (!form.value.images) {
+      form.value.images = [];
+    }
+    form.value.images.push(response.data.id);
+    
+    // 获取图片数据并创建URL
+    try {
+      const blob = await getImageData(response.data.id);
+      const url = URL.createObjectURL(blob);
+      file.url = url;
+    } catch (error) {
+      console.error("获取图片数据失败:", error);
+      ElMessage.error("获取图片数据失败");
+    }
+  } else {
+    ElMessage.error("图片上传失败");
+  }
+};
 
 // 处理提交
 const handleSubmit = async () => {
-  if (!formRef.value) return
-  
-  await formRef.value.validate((valid) => {
+  if (!formRef.value) return;
+
+  await formRef.value.validate(valid => {
     if (valid) {
       // 更新图片和附件列表
-      form.value.images = imageList.value.map(file => file.url!)
+      form.value.images = imageList.value.map(file => file.url!);
       form.value.attachments = attachmentList.value.map(file => ({
         name: file.name,
         url: file.url!
-      }))
-      
-      emit('submit', form.value)
+      }));
+
+      emit("submit", form.value);
     }
-  })
-}
+  });
+};
 
 // 处理取消
 const handleCancel = () => {
-  emit('cancel')
-}
+  emit("cancel");
+};
 
 // 监听实体变化
-watch(() => props.entity, (newEntity) => {
-  if (newEntity) {
-    // 确保表单数据类型正确
-    form.value = {
-      name: newEntity.name || '',
-      type: newEntity.type || 'item',
-      parentId: newEntity.parentId || '',
-      status: (newEntity.status as unknown) as EntityStatus || 'AVAILABLE' as EntityStatus,
-      location: (newEntity as any).location || '',
-      price: newEntity.price || 0,
-      purchaseDate: newEntity.purchaseDate || '',
-      warrantyPeriod: newEntity.warrantyPeriod || 0,
-      description: newEntity.description || '',
-      tags: ((newEntity.tags || []) as any) || [],
-      images: ((newEntity.images || []) as any) || [],
-      attachments: ((newEntity as any).attachments || [])
+watch(
+  () => props.entity,
+  newEntity => {
+    if (newEntity) {
+      // 确保表单数据类型正确
+      form.value = {
+        name: newEntity.name || "",
+        type: newEntity.type || "item",
+        parentId: newEntity.parentId || "",
+        status:
+          (newEntity.status as unknown as EntityStatus) ||
+          ("AVAILABLE" as EntityStatus),
+        location: (newEntity as any).location || "",
+        price: newEntity.price || 0,
+        purchaseDate: newEntity.purchaseDate || "",
+        warrantyPeriod: newEntity.warrantyPeriod || 0,
+        description: newEntity.description || "",
+        tags: ((newEntity.tags || []) as any) || [],
+        images: ((newEntity.images || []) as any) || [],
+        attachments: (newEntity as any).attachments || []
+      };
+
+      // 更新图片和附件列表
+      imageList.value =
+        (newEntity.images as any)?.map((url: string) => ({
+          name: typeof url === "string" ? url.split("/").pop() || "" : "",
+          url,
+          uid: Date.now() + Math.random(),
+          status: "success"
+        })) || [];
+
+      attachmentList.value = ((newEntity as any).attachments || []).map(
+        (attachment: any) => ({
+          name: attachment.name,
+          url: attachment.url,
+          uid: Date.now() + Math.random(),
+          status: "success"
+        })
+      );
+    } else {
+      // 重置表单
+      form.value = {
+        name: "",
+        type: "item",
+        parentId: "",
+        status: "AVAILABLE" as EntityStatus,
+        location: "",
+        price: 0,
+        purchaseDate: "",
+        warrantyPeriod: 0,
+        description: "",
+        tags: [],
+        images: [],
+        attachments: []
+      };
+      imageList.value = [];
+      attachmentList.value = [];
     }
-    
-    // 更新图片和附件列表
-    imageList.value = (newEntity.images as any)?.map((url: string) => ({
-      name: typeof url === 'string' ? url.split('/').pop() || '' : '',
-      url,
-      uid: Date.now() + Math.random(),
-      status: 'success'
-    })) || []
-    
-    attachmentList.value = ((newEntity as any).attachments || []).map((attachment: any) => ({
-      name: attachment.name,
-      url: attachment.url,
-      uid: Date.now() + Math.random(),
-      status: 'success'
-    }))
-  } else {
-    // 重置表单
-    form.value = {
-      name: '',
-      type: 'item',
-      parentId: '',
-      status: 'AVAILABLE' as EntityStatus,
-      location: '',
-      price: 0,
-      purchaseDate: '',
-      warrantyPeriod: 0,
-      description: '',
-      tags: [],
-      images: [],
-      attachments: []
-    }
-    imageList.value = []
-    attachmentList.value = []
-  }
-}, { immediate: true })
-</script> 
+  },
+  { immediate: true }
+);
+</script>

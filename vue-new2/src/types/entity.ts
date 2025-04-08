@@ -42,8 +42,12 @@ export interface Tag {
 export interface EntityImage {
   id: number;
   entityId: number;
-  imagePath: string;
-  mainImage: boolean;
+  imageUrl: string;
+  imageType: string;
+  contentType: string;
+  fileName: string;
+  fileSize: string;
+  sortOrder: number;
   createdTime: string;
 }
 
