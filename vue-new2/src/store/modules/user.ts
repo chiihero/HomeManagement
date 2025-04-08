@@ -126,9 +126,9 @@ export const useUserStore = defineStore("pure-user",{
       this.tokenExpiry = Date.now() + expiresIn * 1000;
       
       // 保存到本地存储
-      // localStorage.setItem('token', token);
-      // localStorage.setItem('refresh_token', refreshTokenValue);
-      // localStorage.setItem('token_expiry', this.tokenExpiry.toString());
+      localStorage.setItem('token', token);
+      localStorage.setItem('refresh_token', refreshTokenValue);
+      localStorage.setItem('token_expiry', this.tokenExpiry.toString());
       
       // 同时设置PureAdmin的token
       setToken({

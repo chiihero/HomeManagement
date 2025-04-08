@@ -1,7 +1,6 @@
 import http from '@/utils/http'
 import type { User } from '@/types/user'
 import type { ResponseResult } from '@/types/entity'
-import { useUserStoreHook } from '@/store/modules/user'
 
 // 用户个人资料接口
 export interface UserProfile {
@@ -47,10 +46,6 @@ export function updateUserInfo(data: Partial<User>): Promise<ResponseResult<User
   return http.post('/auth/update-info', data)
 }
 
-// 获取当前用户个人资料
-export const getUserProfile = (): Promise<ResponseResult<UserProfile>> => {
-  return http.get('/users/current')
-}
 
 // 更新用户个人资料
 export const updateUserProfile = (profile: Partial<UserProfile>): Promise<ResponseResult<UserProfile>> => {

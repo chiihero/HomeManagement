@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import http from "@/utils/http";
 import type {
   Reminder,
   ReminderFormData,
@@ -12,7 +12,7 @@ import { useUserStoreHook } from "@/store/modules/user";
  * @param params 查询参数
  */
 export function fetchReminders(params: ReminderQueryParams) {
-  return request<{ list: Reminder[]; total: number }>({
+  return http<{ list: Reminder[]; total: number }>({
     url: "/reminders",
     method: "get",
     params
@@ -24,7 +24,7 @@ export function fetchReminders(params: ReminderQueryParams) {
  * @param id 提醒ID
  */
 export function fetchReminderDetail(id: number) {
-  return request<Reminder>({
+  return http<Reminder>({
     url: `/reminders/${id}`,
     method: "get"
   });
@@ -35,7 +35,7 @@ export function fetchReminderDetail(id: number) {
  * @param data 提醒信息
  */
 export function createReminder(data: ReminderFormData) {
-  return request<Reminder>({
+  return http<Reminder>({
     url: "/reminders",
     method: "post",
     data
@@ -48,7 +48,7 @@ export function createReminder(data: ReminderFormData) {
  * @param data 提醒信息
  */
 export function updateReminder(id: number, data: ReminderFormData) {
-  return request<Reminder>({
+  return http<Reminder>({
     url: `/reminders/${id}`,
     method: "put",
     data
@@ -60,7 +60,7 @@ export function updateReminder(id: number, data: ReminderFormData) {
  * @param id 提醒ID
  */
 export function deleteReminder(id: number) {
-  return request({
+  return http({
     url: `/reminders/${id}`,
     method: "delete"
   });
@@ -71,7 +71,7 @@ export function deleteReminder(id: number) {
  * @param id 提醒ID
  */
 export function completeReminder(id: number) {
-  return request<Reminder>({
+  return http<Reminder>({
     url: `/reminders/${id}/complete`,
     method: "put"
   });
@@ -82,7 +82,7 @@ export function completeReminder(id: number) {
  * @param keyword 关键词
  */
 export function searchItems(keyword: string) {
-  return request<ItemOption[]>({
+  return http<ItemOption[]>({
     url: "/items/search",
     method: "get",
     params: { keyword }
@@ -94,7 +94,7 @@ export function searchItems(keyword: string) {
  * @param keyword 关键词
  */
 export function searchReminders(keyword: string) {
-  return request<Reminder[]>({
+  return http<Reminder[]>({
     url: "/reminders/search",
     method: "get",
     params: { keyword }
@@ -106,7 +106,7 @@ export function searchReminders(keyword: string) {
  * @param days 天数
  */
 export function fetchUpcomingReminders(days: number = 7) {
-  return request<Reminder[]>({
+  return http<Reminder[]>({
     url: "/reminders/upcoming",
     method: "get",
     params: { days }
@@ -117,7 +117,7 @@ export function fetchUpcomingReminders(days: number = 7) {
  * 获取过期的提醒
  */
 export function fetchExpiredReminders() {
-  return request<Reminder[]>({
+  return http<Reminder[]>({
     url: "/reminders/expired",
     method: "get"
   });
@@ -129,7 +129,7 @@ export function fetchExpiredReminders() {
  * @param status 状态
  */
 export function updateBatchReminderStatus(ids: number[], status: string) {
-  return request<void>({
+  return http<void>({
     url: "/reminders/batch/status",
     method: "patch",
     data: { ids, status }
@@ -141,7 +141,7 @@ export function updateBatchReminderStatus(ids: number[], status: string) {
  * @param ids 提醒ID数组
  */
 export function deleteBatchReminders(ids: number[]) {
-  return request<void>({
+  return http<void>({
     url: "/reminders/batch",
     method: "delete",
     data: { ids }
@@ -155,7 +155,7 @@ export function deleteBatchReminders(ids: number[]) {
 export const getTodayReminders = (
   userId: number
 ): Promise<ResponseResult<Reminder[]>> => {
-  return request<ResponseResult<Reminder[]>>({
+  return http<ResponseResult<Reminder[]>>({
     url: "/reminders/today",
     method: "get",
     params: { userId }
@@ -173,7 +173,7 @@ export const getRemindersByDateRange = (
   startDate: string,
   endDate: string
 ): Promise<ResponseResult<Reminder[]>> => {
-  return request<ResponseResult<Reminder[]>>({
+  return http<ResponseResult<Reminder[]>>({
     url: "/reminders/date-range",
     method: "get",
     params: { userId, startDate, endDate }
@@ -187,7 +187,7 @@ export const getRemindersByDateRange = (
 export const getRemindersByEntityId = (
   entityId: string
 ): Promise<ResponseResult<Reminder[]>> => {
-  return request<ResponseResult<Reminder[]>>({
+  return http<ResponseResult<Reminder[]>>({
     url: `/reminders/entity/${entityId}`,
     method: "get"
   });
@@ -202,7 +202,7 @@ export const getRemindersByStatus = (
   userId: number,
   status: string
 ): Promise<ResponseResult<Reminder[]>> => {
-  return request<ResponseResult<Reminder[]>>({
+  return http<ResponseResult<Reminder[]>>({
     url: "/reminders/status",
     method: "get",
     params: { userId, status }
@@ -216,7 +216,7 @@ export const getRemindersByStatus = (
 export const generateRemindersForItem = (
   itemId: string
 ): Promise<ResponseResult<void>> => {
-  return request<ResponseResult<void>>({
+  return http<ResponseResult<void>>({
     url: `/reminders/generate/${itemId}`,
     method: "post",
     data: {}

@@ -107,9 +107,9 @@ http.interceptors.request.use(
     }
     
     // 如果有token，则添加到请求头
-    const cookie = getCookie();
-    if (cookie && config.headers) {
-      config.headers['Authorization'] = `Bearer ${cookie.accessToken}`
+    const token = localStorage.getItem('token');
+    if (token && config.headers) {
+      config.headers['Authorization'] = `Bearer ${token}`
     }
     
     // 确保非FormData类型的请求体被正确序列化为JSON
@@ -174,6 +174,7 @@ http.interceptors.response.use(
           errMsg = '用户未授权或会话已过期';
           // 尝试刷新token或跳转到登录页
           const userStore = useUserStoreHook();
+
           if (userStore.handRefreshToken) {
             userStore.handRefreshToken({}).then(success => {
               if (success && error.config) {

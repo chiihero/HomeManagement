@@ -26,8 +26,8 @@ export function useEntityCRUD() {
     loading.value = true;
     try {
       const response = await getEntityTree(authStore.currentUser.id);
-      if (response.data && response.data.code === 200 && response.data.data) {
-        treeData.value = response.data.data;
+      if (response.data && response.code === 200) {
+        treeData.value = response.data;
       }
     } catch (error) {
       console.error("Failed to load entity tree:", error);
@@ -92,8 +92,8 @@ export function useEntityCRUD() {
   const loadEntityDetail = async (id: string) => {
     try {
       const response = await getEntity(id);
-      if (response.data && response.data.code === 200 && response.data.data) {
-        currentEntity.value = response.data.data;
+      if (response.data && response.code === 200) {
+        currentEntity.value = response.data;
       }
     } catch (error) {
       console.error("Failed to load entity detail:", error);
@@ -109,13 +109,13 @@ export function useEntityCRUD() {
         ? await createEntity(formData)
         : await updateEntity(currentEntity.value?.id || "", formData);
 
-      if (response.data && response.data.code === 200) {
+      if (response.data && response.code === 200) {
         ElMessage.success(isAdding.value ? "添加成功" : "更新成功");
         isEditing.value = false;
         isAdding.value = false;
         loadTreeData();
-        if (response.data.data) {
-          currentEntity.value = response.data.data;
+        if (response.data) {
+          currentEntity.value = response.data;
         }
       }
     } catch (error) {
@@ -140,7 +140,7 @@ export function useEntityCRUD() {
       );
 
       const response = await deleteEntity(entity.id);
-      if (response.data && response.data.code === 200) {
+      if (response.data && response.code === 200) {
         ElMessage.success("删除成功");
         currentEntity.value = null;
         loadTreeData();

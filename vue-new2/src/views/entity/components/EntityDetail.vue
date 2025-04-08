@@ -195,7 +195,7 @@ const getStatusText = (status: string) => {
 
 // 格式化价格
 const formatPrice = (price: number) => {
-  return `¥${price.toFixed(2)}`;
+  return `¥${price}`;
 };
 
 // 格式化日期
