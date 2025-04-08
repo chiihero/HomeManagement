@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { EntityType, EntityFormData, EntityQueryParams, EntityStats } from '@/types/entity'
+import type { Entity, EntityFormData, EntityQueryParams, EntityStats } from '@/types/entity'
 import {
   getEntities,
   getEntityTree,
@@ -20,9 +20,9 @@ import {
 
 interface EntityState {
   loading: boolean
-  treeData: EntityType[]
-  currentEntity: EntityType | null
-  entityList: EntityType[]
+  treeData: Entity[]
+  currentEntity: Entity | null
+  entityList: Entity[]
   total: number
   stats: EntityStats | null
   tags: string[]
@@ -80,7 +80,7 @@ export const useEntityStore = defineStore('entity', {
     },
 
     // 设置当前物品
-    setCurrentEntity(entity: EntityType | null) {
+    setCurrentEntity(entity: Entity | null) {
       this.currentEntity = entity
     },
 

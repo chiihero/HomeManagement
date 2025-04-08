@@ -1,6 +1,6 @@
 HELP.md
 .gradle
-build/
+/build
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -100,7 +100,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 .Python
-build/
 develop-eggs/
 dist/
 downloads/

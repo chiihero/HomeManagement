@@ -2,13 +2,15 @@
   <div class="bg-gray-50 min-h-screen p-4 md:p-6">
     <!-- 头部 -->
     <el-card class="mb-6 border-0 shadow-sm">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+      >
         <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
           <el-icon class="mr-2 text-primary"><Search /></el-icon>物品搜索
         </h1>
       </div>
     </el-card>
-    
+
     <!-- 搜索条件 -->
     <el-card class="mb-6 border-0 shadow-sm">
       <template #header>
@@ -20,45 +22,70 @@
         <el-row :gutter="20">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="名称">
-              <el-input v-model="searchForm.name" placeholder="请输入名称" clearable @keyup.enter="handleSearch"></el-input>
+              <el-input
+                v-model="searchForm.name"
+                placeholder="请输入名称"
+                clearable
+                @keyup.enter="handleSearch"
+              />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="类型">
-              <el-select v-model="searchForm.type" placeholder="请选择类型" clearable class="w-full">
-                <el-option label="物品" value="item"></el-option>
-                <el-option label="空间" value="space"></el-option>
+              <el-select
+                v-model="searchForm.type"
+                placeholder="请选择类型"
+                clearable
+                class="w-full"
+              >
+                <el-option label="物品" value="item" />
+                <el-option label="空间" value="space" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="状态">
-              <el-select v-model="searchForm.status" placeholder="请选择状态" clearable class="w-full">
-                <el-option label="正常" value="normal"></el-option>
-                <el-option label="损坏" value="damaged"></el-option>
-                <el-option label="丢弃" value="discarded"></el-option>
+              <el-select
+                v-model="searchForm.status"
+                placeholder="请选择状态"
+                clearable
+                class="w-full"
+              >
+                <el-option label="正常" value="normal" />
+                <el-option label="损坏" value="damaged" />
+                <el-option label="丢弃" value="discarded" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="使用频率">
-              <el-select v-model="searchForm.usageFrequency" placeholder="请选择使用频率" clearable class="w-full">
-                <el-option label="高" value="high"></el-option>
-                <el-option label="中" value="medium"></el-option>
-                <el-option label="低" value="low"></el-option>
-                <el-option label="很少" value="rare"></el-option>
+              <el-select
+                v-model="searchForm.usageFrequency"
+                placeholder="请选择使用频率"
+                clearable
+                class="w-full"
+              >
+                <el-option label="高" value="high" />
+                <el-option label="中" value="medium" />
+                <el-option label="低" value="low" />
+                <el-option label="很少" value="rare" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="所在空间">
-              <el-select v-model="searchForm.parentId" placeholder="请选择所在空间" clearable class="w-full">
+              <el-select
+                v-model="searchForm.parentId"
+                placeholder="请选择所在空间"
+                clearable
+                class="w-full"
+              >
                 <el-option
                   v-for="space in spaceList"
                   :key="space.id"
                   :label="space.name"
                   :value="space.id"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -73,7 +100,7 @@
         </div>
       </el-form>
     </el-card>
-    
+
     <!-- 表格 -->
     <el-card class="border-0 shadow-sm">
       <template #header>
@@ -82,7 +109,7 @@
           <div class="text-sm text-gray-500">共 {{ pagination.total }} 项</div>
         </div>
       </template>
-      
+
       <el-table
         v-loading="loading"
         :data="entityList"
@@ -92,22 +119,32 @@
         @row-click="handleRowClick"
       >
         <el-table-column type="index" width="50" />
-        <el-table-column prop="name" label="名称" min-width="150" show-overflow-tooltip>
+        <el-table-column
+          prop="name"
+          label="名称"
+          min-width="150"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             <div class="flex items-center">
-              <el-image 
-                v-if="row.images && row.images[0]" 
-                :src="row.images[0].imagePath" 
+              <el-image
+                v-if="row.images && row.images[0]"
+                :src="row.images[0].imagePath"
                 fit="cover"
                 class="w-8 h-8 rounded mr-2 object-cover"
               >
                 <template #error>
-                  <div class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400">
+                  <div
+                    class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400"
+                  >
                     <el-icon><Picture /></el-icon>
                   </div>
                 </template>
               </el-image>
-              <div v-else class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400">
+              <div
+                v-else
+                class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400"
+              >
                 <el-icon><Document /></el-icon>
               </div>
               <span>{{ row.name }}</span>
@@ -116,15 +153,23 @@
         </el-table-column>
         <el-table-column prop="type" label="类型" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.type === 'item' ? 'success' : 'primary'" size="small">
-              {{ row.type === 'item' ? '物品' : '空间' }}
+            <el-tag
+              :type="row.type === 'item' ? 'success' : 'primary'"
+              size="small"
+            >
+              {{ row.type === "item" ? "物品" : "空间" }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="specification" label="规格" min-width="120" show-overflow-tooltip />
+        <el-table-column
+          prop="specification"
+          label="规格"
+          min-width="120"
+          show-overflow-tooltip
+        />
         <el-table-column prop="price" label="价格" width="120">
           <template #default="{ row }">
-            {{ row.price ? '¥' + row.price.toFixed(2) : '-' }}
+            {{ row.price ? "¥" + row.price.toFixed(2) : "-" }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
@@ -139,24 +184,36 @@
             {{ getUsageFrequencyText(row.usageFrequency) }}
           </template>
         </el-table-column>
-        <el-table-column prop="tags" label="标签" min-width="160" show-overflow-tooltip>
+        <el-table-column
+          prop="tags"
+          label="标签"
+          min-width="160"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             <div class="flex flex-wrap gap-1">
-              <el-tag 
-                v-for="tag in row.tags" 
-                :key="tag.id" 
-                :style="{ backgroundColor: tag.color, color: getContrastColor(tag.color) }"
+              <el-tag
+                v-for="tag in row.tags"
+                :key="tag.id"
+                :style="{
+                  backgroundColor: tag.color,
+                  color: getContrastColor(tag.color)
+                }"
                 size="small"
               >
                 {{ tag.name }}
               </el-tag>
-              <span v-if="!row.tags || row.tags.length === 0" class="text-gray-400">-</span>
+              <span
+                v-if="!row.tags || row.tags.length === 0"
+                class="text-gray-400"
+                >-</span
+              >
             </div>
           </template>
         </el-table-column>
         <el-table-column prop="expirationDate" label="过保日期" width="120">
           <template #default="{ row }">
-            {{ row.expirationDate ? formatDate(row.expirationDate) : '-' }}
+            {{ row.expirationDate ? formatDate(row.expirationDate) : "-" }}
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
@@ -167,8 +224,8 @@
             <el-button type="primary" link size="small">
               <el-icon class="mr-1"><Edit /></el-icon>编辑
             </el-button>
-            <el-popconfirm 
-              title="确定删除此实体吗？" 
+            <el-popconfirm
+              title="确定删除此实体吗？"
               confirm-button-text="确定"
               cancel-button-text="取消"
             >
@@ -181,7 +238,7 @@
           </template>
         </el-table-column>
       </el-table>
-      
+
       <!-- 分页 -->
       <div class="flex justify-end mt-4">
         <el-pagination
@@ -200,35 +257,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { useAuthStore } from '@/store/modules/auth';
-import { 
-  getEntities as pageEntities,
-  getEntitiesByUser,
-} from '@/api/entity';
-import { Entity,Tag } from '@/types/entity';
-import { 
-  Plus, 
-  Search, 
-  Refresh, 
-  Edit, 
-  Delete, 
-  View, 
-  Picture, 
+import { defineComponent, ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import { useAuthStore } from "@/store/modules/auth";
+import { getEntities as pageEntities, getEntitiesByUser } from "@/api/entity";
+import { Entity, Tag } from "@/types/entity";
+import {
+  Plus,
+  Search,
+  Refresh,
+  Edit,
+  Delete,
+  View,
+  Picture,
   Document,
   UploadFilled,
   Folder,
   Goods,
   Check,
   Close
-} from '@element-plus/icons-vue';
-import moment from 'moment';
-
+} from "@element-plus/icons-vue";
+import moment from "moment";
 
 export default defineComponent({
-  name: 'EntityList',
+  name: "EntityList",
   components: {
     Plus,
     Search,
@@ -247,7 +300,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const authStore = useAuthStore();
-    
+
     const loading = ref(false);
     const saving = ref(false);
     const entityList = ref<Entity[]>([]);
@@ -257,36 +310,33 @@ export default defineComponent({
     const addEntityDialogVisible = ref(false);
     const imageDialogVisible = ref(false);
     const entityFormRef = ref<any>(null);
-    const tempImages = ref<{file: File, url: string}[]>([]);
-    
+    const tempImages = ref<{ file: File; url: string }[]>([]);
+
     // 分页参数
     const pagination = reactive({
       current: 1,
       size: 10,
       total: 0
     });
-    
+
     // 搜索表单
     const searchForm = reactive({
-      name: '',
-      type: '',
-      specification: '',
-      status: '',
-      usageFrequency: '',
-      parentId: '' as string | undefined
+      name: "",
+      type: "",
+      specification: "",
+      status: "",
+      usageFrequency: "",
+      parentId: "" as string | undefined
     });
-    
 
-
-    
     // 新增状态
     const isEditing = ref(false);
     const isAdding = ref(false);
-    
+
     // 加载实体列表
     const loadEntityList = async () => {
       if (!authStore.currentUser?.id) return;
-      
+
       loading.value = true;
       try {
         const response = await pageEntities({
@@ -295,133 +345,131 @@ export default defineComponent({
           ...searchForm,
           userId: authStore.currentUser.id
         });
-        
+
         if (response.data && response.data.records) {
           entityList.value = response.data.records;
           pagination.total = response.data.total;
         }
       } catch (error) {
-        console.error('加载实体列表失败:', error);
-        ElMessage.error('加载实体列表失败，请检查网络连接');
+        console.error("加载实体列表失败:", error);
+        ElMessage.error("加载实体列表失败，请检查网络连接");
       } finally {
         loading.value = false;
       }
     };
-    
+
     // 加载搜索的空间列表
     const loadSpaceList = async () => {
       if (!authStore.currentUser?.id) return;
-      
+
       try {
         const response = await getEntitiesByUser(authStore.currentUser.id);
-        
+
         if (response.data) {
           spaceList.value = response.data;
         }
       } catch (error) {
-        console.error('加载空间列表失败:', error);
+        console.error("加载空间列表失败:", error);
       }
     };
-    
+
     // 处理搜索
     const handleSearch = () => {
       pagination.current = 1;
       loadEntityList();
     };
-    
+
     // 重置搜索
     const resetSearch = () => {
       Object.assign(searchForm, {
-        name: '',
-        type: '',
-        specification: '',
-        status: '',
-        usageFrequency: '',
-        parentId: ''
+        name: "",
+        type: "",
+        specification: "",
+        status: "",
+        usageFrequency: "",
+        parentId: ""
       });
       pagination.current = 1;
       loadEntityList();
     };
-    
+
     // 处理表格行点击
     const handleRowClick = (row: Entity) => {
       router.push(`/entity/${row.id}`);
     };
-
 
     // 处理分页大小改变
     const handleSizeChange = (size: number) => {
       pagination.size = size;
       loadEntityList();
     };
-    
+
     // 处理当前页改变
     const handleCurrentChange = (current: number) => {
       pagination.current = current;
       loadEntityList();
     };
-    
+
     // 格式化日期
     const formatDate = (date: string) => {
-      if (!date) return '-';
-      return moment(date).format('YYYY-MM-DD');
+      if (!date) return "-";
+      return moment(date).format("YYYY-MM-DD");
     };
-    
+
     // 获取状态对应的类型
     const getStatusType = (status: string) => {
       const statusMap: Record<string, string> = {
-        'normal': 'success',
-        'damaged': 'warning',
-        'discarded': 'danger',
-        'expired': 'danger'
+        normal: "success",
+        damaged: "warning",
+        discarded: "danger",
+        expired: "danger"
       };
-      return statusMap[status] || 'info';
+      return statusMap[status] || "info";
     };
-    
+
     // 获取状态对应的文本
     const getStatusText = (status: string) => {
       const statusMap: Record<string, string> = {
-        'normal': '正常',
-        'damaged': '损坏',
-        'discarded': '丢弃',
-        'expired': '过期'
+        normal: "正常",
+        damaged: "损坏",
+        discarded: "丢弃",
+        expired: "过期"
       };
       return statusMap[status] || status;
     };
-    
+
     // 获取使用频率文本
     const getUsageFrequencyText = (usageFrequency: string) => {
       const usageMap: Record<string, string> = {
-        'high': '高',
-        'medium': '中',
-        'low': '低',
-        'rare': '很少',
-        'never': '从不',
-        'rarely': '很少',
-        'occasionally': '偶尔',
-        'frequently': '经常',
-        'daily': '每天'
+        high: "高",
+        medium: "中",
+        low: "低",
+        rare: "很少",
+        never: "从不",
+        rarely: "很少",
+        occasionally: "偶尔",
+        frequently: "经常",
+        daily: "每天"
       };
       return usageMap[usageFrequency] || usageFrequency;
     };
 
     // 获取标签文字颜色
     const getContrastColor = (bgColor: string) => {
-      if (!bgColor) return '#ffffff';
-      
+      if (!bgColor) return "#ffffff";
+
       // 将十六进制颜色转换为RGB
-      let color = bgColor.charAt(0) === '#' ? bgColor.substring(1) : bgColor;
+      let color = bgColor.charAt(0) === "#" ? bgColor.substring(1) : bgColor;
       let r = parseInt(color.substr(0, 2), 16);
       let g = parseInt(color.substr(2, 2), 16);
       let b = parseInt(color.substr(4, 2), 16);
-      
+
       // 计算亮度
-      let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-      
+      let yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
       // 如果亮度高于128，返回黑色，否则返回白色
-      return (yiq >= 128) ? '#000000' : '#ffffff';
+      return yiq >= 128 ? "#000000" : "#ffffff";
     };
-    
 
     // 在组件挂载时加载数据
     onMounted(() => {
@@ -431,8 +479,7 @@ export default defineComponent({
     });
 
     // 新增两个新变量和两个新方法
-    const selectedLocationName = ref<string>('');
-
+    const selectedLocationName = ref<string>("");
 
     return {
       loading,
@@ -459,7 +506,7 @@ export default defineComponent({
       getContrastColor,
       isEditing,
       isAdding,
-      selectedLocationName,
+      selectedLocationName
     };
   }
 });
@@ -714,16 +761,16 @@ export default defineComponent({
   .main-content {
     flex-direction: column;
   }
-  
+
   .tree-container {
     width: 100%;
     margin-bottom: 20px;
   }
-  
+
   .entity-form {
     padding: 0;
   }
-  
+
   .info-item {
     flex: 1 0 100%;
   }
@@ -735,16 +782,16 @@ export default defineComponent({
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .header-actions {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .detail-image-container {
     height: 150px;
   }
-  
+
   .el-form-item {
     margin-bottom: 18px;
   }
@@ -755,9 +802,9 @@ export default defineComponent({
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .detail-card .header-actions {
     margin-top: 10px;
   }
 }
-</style> 
+</style>

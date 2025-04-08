@@ -2,7 +2,7 @@
 export interface Entity {
   id?: string;
   name: string;
-  type: 'item' | 'space'; // item-物品, space-空间
+  type: "item" | "space"; // item-物品, space-空间
   code?: string;
   specification?: string;
   quantity?: number;
@@ -10,9 +10,9 @@ export interface Entity {
   purchaseDate?: string;
   warrantyPeriod?: number;
   warrantyEndDate?: string;
-  usageFrequency?: 'daily' | 'weekly' | 'monthly' | 'rarely';
+  usageFrequency?: "daily" | "weekly" | "monthly" | "rarely";
   usageYears?: number;
-  status?: 'normal' | 'damaged' | 'discarded'; // normal-正常, damaged-损坏, discarded-丢弃
+  status?: "normal" | "damaged" | "discarded"; // normal-正常, damaged-损坏, discarded-丢弃
   description?: string;
   userId?: string;
   userName?: string;
@@ -63,101 +63,81 @@ export interface ResponseResult<T> {
   data: T;
 }
 
-// 物品实体类型
-export type EntityType = {
-  id: string
-  name: string
-  type: string
-  parentId: string | null
-  status: EntityStatus
-  location: string
-  price: number
-  purchaseDate: string
-  warrantyPeriod: number
-  description: string
-  tags: string[]
-  images: string[]
-  attachments: Attachment[]
-  children?: EntityType[]
-  createdAt: string
-  updatedAt: string
-}
-
 // 物品状态枚举
 export enum EntityStatus {
-  AVAILABLE = 'AVAILABLE',    // 可用
-  IN_USE = 'IN_USE',         // 使用中
-  MAINTENANCE = 'MAINTENANCE', // 维护中
-  DISPOSED = 'DISPOSED'      // 已处置
+  AVAILABLE = "AVAILABLE", // 可用
+  IN_USE = "IN_USE", // 使用中
+  MAINTENANCE = "MAINTENANCE", // 维护中
+  DISPOSED = "DISPOSED" // 已处置
 }
 
 // 附件类型
 export type Attachment = {
-  name: string
-  url: string
-}
+  name: string;
+  url: string;
+};
 
 // 物品表单数据类型
 export type EntityFormData = {
-  name: string
-  type: string
-  parentId: string | null
-  status: EntityStatus
-  location: string
-  price: number
-  purchaseDate: string
-  warrantyPeriod: number
-  description: string
-  tags: string[]
-  images: string[]
-  attachments: Attachment[]
-}
+  name: string;
+  type: string;
+  parentId: string | null;
+  status: EntityStatus;
+  location: string;
+  price: number;
+  purchaseDate: string;
+  warrantyPeriod: number;
+  description: string;
+  tags: string[];
+  images: string[];
+  attachments: Attachment[];
+};
 
 // 物品查询参数类型
 export type EntityQueryParams = {
-  name?: string
-  type?: string
-  status?: EntityStatus
-  location?: string
-  minPrice?: number
-  maxPrice?: number
-  startDate?: string
-  endDate?: string
-  tags?: string[]
-  page: number
-  pageSize: number
-}
+  name?: string;
+  type?: string;
+  status?: EntityStatus;
+  location?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  startDate?: string;
+  endDate?: string;
+  tags?: string[];
+  page: number;
+  pageSize: number;
+};
 
 // 物品统计数据类型
 export type EntityStats = {
-  total: number
-  available: number
-  inUse: number
-  maintenance: number
-  disposed: number
-  totalValue: number
+  total: number;
+  available: number;
+  inUse: number;
+  maintenance: number;
+  disposed: number;
+  totalValue: number;
   byType: {
-    type: string
-    count: number
-  }[]
+    type: string;
+    count: number;
+  }[];
   byStatus: {
-    status: EntityStatus
-    count: number
-  }[]
-}
+    status: EntityStatus;
+    count: number;
+  }[];
+};
 
 // 物品导入/导出类型
 export type EntityImportExport = {
-  name: string
-  type: string
-  parentName?: string
-  status: EntityStatus
-  location: string
-  price: number
-  purchaseDate: string
-  warrantyPeriod: number
-  description: string
-  tags: string
-  images: string
-  attachments: string
-} 
+  name: string;
+  type: string;
+  parentName?: string;
+  status: EntityStatus;
+  location: string;
+  price: number;
+  purchaseDate: string;
+  warrantyPeriod: number;
+  description: string;
+  tags: string;
+  images: string;
+  attachments: string;
+};
