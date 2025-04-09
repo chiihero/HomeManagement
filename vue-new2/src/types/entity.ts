@@ -67,14 +67,13 @@ export interface ResponseResult<T> {
   data: T;
 }
 
-// 物品状态枚举
+// 物品状态枚举 状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出
 export enum EntityStatus {
-  AVAILABLE = "AVAILABLE", // 可用
-  IN_USE = "IN_USE", // 使用中
-  MAINTENANCE = "MAINTENANCE", // 维护中
-  DISPOSED = "DISPOSED" // 已处置
+  normal = "normal",
+  damaged = "damaged",
+  discarded = "discarded",
+  lent = "lent"
 }
-
 
 // 物品表单数据类型
 export type EntityFormData = {
@@ -88,7 +87,8 @@ export type EntityFormData = {
   warrantyPeriod: number;
   description: string;
   tags: string[];
-  images: {file: File, url: string}[] | any[];
+  images: { file: File; url: string }[] | any[];
+  userId?: string;
 };
 
 // 物品查询参数类型
@@ -106,36 +106,3 @@ export type EntityQueryParams = {
   pageSize: number;
 };
 
-// 物品统计数据类型
-export type EntityStats = {
-  total: number;
-  available: number;
-  inUse: number;
-  maintenance: number;
-  disposed: number;
-  totalValue: number;
-  byType: {
-    type: string;
-    count: number;
-  }[];
-  byStatus: {
-    status: EntityStatus;
-    count: number;
-  }[];
-};
-
-// 物品导入/导出类型
-export type EntityImportExport = {
-  name: string;
-  type: string;
-  parentName?: string;
-  status: EntityStatus;
-  location: string;
-  price: number;
-  purchaseDate: string;
-  warrantyPeriod: number;
-  description: string;
-  tags: string;
-  images: string;
-  attachments: string;
-};

@@ -39,43 +39,78 @@ export function useEntityImageUpload() {
   };
 
   // 处理图片上传成功
-  const handleImageChange = (response: any, file: any, formData?: any) => {
+  const handleImageChange = (response: any, file: any) => {
     // 将文件对象保存到imageList中，等待表单提交时上传
     imageList.value.push(file);
-    
-    // 如果提供了表单数据对象，将图片信息更新到表单中
-    if (formData && typeof formData === 'object') {
-      // 如果表单中已有images字段且为数组，则添加到现有数组
-      if (Array.isArray(formData.images)) {
-        formData.images.push(file);
-      } else {
-        // 否则创建新的images数组
-        formData.images = [...imageList.value];
-      }
-    }
-    
+
     return file;
   };
 
-  // 上传图片到服务器
-  const uploadImages = async (entityId: string) => {
-    const uploadedImageIds: string[] = [];
-    
-    for (const file of imageList.value) {
-      if (file.raw) {
+  /**
+   * 上传实体的所有图片
+   * @param entityId 实体ID
+   * @param images 图片列表，含有file属性的对象数组
+   * @returns 是否全部上传成功
+   */
+  const uploadImages = async (entityId: string, images: any[]) => {
+    if (!entityId || !images || images.length === 0) {
+      return true; // 没有图片需要上传，视为成功
+    }
+
+    try {
+      // 过滤出有文件对象的图片
+      // const imagesToUpload = images.filter(
+      //   img => img.raw && img.raw instanceof File
+      // );
+
+      // if (imagesToUpload.length === 0) {
+      //   return true; // 没有新图片需要上传
+      // }
+
+      // 创建上传任务
+      const uploadTasks = images.map(async (image, index) => {
         try {
-          const uploadResult = await uploadEntityImage(entityId, file.raw);
-          if (uploadResult && uploadResult.data && uploadResult.data.id) {
-            uploadedImageIds.push(uploadResult.data.id);
+          const imageType = image.imageType || "normal"; // 默认为普通图片
+          const response = await uploadEntityImage(
+            entityId,
+            image.raw, // 使用raw属性而不是file属性
+            imageType
+          );
+
+          if (response && response.data) {
+            console.log(`图片 ${index + 1} 上传成功:`, response.data);
+            return true;
+          } else {
+            console.error(`图片 ${index + 1} 上传失败:`, response);
+            return false;
           }
         } catch (error) {
-          console.error("上传图片失败:", error);
-          ElMessage.error(`上传图片 ${file.name} 失败`);
+          console.error(`图片 ${index + 1} 上传出错:`, error);
+          return false;
         }
+      });
+
+      // 等待所有上传任务完成
+      const results = await Promise.all(uploadTasks);
+
+      // 判断是否所有图片都上传成功
+      const allSuccess = results.every(result => result === true);
+
+      if (allSuccess) {
+        ElMessage.success("所有图片上传成功");
+        return true;
+      } else {
+        const successCount = results.filter(r => r === true).length;
+        // ElMessage.warning(
+        //   `部分图片上传失败，成功 ${successCount}/${imagesToUpload.length}`
+        // );
+        return false;
       }
+    } catch (error) {
+      console.error("上传实体图片时发生错误:", error);
+      ElMessage.error("图片上传过程中出现错误");
+      return false;
     }
-    
-    return uploadedImageIds;
   };
 
   // 重置图片列表
@@ -105,4 +140,4 @@ export function useEntityImageUpload() {
     resetImageList,
     setImageList
   };
-} 
+}

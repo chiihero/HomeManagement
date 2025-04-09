@@ -4,14 +4,14 @@ import { getImageData } from "@/api/image";
 
 export function useEntityDetail() {
   // 图片URL缓存
-  const imageUrlCache = ref<Record<number, string>>({});
+  const imageUrlCache = ref<Record<string, string>>({});
 
   // 获取图片URL
-  const getImageUrl = async (imageId: number) => {
+  const getImageUrl = async (imageId: string) => {
     if (imageUrlCache.value[imageId]) {
       return imageUrlCache.value[imageId];
     }
-    
+
     try {
       const blob = await getImageData(imageId);
       const url = URL.createObjectURL(blob);
@@ -26,7 +26,7 @@ export function useEntityDetail() {
   // 加载所有图片
   const loadAllImages = async (entity: Entity | null) => {
     if (!entity?.images) return;
-    
+
     for (const image of entity.images) {
       if (image.id) {
         await getImageUrl(image.id);
@@ -63,10 +63,10 @@ export function useEntityDetail() {
   // 获取状态文本
   const getStatusText = (status: string) => {
     const texts = {
-      AVAILABLE: "可用",
-      IN_USE: "使用中",
-      MAINTENANCE: "维护中",
-      DISPOSED: "已处置"
+      normal: "正常",
+      damaged: "损坏",
+      discarded: "丢弃",
+      lent: "借出"
     };
     return texts[status] || "未知状态";
   };
@@ -84,12 +84,14 @@ export function useEntityDetail() {
   // 预览图片URL列表
   const getPreviewImageUrls = (entity: Entity | null) => {
     if (!entity?.images) return [];
-    return entity.images.map(img => {
-      if (img.id && imageUrlCache.value[img.id]) {
-        return imageUrlCache.value[img.id];
-      }
-      return "";
-    }).filter(url => url !== "");
+    return entity.images
+      .map(img => {
+        if (img.id && imageUrlCache.value[img.id]) {
+          return imageUrlCache.value[img.id];
+        }
+        return "";
+      })
+      .filter(url => url !== "");
   };
 
   return {
@@ -103,4 +105,4 @@ export function useEntityDetail() {
     formatDate,
     getPreviewImageUrls
   };
-} 
+}

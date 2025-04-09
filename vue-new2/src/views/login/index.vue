@@ -16,7 +16,6 @@ import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import { addPathMatch, getTopMenu } from "@/router/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 
-
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
 import Lock from "@iconify-icons/ri/lock-fill";
@@ -48,10 +47,10 @@ const onLogin = async (formEl: FormInstance | undefined) => {
     if (valid) {
       loading.value = true;
       useUserStoreHook()
-        .loginByUsername({ 
-          username: ruleForm.username, 
+        .loginByUsername({
+          username: ruleForm.username,
           password: ruleForm.password,
-          remember: ruleForm.rememberMe 
+          remember: ruleForm.rememberMe
         })
         .then(async res => {
           if (res.success) {
@@ -59,14 +58,13 @@ const onLogin = async (formEl: FormInstance | undefined) => {
             if (!useUserStoreHook().user) {
               await useUserStoreHook().fetchUserInfo();
             }
-            
+
             // 全部采取静态路由模式
             usePermissionStoreHook().handleWholeMenus([]);
             addPathMatch();
             router.push(getTopMenu(true).path);
 
             message("登录成功", { type: "success" });
-              
           } else {
             message("登录失败", { type: "error" });
           }

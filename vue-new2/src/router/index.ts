@@ -116,7 +116,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
   const userStore = useUserStoreHook();
-  
+
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
@@ -131,18 +131,18 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   function toCorrectRoute() {
     whiteList.includes(to.fullPath) ? next(_from.fullPath) : next();
   }
-  
+
   // 如果已登录但没有用户信息，尝试获取用户信息
   async function ensureUserInfo() {
     if (userStore.token && !userStore.user) {
       try {
         await userStore.fetchUserInfo();
       } catch (error) {
-        console.error('Failed to fetch user info:', error);
+        console.error("Failed to fetch user info:", error);
       }
     }
   }
-  
+
   if (Cookies.get(multipleTabsKey) && userInfo) {
     // 确保有用户信息
     ensureUserInfo().then(() => {
@@ -168,13 +168,15 @@ router.beforeEach((to: ToRouteType, _from, next) => {
           usePermissionStoreHook().wholeMenus.length === 0 &&
           to.path !== "/login"
         ) {
-
           // 使用下面方法替换initRouter
           usePermissionStoreHook().handleWholeMenus([]);
           addPathMatch();
           if (!useMultiTagsStoreHook().getMultiTagsCache) {
             const { path } = to;
-            const route = findRouteByPath(path, router.options.routes[0].children);
+            const route = findRouteByPath(
+              path,
+              router.options.routes[0].children
+            );
             getTopMenu(true);
             // query、params模式路由传参数的标签页不在此处处理
             if (route && route.meta?.title) {
@@ -184,21 +186,20 @@ router.beforeEach((to: ToRouteType, _from, next) => {
                 useMultiTagsStoreHook().handleTags("push", {
                   path,
                   name,
-                  meta,
+                  meta
                 });
               } else {
                 const { path, name, meta } = route;
                 useMultiTagsStoreHook().handleTags("push", {
                   path,
                   name,
-                  meta,
+                  meta
                 });
               }
             }
           }
           // 确保动态路由完全加入路由列表并且不影响静态路由（注意：动态路由刷新时router.beforeEach可能会触发两次，第一次触发动态路由还未完全添加，第二次动态路由才完全添加到路由列表，如果需要在router.beforeEach做一些判断可以在to.name存在的条件下去判断，这样就只会触发一次）
           if (isAllEmpty(to.name)) router.push(to.fullPath);
-
         }
         toCorrectRoute();
       }

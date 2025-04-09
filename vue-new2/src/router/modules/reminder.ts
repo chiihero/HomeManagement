@@ -2,7 +2,7 @@ export default {
   path: "/reminder",
   redirect: "/reminder/index",
   meta: {
-    title: "提醒管理",
+    title: "提醒管理"
   },
   children: [
     {
@@ -10,8 +10,8 @@ export default {
       name: "Reminder",
       component: () => import("@/views/reminder/index.vue"),
       meta: {
-        title: "提醒管理",
+        title: "提醒管理"
       }
     }
   ]
-}satisfies RouteConfigsTable;
+} satisfies RouteConfigsTable;

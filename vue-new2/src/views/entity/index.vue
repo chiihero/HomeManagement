@@ -58,27 +58,22 @@
               {{ getDetailTitle }}
             </span>
             <div v-if="currentEntity" class="flex gap-2 mt-1">
-              <el-button type="primary" @click="buttonEdit">
+              <el-button type="primary" @click="openEditEntityForm">
                 <el-icon class="mr-1"><Edit /></el-icon>编辑
               </el-button>
-              <el-button type="danger" @click="buttonDelete">
+              <el-button type="danger" @click="handleDelete(currentEntity)">
                 <el-icon class="mr-1"><Delete /></el-icon>删除
               </el-button>
-              <el-tooltip
-              effect="dark"
-              content="刷新"
-              placement="top"
-            >
-              <el-button
-                :icon="Refresh"
-                circle
-                plain
-                size="small"
-                @click="refreshCurrentEntity"
-              />
-            </el-tooltip>
+              <el-tooltip effect="dark" content="刷新" placement="top">
+                <el-button
+                  :icon="Refresh"
+                  circle
+                  plain
+                  size="small"
+                  @click="refreshCurrentEntity"
+                />
+              </el-tooltip>
             </div>
-            
           </div>
         </template>
 
@@ -115,10 +110,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from "vue";
-import { Plus, Folder, Refresh, Search, Select } from "@element-plus/icons-vue";
+import { ref, onMounted, computed } from "vue";
+import {
+  Plus,
+  Folder,
+  Refresh,
+  Search,
+  Select,
+  Edit,
+  Delete
+} from "@element-plus/icons-vue";
 import { useEntityCRUD } from "./composables/useEntityCRUD";
-import { useEntityImageUpload } from "./composables/useEntityImageUpload";
 import EntityTree from "./components/EntityTree.vue";
 import EntityDetail from "./components/EntityDetail.vue";
 import EntityForm from "./components/EntityForm.vue";
@@ -127,13 +129,6 @@ import type { Entity } from "@/types/entity";
 defineOptions({
   name: "Entity"
 });
-const emit = defineEmits<{
-  (e: "edit"): void;
-  (e: "delete"): void;
-}>();
-
-// 使用图片上传相关逻辑
-const { uploadImages } = useEntityImageUpload();
 
 // 使用实体CRUD相关逻辑
 const {
@@ -149,8 +144,9 @@ const {
   openAddEntityForm,
   openEditEntityForm,
   cancelEditOrAdd,
-  saveEntity
-} = useEntityCRUD(uploadImages);
+  saveEntity,
+  loadEntityDetail
+} = useEntityCRUD();
 
 // 搜索关键词
 const searchKeyword = ref("");
@@ -194,19 +190,8 @@ const getDetailTitle = computed(() => {
 // 刷新当前实体
 const refreshCurrentEntity = () => {
   if (currentEntity.value && currentEntity.value.id) {
-    // 这里可以添加刷新单个实体的逻辑
-    loadTreeData();
+    loadEntityDetail(currentEntity.value.id);
   }
-};
-
-// 处理编辑
-const buttonEdit = () => {
-  emit("edit");
-};
-
-// 处理删除
-const buttonDelete = () => {
-  emit("delete");
 };
 
 // 在组件挂载时加载数据
@@ -255,13 +240,11 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* 为Element Plus卡片标题添加样式 */
 :deep(.el-card__header) {
   padding: 12px 16px;
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* 允许内容区域滚动 */
 .detail-container :deep(.el-card__body) {
   max-height: calc(100vh - 200px);
   overflow-y: auto;

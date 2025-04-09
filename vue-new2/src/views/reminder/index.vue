@@ -2,11 +2,18 @@
   <div class="bg-gray-50 min-h-screen p-4 md:p-6">
     <!-- 头部 -->
     <el-card class="mb-6 border-0 shadow-sm">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+      >
         <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
-          <el-icon class="mr-2 text-primary"><AlarmClock /></el-icon>提醒事项管理
+          <el-icon class="mr-2 text-primary"><AlarmClock /></el-icon
+          >提醒事项管理
         </h1>
-        <el-button type="primary" @click="openAddForm" class="flex items-center gap-2">
+        <el-button
+          type="primary"
+          class="flex items-center gap-2"
+          @click="openAddForm"
+        >
           <el-icon><Plus /></el-icon>添加提醒
         </el-button>
       </div>
@@ -22,10 +29,18 @@
       <el-form :model="searchForm" inline @submit.prevent>
         <div class="flex flex-wrap gap-4">
           <el-form-item label="物品名称">
-            <el-input v-model="searchForm.itemName" placeholder="请输入物品名称" clearable />
+            <el-input
+              v-model="searchForm.itemName"
+              placeholder="请输入物品名称"
+              clearable
+            />
           </el-form-item>
           <el-form-item label="提醒类型">
-            <el-select v-model="searchForm.type" placeholder="请选择提醒类型" clearable>
+            <el-select
+              v-model="searchForm.type"
+              placeholder="请选择提醒类型"
+              clearable
+            >
               <el-option
                 v-for="type in reminderTypes"
                 :key="type.value"
@@ -35,7 +50,11 @@
             </el-select>
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
+            <el-select
+              v-model="searchForm.status"
+              placeholder="请选择状态"
+              clearable
+            >
               <el-option
                 v-for="status in reminderStatuses"
                 :key="status.value"
@@ -56,7 +75,11 @@
             />
           </el-form-item>
           <div class="flex items-center ml-auto">
-            <el-button type="primary" class="mr-2" @click="loadReminders(searchForm)">
+            <el-button
+              type="primary"
+              class="mr-2"
+              @click="loadReminders(searchForm)"
+            >
               <el-icon class="mr-1"><Search /></el-icon>搜索
             </el-button>
             <el-button @click="resetSearchForm">
@@ -75,12 +98,7 @@
           <div class="text-sm text-gray-500">共 {{ total }} 项</div>
         </div>
       </template>
-      <el-table
-        v-loading="loading"
-        :data="reminderList"
-        border
-        class="w-full"
-      >
+      <el-table v-loading="loading" :data="reminderList" border class="w-full">
         <el-table-column prop="itemName" label="物品名称" min-width="120" />
         <el-table-column prop="type" label="提醒类型" width="100">
           <template #default="{ row }">
@@ -97,8 +115,17 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="content" label="提醒内容" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="notificationMethods" label="通知方式" width="120">
+        <el-table-column
+          prop="content"
+          label="提醒内容"
+          min-width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="notificationMethods"
+          label="通知方式"
+          width="120"
+        >
           <template #default="{ row }">
             <div class="flex flex-wrap gap-1">
               <el-tag
@@ -193,7 +220,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="提醒类型" prop="type">
-          <el-select v-model="reminderForm.type" placeholder="请选择提醒类型" class="w-full">
+          <el-select
+            v-model="reminderForm.type"
+            placeholder="请选择提醒类型"
+            class="w-full"
+          >
             <el-option
               v-for="type in reminderTypes"
               :key="type.value"
@@ -265,7 +296,7 @@
       <template #footer>
         <div class="flex justify-end gap-2">
           <el-button @click="cancelEdit">取消</el-button>
-          <el-button type="primary" @click="handleSave" :loading="saving">
+          <el-button type="primary" :loading="saving" @click="handleSave">
             确定
           </el-button>
         </div>
@@ -275,13 +306,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
-import { useReminderCRUD } from './composables/useReminderCRUD'
-import { useReminderForm } from './composables/useReminderForm'
-import { useReminderSearch } from './composables/useReminderSearch'
-import { ReminderType, ReminderStatus, NotificationMethod, RecurringCycle } from '@/types/reminder'
-import { searchItems as searchItemsApi } from '@/api/reminder'
-import { Plus, Search, Refresh, Edit, Delete, Check, AlarmClock } from '@element-plus/icons-vue'
+import { onMounted, ref, computed } from "vue";
+import { useReminderCRUD } from "./composables/useReminderCRUD";
+import { useReminderForm } from "./composables/useReminderForm";
+import { useReminderSearch } from "./composables/useReminderSearch";
+import {
+  ReminderType,
+  ReminderStatus,
+  NotificationMethod,
+  RecurringCycle
+} from "@/types/reminder";
+import { searchItems as searchItemsApi } from "@/api/reminder";
+import {
+  Plus,
+  Search,
+  Refresh,
+  Edit,
+  Delete,
+  Check,
+  AlarmClock
+} from "@element-plus/icons-vue";
 
 defineOptions({
   name: "Reminder"
@@ -304,7 +348,7 @@ const {
   saveReminder,
   handleDelete,
   handleComplete
-} = useReminderCRUD()
+} = useReminderCRUD();
 
 const {
   reminderFormRef,
@@ -313,7 +357,7 @@ const {
   resetForm,
   fillFormWithReminder,
   validateForm
-} = useReminderForm()
+} = useReminderForm();
 
 const {
   searchForm,
@@ -321,120 +365,122 @@ const {
   handlePageChange,
   handleSizeChange,
   handleDateRangeChange
-} = useReminderSearch()
+} = useReminderSearch();
 
 // 提醒类型选项
 const reminderTypes = [
-  { label: '到期提醒', value: 'EXPIRATION' },
-  { label: '维护提醒', value: 'MAINTENANCE' },
-  { label: '自定义提醒', value: 'CUSTOM' }
-]
+  { label: "到期提醒", value: "EXPIRATION" },
+  { label: "维护提醒", value: "MAINTENANCE" },
+  { label: "自定义提醒", value: "CUSTOM" }
+];
 
 // 提醒状态选项
 const reminderStatuses = [
-  { label: '待提醒', value: 'PENDING' },
-  { label: '已完成', value: 'COMPLETED' },
-  { label: '已取消', value: 'CANCELLED' }
-]
+  { label: "待提醒", value: "PENDING" },
+  { label: "已完成", value: "COMPLETED" },
+  { label: "已取消", value: "CANCELLED" }
+];
 
 // 通知方式选项
 const notificationMethods = [
-  { label: '系统通知', value: 'SYSTEM' },
-  { label: '邮件通知', value: 'EMAIL' },
-  { label: '短信通知', value: 'SMS' }
-]
+  { label: "系统通知", value: "SYSTEM" },
+  { label: "邮件通知", value: "EMAIL" },
+  { label: "短信通知", value: "SMS" }
+];
 
 // 重复周期选项
 const recurringCycles = [
-  { label: '每天', value: 'DAILY' },
-  { label: '每周', value: 'WEEKLY' },
-  { label: '每月', value: 'MONTHLY' },
-  { label: '每年', value: 'YEARLY' }
-]
+  { label: "每天", value: "DAILY" },
+  { label: "每周", value: "WEEKLY" },
+  { label: "每月", value: "MONTHLY" },
+  { label: "每年", value: "YEARLY" }
+];
 
 // 物品选项
-const itemOptions = ref<Array<{ id: number; name: string }>>([])
-const itemLoading = ref(false)
+const itemOptions = ref<Array<{ id: number; name: string }>>([]);
+const itemLoading = ref(false);
 
 // 搜索物品
 const searchItems = async (query: string) => {
   if (query) {
-    itemLoading.value = true
+    itemLoading.value = true;
     try {
-      const data = await searchItemsApi(query)
-      itemOptions.value = data
+      const data = await searchItemsApi(query);
+      itemOptions.value = data;
     } catch (error) {
-      console.error('搜索物品失败:', error)
+      console.error("搜索物品失败:", error);
     } finally {
-      itemLoading.value = false
+      itemLoading.value = false;
     }
   } else {
-    itemOptions.value = []
+    itemOptions.value = [];
   }
-}
+};
 
 // 获取提醒类型标签
 const getReminderTypeLabel = (type: ReminderType) => {
-  return reminderTypes.find(item => item.value === type)?.label || type
-}
+  return reminderTypes.find(item => item.value === type)?.label || type;
+};
 
 // 获取状态标签
 const getStatusLabel = (status: ReminderStatus) => {
-  return reminderStatuses.find(item => item.value === status)?.label || status
-}
+  return reminderStatuses.find(item => item.value === status)?.label || status;
+};
 
 // 获取状态类型
 const getStatusType = (status: ReminderStatus) => {
   switch (status) {
-    case 'PENDING':
-      return 'warning'
-    case 'COMPLETED':
-      return 'success'
-    case 'CANCELLED':
-      return 'info'
+    case "PENDING":
+      return "warning";
+    case "COMPLETED":
+      return "success";
+    case "CANCELLED":
+      return "info";
     default:
-      return ''
+      return "";
   }
-}
+};
 
 // 获取提醒类型颜色
 const getTypeColor = (type: ReminderType) => {
   switch (type) {
-    case 'EXPIRATION':
-      return 'danger'
-    case 'MAINTENANCE':
-      return 'warning'
-    case 'CUSTOM':
-      return 'primary'
+    case "EXPIRATION":
+      return "danger";
+    case "MAINTENANCE":
+      return "warning";
+    case "CUSTOM":
+      return "primary";
     default:
-      return 'info'
+      return "info";
   }
-}
+};
 
 // 获取通知方式标签
 const getNotificationMethodLabel = (method: NotificationMethod) => {
-  return notificationMethods.find(item => item.value === method)?.label || method
-}
+  return (
+    notificationMethods.find(item => item.value === method)?.label || method
+  );
+};
 
 // 保存提醒
 const handleSave = async () => {
   if (await validateForm()) {
-    await saveReminder(reminderForm)
+    await saveReminder(reminderForm);
   }
-}
+};
 
 // 对话框显示状态
 const dialogVisible = computed<boolean>({
   get: () => isAdding.value || isEditing.value,
-  set: (value) => {
+  set: value => {
     if (!value) {
-      cancelEdit()
+      cancelEdit();
     }
   }
-})
+});
 
 // 初始化
 onMounted(() => {
-  loadReminders(searchForm)
-})
-</script> 
+  loadReminders(searchForm);
+});
+</script>

@@ -5,10 +5,19 @@
         <el-card class="mb-4" shadow="hover">
           <div class="flex justify-between items-center">
             <div>
-              <h2 class="m-0">欢迎回来，{{ userInfo.nickname || userInfo.username }}</h2>
-              <p class="mt-2 mb-0 text-gray-500">今天是 {{ currentDate }}，{{ welcomeMessage }}</p>
+              <h2 class="m-0">
+                欢迎回来，{{ userInfo.nickname || userInfo.username }}
+              </h2>
+              <p class="mt-2 mb-0 text-gray-500">
+                今天是 {{ currentDate }}，{{ welcomeMessage }}
+              </p>
             </div>
-            <el-button type="primary" :icon="Refresh" circle @click="refreshData" />
+            <el-button
+              type="primary"
+              :icon="Refresh"
+              circle
+              @click="refreshData"
+            />
           </div>
         </el-card>
       </el-col>
@@ -24,7 +33,9 @@
             <div class="card-data">
               <div class="data-title">物品总数</div>
               <div class="data-value">{{ statistics.totalItems }}</div>
-              <div class="data-info">其中 {{ statistics.availableItems }} 个可用</div>
+              <div class="data-info">
+                其中 {{ statistics.availableItems }} 个可用
+              </div>
             </div>
           </div>
         </el-card>
@@ -38,7 +49,9 @@
             <div class="card-data">
               <div class="data-title">即将过期</div>
               <div class="data-value">{{ statistics.expiringItems }}</div>
-              <div class="data-info">{{ statistics.expiredItems }} 个已过期</div>
+              <div class="data-info">
+                {{ statistics.expiredItems }} 个已过期
+              </div>
             </div>
           </div>
         </el-card>
@@ -51,8 +64,12 @@
             </div>
             <div class="card-data">
               <div class="data-title">总价值</div>
-              <div class="data-value">¥{{ formatNumber(statistics.totalValue) }}</div>
-              <div class="data-info">{{ statistics.categoriesCount }} 个分类</div>
+              <div class="data-value">
+                ¥{{ formatNumber(statistics.totalValue) }}
+              </div>
+              <div class="data-info">
+                {{ statistics.categoriesCount }} 个分类
+              </div>
             </div>
           </div>
         </el-card>
@@ -72,8 +89,9 @@
             </div>
           </template>
           <div class="chart-container">
-            <component :is="currentChartComponent" 
-              :chart-data="currentChartData" 
+            <component
+              :is="currentChartComponent"
+              :chart-data="currentChartData"
               :height="300"
             />
           </div>
@@ -84,22 +102,38 @@
           <template #header>
             <div class="flex justify-between items-center">
               <span>最近提醒</span>
-              <el-button type="primary" link @click="navigateToReminders">查看全部</el-button>
+              <el-button type="primary" link @click="navigateToReminders"
+                >查看全部</el-button
+              >
             </div>
           </template>
-          <el-skeleton :rows="3" animated v-if="loading.reminders" />
+          <el-skeleton v-if="loading.reminders" :rows="3" animated />
           <div v-else>
-            <el-empty description="暂无提醒" v-if="recentReminders.length === 0" />
-            <ul class="reminder-list" v-else>
-              <li v-for="(reminder, index) in recentReminders" :key="reminder.id" class="reminder-item">
-                <el-tag size="small" :type="getReminderTypeColor(reminder.type)">
+            <el-empty
+              v-if="recentReminders.length === 0"
+              description="暂无提醒"
+            />
+            <ul v-else class="reminder-list">
+              <li
+                v-for="(reminder, index) in recentReminders"
+                :key="reminder.id"
+                class="reminder-item"
+              >
+                <el-tag
+                  size="small"
+                  :type="getReminderTypeColor(reminder.type)"
+                >
                   {{ getReminderTypeText(reminder.type) }}
                 </el-tag>
                 <div class="reminder-info">
                   <div class="reminder-title">{{ reminder.itemName }}</div>
                   <div class="reminder-time">
                     提醒日期: {{ formatDate(reminder.reminderDate) }}
-                    <el-tag size="small" :type="getReminderStatusColor(reminder.status)" class="ml-2">
+                    <el-tag
+                      size="small"
+                      :type="getReminderStatusColor(reminder.status)"
+                      class="ml-2"
+                    >
                       {{ getReminderStatusText(reminder.status) }}
                     </el-tag>
                   </div>
@@ -118,13 +152,18 @@
           <template #header>
             <div class="flex justify-between items-center">
               <span>最近添加的物品</span>
-              <el-button type="primary" link @click="navigateToEntities">查看全部</el-button>
+              <el-button type="primary" link @click="navigateToEntities"
+                >查看全部</el-button
+              >
             </div>
           </template>
-          <el-skeleton :rows="5" animated v-if="loading.recentItems" />
+          <el-skeleton v-if="loading.recentItems" :rows="5" animated />
           <div v-else>
-            <el-empty description="暂无物品记录" v-if="recentItems.length === 0" />
-            <div class="table-responsive" v-else>
+            <el-empty
+              v-if="recentItems.length === 0"
+              description="暂无物品记录"
+            />
+            <div v-else class="table-responsive">
               <el-table :data="recentItems" style="width: 100%">
                 <el-table-column prop="name" label="物品名称" min-width="120" />
                 <el-table-column prop="type" label="类型" width="120" />
@@ -142,7 +181,12 @@
                 </el-table-column>
                 <el-table-column label="操作" width="120" fixed="right">
                   <template #default="scope">
-                    <el-button type="primary" link @click="viewEntityDetail(scope.row)">查看</el-button>
+                    <el-button
+                      type="primary"
+                      link
+                      @click="viewEntityDetail(scope.row)"
+                      >查看</el-button
+                    >
                   </template>
                 </el-table-column>
               </el-table>
@@ -155,46 +199,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Box, Wallet, CircleClose, Refresh } from '@element-plus/icons-vue'
-import moment from 'moment'
-import Pie from '@/components/charts/Pie.vue'
-import Bar from '@/components/charts/Bar.vue'
-import { 
-  getDashboardStatistics 
-} from '@/api/dashboard'
-import { getRemindersByDateRange } from '@/api/reminder'
-import { getRecentEntities } from '@/api/entity'
-import { useUserStoreHook } from '@/store/modules/user'
-import type { PageResult } from '@/types/common'
-import type { Entity } from '@/types/entity'
-import type { Reminder } from '@/types/reminder'
+import { ref, computed, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { Box, Wallet, CircleClose, Refresh } from "@element-plus/icons-vue";
+import moment from "moment";
+import Pie from "@/components/charts/Pie.vue";
+import Bar from "@/components/charts/Bar.vue";
+import { getDashboardStatistics } from "@/api/dashboard";
+import { getRemindersByDateRange } from "@/api/reminder";
+import { getRecentEntities } from "@/api/entity";
+import { useUserStoreHook } from "@/store/modules/user";
+import type { PageResult } from "@/types/common";
+import type { Entity } from "@/types/entity";
+import type { Reminder } from "@/types/reminder";
 
-const router = useRouter()
-const userStore = useUserStoreHook()
-const userInfo = computed(() => userStore.currentUser || {})
+const router = useRouter();
+const userStore = useUserStoreHook();
+const userInfo = computed(() => userStore.currentUser || {});
 
 // 当前日期和欢迎语
-const currentDate = computed(() => moment().format('YYYY年MM月DD日'))
+const currentDate = computed(() => moment().format("YYYY年MM月DD日"));
 const welcomeMessage = computed(() => {
-  const hour = moment().hour()
+  const hour = moment().hour();
   if (hour < 6) {
-    return '夜深了，注意休息！'
+    return "夜深了，注意休息！";
   } else if (hour < 9) {
-    return '早上好，祝你有个美好的一天！'
+    return "早上好，祝你有个美好的一天！";
   } else if (hour < 12) {
-    return '上午好，工作顺利！'
+    return "上午好，工作顺利！";
   } else if (hour < 14) {
-    return '中午好，记得午休哦！'
+    return "中午好，记得午休哦！";
   } else if (hour < 18) {
-    return '下午好，工作效率高！'
+    return "下午好，工作效率高！";
   } else if (hour < 22) {
-    return '晚上好，辛苦了！'
+    return "晚上好，辛苦了！";
   } else {
-    return '夜深了，注意休息！'
+    return "夜深了，注意休息！";
   }
-})
+});
 
 // 统计数据
 const statistics = reactive({
@@ -204,10 +246,10 @@ const statistics = reactive({
   expiredItems: 0,
   totalValue: 0,
   categoriesCount: 0
-})
+});
 
 // 图表相关
-const chartViewType = ref('category')
+const chartViewType = ref("category");
 const categoryChartData = ref({
   labels: [] as string[],
   datasets: [
@@ -216,7 +258,7 @@ const categoryChartData = ref({
       data: [] as number[]
     }
   ]
-})
+});
 const statusChartData = ref({
   labels: [] as string[],
   datasets: [
@@ -225,26 +267,28 @@ const statusChartData = ref({
       data: [] as number[]
     }
   ]
-})
+});
 
 const currentChartData = computed(() => {
-  return chartViewType.value === 'category' ? categoryChartData.value : statusChartData.value
-})
+  return chartViewType.value === "category"
+    ? categoryChartData.value
+    : statusChartData.value;
+});
 
 const currentChartComponent = computed(() => {
-  return chartViewType.value === 'category' ? Pie : Bar
-})
+  return chartViewType.value === "category" ? Pie : Bar;
+});
 
 // 提醒、物品和借出记录
-const recentReminders = ref<Reminder[]>([])
-const recentItems = ref<Entity[]>([])
+const recentReminders = ref<Reminder[]>([]);
+const recentItems = ref<Entity[]>([]);
 
 // 加载状态
 const loading = reactive({
   statistics: true,
   reminders: true,
   recentItems: true
-})
+});
 
 // 初始化
 onMounted(async () => {
@@ -252,171 +296,178 @@ onMounted(async () => {
     fetchStatistics(),
     fetchRecentReminders(),
     fetchRecentItems()
-  ])
-})
+  ]);
+});
 
 // 刷新数据
 const refreshData = async () => {
-  loading.statistics = true
-  loading.reminders = true
-  loading.recentItems = true
-  
+  loading.statistics = true;
+  loading.reminders = true;
+  loading.recentItems = true;
+
   await Promise.all([
     fetchStatistics(),
     fetchRecentReminders(),
     fetchRecentItems()
-  ])
-}
+  ]);
+};
 
 // 获取统计数据
 const fetchStatistics = async () => {
   try {
-    const response = await getDashboardStatistics()
+    const response = await getDashboardStatistics();
     if (response.code === 200 && response.data) {
-      const data = response.data
-      statistics.totalItems = data.totalItems
-      statistics.availableItems = data.availableItems
-      statistics.expiringItems = data.expiringItems
-      statistics.expiredItems = data.expiredItems
-      statistics.totalValue = data.totalValue
-      statistics.categoriesCount = data.categoriesCount
-      
+      const data = response.data;
+      statistics.totalItems = data.totalItems;
+      statistics.availableItems = data.availableItems;
+      statistics.expiringItems = data.expiringItems;
+      statistics.expiredItems = data.expiredItems;
+      statistics.totalValue = data.totalValue;
+      statistics.categoriesCount = data.categoriesCount;
+
       // 更新分类图表数据
       categoryChartData.value = {
         labels: data.categoryDistribution.map(item => item.name),
-        datasets: [{
-          backgroundColor: data.categoryDistribution.map(item => item.color),
-          data: data.categoryDistribution.map(item => item.count)
-        }]
-      }
-      
+        datasets: [
+          {
+            backgroundColor: data.categoryDistribution.map(item => item.color),
+            data: data.categoryDistribution.map(item => item.count)
+          }
+        ]
+      };
+
       // 更新状态图表数据
       statusChartData.value = {
         labels: data.statusDistribution.map(item => item.name),
-        datasets: [{
-          backgroundColor: data.statusDistribution.map(item => item.color),
-          data: data.statusDistribution.map(item => item.count)
-        }]
-      }
+        datasets: [
+          {
+            backgroundColor: data.statusDistribution.map(item => item.color),
+            data: data.statusDistribution.map(item => item.count)
+          }
+        ]
+      };
     }
   } catch (error) {
-    console.error('Failed to fetch statistics:', error)
+    console.error("Failed to fetch statistics:", error);
   } finally {
-    loading.statistics = false
+    loading.statistics = false;
   }
-}
+};
 
 // 获取最近提醒
 const fetchRecentReminders = async () => {
   try {
     const response = await getRemindersByDateRange({
-      startDate: moment().format('YYYY-MM-DD'),
-      endDate: moment().add(7, 'days').format('YYYY-MM-DD'),
+      startDate: moment().format("YYYY-MM-DD"),
+      endDate: moment().add(7, "days").format("YYYY-MM-DD"),
       limit: 5
-    })
+    });
     if (response.code === 200 && response.data) {
-      recentReminders.value = response.data
+      recentReminders.value = response.data;
     }
   } catch (error) {
-    console.error('Failed to fetch recent reminders:', error)
+    console.error("Failed to fetch recent reminders:", error);
   } finally {
-    loading.reminders = false
+    loading.reminders = false;
   }
-}
+};
 
 // 获取最近物品
 const fetchRecentItems = async () => {
   try {
-    const response = await getRecentEntities(5)
+    const response = await getRecentEntities(5);
     if (response.code === 200 && response.data) {
-      recentItems.value = response.data
+      recentItems.value = response.data;
     }
   } catch (error) {
-    console.error('Failed to fetch recent items:', error)
+    console.error("Failed to fetch recent items:", error);
   } finally {
-    loading.recentItems = false
+    loading.recentItems = false;
   }
-}
+};
 
 // 工具函数
 const formatNumber = (num: number) => {
-  return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
+  return num.toLocaleString("zh-CN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
 
 const formatDate = (date: string) => {
-  return moment(date).format('YYYY-MM-DD')
-}
+  return moment(date).format("YYYY-MM-DD");
+};
 
 const getReminderTypeColor = (type: string) => {
   const colors = {
-    EXPIRATION: 'danger',
-    MAINTENANCE: 'warning',
-    OTHER: 'info'
-  }
-  return colors[type] || 'info'
-}
+    EXPIRATION: "danger",
+    MAINTENANCE: "warning",
+    OTHER: "info"
+  };
+  return colors[type] || "info";
+};
 
 const getReminderTypeText = (type: string) => {
   const texts = {
-    EXPIRATION: '过期提醒',
-    MAINTENANCE: '维护提醒',
-    OTHER: '其他提醒'
-  }
-  return texts[type] || '其他提醒'
-}
+    EXPIRATION: "过期提醒",
+    MAINTENANCE: "维护提醒",
+    OTHER: "其他提醒"
+  };
+  return texts[type] || "其他提醒";
+};
 
 const getReminderStatusColor = (status: string) => {
   const colors = {
-    PENDING: 'warning',
-    NOTIFIED: 'info',
-    COMPLETED: 'success',
-    EXPIRED: 'danger'
-  }
-  return colors[status] || 'info'
-}
+    PENDING: "warning",
+    NOTIFIED: "info",
+    COMPLETED: "success",
+    EXPIRED: "danger"
+  };
+  return colors[status] || "info";
+};
 
 const getReminderStatusText = (status: string) => {
   const texts = {
-    PENDING: '待处理',
-    NOTIFIED: '已通知',
-    COMPLETED: '已完成',
-    EXPIRED: '已过期'
-  }
-  return texts[status] || '未知状态'
-}
+    PENDING: "待处理",
+    NOTIFIED: "已通知",
+    COMPLETED: "已完成",
+    EXPIRED: "已过期"
+  };
+  return texts[status] || "未知状态";
+};
 
 const getStatusType = (status: string) => {
   const types = {
-    AVAILABLE: 'success',
-    IN_USE: 'primary',
-    MAINTENANCE: 'warning',
-    DISPOSED: 'info'
-  }
-  return types[status] || 'info'
-}
+    AVAILABLE: "success",
+    IN_USE: "primary",
+    MAINTENANCE: "warning",
+    DISPOSED: "info"
+  };
+  return types[status] || "info";
+};
 
 const getStatusText = (status: string) => {
   const texts = {
-    AVAILABLE: '可用',
-    IN_USE: '使用中',
-    MAINTENANCE: '维护中',
-    DISPOSED: '已处置'
-  }
-  return texts[status] || '未知状态'
-}
+    normal: "正常",
+    damaged: "损坏",
+    discarded: "丢弃",
+    lent: "借出"
+  };
+  return texts[status] || "未知状态";
+};
 
 // 导航函数
 const navigateToReminders = () => {
-  router.push('/reminder')
-}
+  router.push("/reminder");
+};
 
 const navigateToEntities = () => {
-  router.push('/entity')
-}
+  router.push("/entity");
+};
 
 const viewEntityDetail = (entity: Entity) => {
-  router.push(`/entity/detail/${entity.id}`)
-}
+  router.push(`/entity/detail/${entity.id}`);
+};
 </script>
 
 <style scoped>
@@ -505,4 +556,4 @@ const viewEntityDetail = (entity: Entity) => {
   height: 300px;
   width: 100%;
 }
-</style> 
+</style>

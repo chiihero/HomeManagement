@@ -1,65 +1,65 @@
 <template>
-  <div ref="chartRef" :style="{ height: height + 'px' }"></div>
+  <div ref="chartRef" :style="{ height: height + 'px' }" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import * as echarts from 'echarts'
-import type { EChartsOption } from 'echarts'
+import { ref, onMounted, watch } from "vue";
+import * as echarts from "echarts";
+import type { EChartsOption } from "echarts";
 
 interface Props {
   chartData: {
-    labels: string[]
+    labels: string[];
     datasets: {
-      backgroundColor: string[]
-      data: number[]
-    }[]
-  }
-  height: number
+      backgroundColor: string[];
+      data: number[];
+    }[];
+  };
+  height: number;
 }
 
-const props = defineProps<Props>()
-const chartRef = ref<HTMLElement>()
-let chart: echarts.ECharts | null = null
+const props = defineProps<Props>();
+const chartRef = ref<HTMLElement>();
+let chart: echarts.ECharts | null = null;
 
 const initChart = () => {
-  if (!chartRef.value) return
-  
-  chart = echarts.init(chartRef.value)
-  updateChart()
-}
+  if (!chartRef.value) return;
+
+  chart = echarts.init(chartRef.value);
+  updateChart();
+};
 
 const updateChart = () => {
-  if (!chart) return
+  if (!chart) return;
 
   const option: EChartsOption = {
     tooltip: {
-      trigger: 'axis',
+      trigger: "axis",
       axisPointer: {
-        type: 'shadow'
+        type: "shadow"
       }
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
       containLabel: true
     },
     xAxis: {
-      type: 'category',
+      type: "category",
       data: props.chartData.labels,
       axisTick: {
         alignWithLabel: true
       }
     },
     yAxis: {
-      type: 'value'
+      type: "value"
     },
     series: [
       {
-        name: '数量',
-        type: 'bar',
-        barWidth: '60%',
+        name: "数量",
+        type: "bar",
+        barWidth: "60%",
         data: props.chartData.labels.map((label, index) => ({
           value: props.chartData.datasets[0].data[index],
           itemStyle: {
@@ -68,19 +68,23 @@ const updateChart = () => {
         }))
       }
     ]
-  }
+  };
 
-  chart.setOption(option)
-}
+  chart.setOption(option);
+};
 
-watch(() => props.chartData, () => {
-  updateChart()
-}, { deep: true })
+watch(
+  () => props.chartData,
+  () => {
+    updateChart();
+  },
+  { deep: true }
+);
 
 onMounted(() => {
-  initChart()
-  window.addEventListener('resize', () => {
-    chart?.resize()
-  })
-})
-</script> 
+  initChart();
+  window.addEventListener("resize", () => {
+    chart?.resize();
+  });
+});
+</script>

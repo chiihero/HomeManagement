@@ -337,13 +337,13 @@ export default defineComponent({
 
     // 图片URL缓存
     const imageUrlCache = ref<Record<number, string>>({});
-    
+
     // 获取图片URL
     const getImageUrl = async (imageId: number) => {
       if (imageUrlCache.value[imageId]) {
         return imageUrlCache.value[imageId];
       }
-      
+
       try {
         const blob = await getImageData(imageId);
         const url = URL.createObjectURL(blob);
@@ -354,7 +354,7 @@ export default defineComponent({
         return "";
       }
     };
-    
+
     // 加载实体图片
     const loadEntityImage = async (entity: Entity) => {
       if (entity.images && entity.images[0] && entity.images[0].id) {
@@ -378,7 +378,7 @@ export default defineComponent({
         if (response.data && response.data.records) {
           entityList.value = response.data.records;
           pagination.total = response.data.total;
-          
+
           // 加载每个实体的第一张图片
           for (const entity of entityList.value) {
             await loadEntityImage(entity);

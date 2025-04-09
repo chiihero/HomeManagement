@@ -24,7 +24,7 @@
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="位置">{{
-            entity.location
+            getLocation(entity)
           }}</el-descriptions-item>
           <el-descriptions-item label="价格">{{
             formatPrice(entity.price)
@@ -36,7 +36,7 @@
             >{{ entity.warrantyPeriod }}个月</el-descriptions-item
           >
           <el-descriptions-item label="父级物品">{{
-            entity.parentId ? getParentName(entity.parentId) : "无"
+            entity.parentId ? getParentName(entity.parentId, treeData) : "无"
           }}</el-descriptions-item>
         </el-descriptions>
       </div>
@@ -63,7 +63,7 @@
           </h3>
         </div>
         <div class="flex flex-wrap gap-2">
-          <el-tag v-for="tag in entity.tags" :key="tag">
+          <el-tag v-for="(tag, index) in entity.tags" :key="index">
             {{ tag }}
           </el-tag>
           <el-empty
@@ -84,8 +84,8 @@
         </div>
         <div class="flex flex-wrap gap-4">
           <el-image
-            v-for="image in entity.images"
-            :key="image.id"
+            v-for="(image, index) in entity.images"
+            :key="index"
             :src="imageUrlCache[image.id]"
             :preview-src-list="previewImageUrls"
             fit="cover"
@@ -98,15 +98,12 @@
           />
         </div>
       </div>
-
-      
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
-import { Document, Edit, Delete } from "@element-plus/icons-vue";
+import { computed, watch, onMounted } from "vue";
 import type { Entity } from "@/types/entity";
 import { useEntityDetail } from "../composables/useEntityDetail";
 
@@ -117,6 +114,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: "edit"): void;
+  (e: "delete"): void;
+}>();
 
 // 使用实体详情composable
 const {
@@ -130,17 +131,26 @@ const {
   getPreviewImageUrls
 } = useEntityDetail();
 
+// 获取位置信息
+const getLocation = (entity: Entity) => {
+  return entity && "location" in entity ? entity.location : "未设置";
+};
+
 // 预览图片URL列表
 const previewImageUrls = computed(() => {
   return getPreviewImageUrls(props.entity);
 });
 
 // 监听实体变化，加载图片
-watch(() => props.entity, (newEntity) => {
-  if (newEntity) {
-    loadAllImages(newEntity);
-  }
-}, { immediate: true });
+watch(
+  () => props.entity,
+  newEntity => {
+    if (newEntity) {
+      loadAllImages(newEntity);
+    }
+  },
+  { immediate: true }
+);
 
 // 组件挂载时加载图片
 onMounted(() => {

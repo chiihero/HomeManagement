@@ -8,7 +8,6 @@ import {
   deleteEntity
 } from "@/api/entity";
 import { getEntityImages } from "@/api/image";
-
 import type { Entity, EntityFormData } from "@/types/entity";
 import { useUserStoreHook } from "@/store/modules/user";
 import { useEntityImageUpload } from "../composables/useEntityImageUpload";
@@ -16,17 +15,15 @@ import { useEntityImageUpload } from "../composables/useEntityImageUpload";
 export function useEntityCRUD() {
   // 状态
   const authStore = useUserStoreHook();
-
   const loading = ref(false);
   const saving = ref(false);
   const treeData = ref<Entity[]>([]);
   const currentEntity = ref<Entity | null>(null);
   const isEditing = ref(false);
   const isAdding = ref(false);
+
   // 使用图片上传composable
-  const {
-    uploadImages
-  } = useEntityImageUpload();
+  const { uploadImages } = useEntityImageUpload();
 
   // 加载树形数据
   const loadTreeData = async () => {
@@ -34,6 +31,7 @@ export function useEntityCRUD() {
     try {
       const response = await getEntityTree(authStore.currentUser.id);
       if (response.data) {
+        // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         treeData.value = response.data;
       }
     } catch (error) {
@@ -100,9 +98,13 @@ export function useEntityCRUD() {
     try {
       const response = await getEntity(id);
       if (response.data) {
+        // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         currentEntity.value = response.data;
         // 如果实体中没有图片数据，单独加载图片
-        if (!currentEntity.value.images || currentEntity.value.images.length === 0) {
+        if (
+          !currentEntity.value.images ||
+          currentEntity.value.images.length === 0
+        ) {
           await loadEntityImages(id);
         }
       }
@@ -111,7 +113,7 @@ export function useEntityCRUD() {
       ElMessage.error("加载物品详情失败");
     }
   };
-  
+
   /**
    * 单独加载实体的图片列表
    * @param entityId 实体ID
@@ -136,55 +138,70 @@ export function useEntityCRUD() {
     }
   };
 
-
   // 保存实体
   const saveEntity = async (formData: EntityFormData) => {
     saving.value = true;
     try {
-
       // 特殊处理根空间的情况
-      if (formData.parentId === '0') {
+      if (formData.parentId === "0") {
         // @ts-ignore - 忽略类型检查，因为服务端需要接收null值
         formData.parentId = null; // 发送null表示没有父节点
       }
+      // 临时保存图片数据，因为提交给后端时不需要这些数据
+      const images = [...formData.images];
+
       // 从提交数据中移除images字段，避免发送大量无用数据到后端
-      // delete formData.images;
+      delete formData.images;
+
       const response = isAdding.value
         ? await createEntity(formData)
         : await updateEntity(currentEntity.value?.id || "", formData);
 
       if (response.data) {
         // 将返回的数据转换为Entity类型
+        // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         const savedEntity = response.data as Entity;
-        
+
         // 更新当前实体
         currentEntity.value = savedEntity;
-        
+
         // 获取实体ID用于图片上传
         const entityId = savedEntity.id;
-        
+
         // 上传图片（如果有）
         if (entityId) {
           try {
-            const uploadedImageIds = await uploadImages(entityId);
-            if (uploadedImageIds && uploadedImageIds.length > 0) {
-              ElMessage.success(isAdding.value ? '添加物品及图片成功' : '更新物品及图片成功');
+            const uploadSuccess = await uploadImages(entityId, images);
+            if (uploadSuccess) {
+              ElMessage.success(
+                isAdding.value ? "添加物品及图片成功" : "更新物品及图片成功"
+              );
+            } else {
+              ElMessage.warning(
+                isAdding.value
+                  ? "物品已添加，但部分图片上传失败"
+                  : "物品已更新，但部分图片上传失败"
+              );
             }
           } catch (uploadError) {
-            console.error('上传图片失败:', uploadError);
-            ElMessage.warning(isAdding.value ? '物品已添加，但图片上传失败' : '物品已更新，但图片上传失败');
+            console.error("上传图片失败:", uploadError);
+            ElMessage.warning(
+              isAdding.value
+                ? "物品已添加，但图片上传失败"
+                : "物品已更新，但图片上传失败"
+            );
           }
         } else {
           ElMessage.success(isAdding.value ? "添加成功" : "更新成功");
         }
-        
+
         // 操作完成后重置状态
         isEditing.value = false;
         isAdding.value = false;
-        
+
         // 重新加载树形数据
         loadTreeData();
-        
+
         // 如果是添加操作，重新加载实体详情
         if (entityId) {
           await loadEntityDetail(entityId);
@@ -225,7 +242,6 @@ export function useEntityCRUD() {
     }
   };
 
-  
   return {
     loading,
     saving,
@@ -239,6 +255,7 @@ export function useEntityCRUD() {
     openAddEntityForm,
     openEditEntityForm,
     cancelEditOrAdd,
-    saveEntity
+    saveEntity,
+    loadEntityDetail
   };
 }

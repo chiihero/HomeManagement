@@ -46,4 +46,4 @@ export interface UserQueryParams {
   email?: string;
   role?: string;
   enabled?: boolean;
-} 
+}

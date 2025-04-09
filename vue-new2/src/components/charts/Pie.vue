@@ -1,68 +1,68 @@
 <template>
-  <div ref="chartRef" :style="{ height: height + 'px' }"></div>
+  <div ref="chartRef" :style="{ height: height + 'px' }" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import * as echarts from 'echarts'
-import type { EChartsOption } from 'echarts'
+import { ref, onMounted, watch } from "vue";
+import * as echarts from "echarts";
+import type { EChartsOption } from "echarts";
 
 interface Props {
   chartData: {
-    labels: string[]
+    labels: string[];
     datasets: {
-      backgroundColor: string[]
-      data: number[]
-    }[]
-  }
-  height: number
+      backgroundColor: string[];
+      data: number[];
+    }[];
+  };
+  height: number;
 }
 
-const props = defineProps<Props>()
-const chartRef = ref<HTMLElement>()
-let chart: echarts.ECharts | null = null
+const props = defineProps<Props>();
+const chartRef = ref<HTMLElement>();
+let chart: echarts.ECharts | null = null;
 
 const initChart = () => {
-  if (!chartRef.value) return
-  
-  chart = echarts.init(chartRef.value)
-  updateChart()
-}
+  if (!chartRef.value) return;
+
+  chart = echarts.init(chartRef.value);
+  updateChart();
+};
 
 const updateChart = () => {
-  if (!chart) return
+  if (!chart) return;
 
   const option: EChartsOption = {
     tooltip: {
-      trigger: 'item',
-      formatter: '{a} <br/>{b}: {c} ({d}%)'
+      trigger: "item",
+      formatter: "{a} <br/>{b}: {c} ({d}%)"
     },
     legend: {
-      orient: 'vertical',
+      orient: "vertical",
       right: 10,
-      top: 'center',
+      top: "center",
       data: props.chartData.labels
     },
     series: [
       {
-        name: '数量',
-        type: 'pie',
-        radius: ['50%', '70%'],
+        name: "数量",
+        type: "pie",
+        radius: ["50%", "70%"],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 10,
-          borderColor: '#fff',
+          borderColor: "#fff",
           borderWidth: 2
         },
         label: {
           show: false,
-          position: 'center'
+          position: "center"
         },
         emphasis: {
           label: {
             show: true,
-            fontSize: '18',
-            fontWeight: 'bold'
+            fontSize: "18",
+            fontWeight: "bold"
           }
         },
         labelLine: {
@@ -77,19 +77,23 @@ const updateChart = () => {
         }))
       }
     ]
-  }
+  };
 
-  chart.setOption(option)
-}
+  chart.setOption(option);
+};
 
-watch(() => props.chartData, () => {
-  updateChart()
-}, { deep: true })
+watch(
+  () => props.chartData,
+  () => {
+    updateChart();
+  },
+  { deep: true }
+);
 
 onMounted(() => {
-  initChart()
-  window.addEventListener('resize', () => {
-    chart?.resize()
-  })
-})
-</script> 
+  initChart();
+  window.addEventListener("resize", () => {
+    chart?.resize();
+  });
+});
+</script>

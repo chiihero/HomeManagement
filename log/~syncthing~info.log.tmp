@@ -1,314 +1,228 @@
-[2025-04-08 08:19:33.524] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Starting HomeManagementApplication using Java 21.0.6 with PID 169900 (D:\project\JavaProject\HomeManagement\build\classes\java\main started by Administrator in D:\project\JavaProject\HomeManagement)
-[2025-04-08 08:19:33.537] [INFO] [restartedMain] [org.springframework.boot.SpringApplication] - The following 1 profile is active: "my"
-[2025-04-08 08:19:33.584] [INFO] [restartedMain] [org.springframework.boot.logging.DeferredLog] - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-[2025-04-08 08:19:33.584] [INFO] [restartedMain] [org.springframework.boot.logging.DeferredLog] - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-[2025-04-08 08:19:34.861] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat initialized with port 26000 (http)
-[2025-04-08 08:19:34.874] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing ProtocolHandler ["http-nio-26000"]
-[2025-04-08 08:19:34.876] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting service [Tomcat]
-[2025-04-08 08:19:34.876] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting Servlet engine: [Apache Tomcat/10.1.36]
-[2025-04-08 08:19:34.928] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring embedded WebApplicationContext
-[2025-04-08 08:19:34.928] [INFO] [restartedMain] [org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext] - Root WebApplicationContext: initialization completed in 1341 ms
-[2025-04-08 08:19:35.005] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Starting...
-[2025-04-08 08:19:35.421] [INFO] [restartedMain] [com.zaxxer.hikari.pool.HikariPool] - master - Added connection com.mysql.cj.jdbc.ConnectionImpl@70cd5dc6
-[2025-04-08 08:19:35.422] [INFO] [restartedMain] [com.zaxxer.hikari.HikariDataSource] - master - Start completed.
-[2025-04-08 08:19:35.423] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource - add a datasource named [master] success
-[2025-04-08 08:19:35.423] [INFO] [restartedMain] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource initial loaded [1] datasource,primary datasource named [master]
-[2025-04-08 08:19:35.905] [INFO] [restartedMain] [com.chii.homemanagement.service.impl.FileStorageServiceImpl] - 文件存储目录初始化成功: D:\project\JavaProject\HomeManagement\uploads
-[2025-04-08 08:19:36.069] [INFO] [restartedMain] [org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer] - Global AuthenticationManager configured with UserDetailsService bean with name userServiceImpl
-[2025-04-08 08:19:36.343] [INFO] [restartedMain] [org.springframework.security.web.access.channel.ChannelProcessingFilter] - Validated configuration attributes
-[2025-04-08 08:19:36.381] [INFO] [restartedMain] [org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean] - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
-[2025-04-08 08:19:36.605] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Using default implementation for ThreadExecutor
-[2025-04-08 08:19:36.614] [INFO] [restartedMain] [org.quartz.core.SchedulerSignalerImpl] - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
-[2025-04-08 08:19:36.614] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Quartz Scheduler v.2.3.2 created.
-[2025-04-08 08:19:36.615] [INFO] [restartedMain] [org.quartz.simpl.RAMJobStore] - RAMJobStore initialized.
-[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
-  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
-  NOT STARTED.
-  Currently in standby mode.
-  Number of jobs executed: 0
-  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
-  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
-
-[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
-[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.impl.StdSchedulerFactory] - Quartz scheduler version: 2.3.2
-[2025-04-08 08:19:36.616] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@75aae0ae
-[2025-04-08 08:19:36.661] [INFO] [restartedMain] [org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer] - LiveReload server is running on port 35729
-[2025-04-08 08:19:36.689] [INFO] [restartedMain] [org.apache.juli.logging.DirectJDKLog] - Starting ProtocolHandler ["http-nio-26000"]
-[2025-04-08 08:19:36.711] [INFO] [restartedMain] [org.springframework.boot.web.embedded.tomcat.TomcatWebServer] - Tomcat started on port 26000 (http) with context path '/'
-[2025-04-08 08:19:36.712] [INFO] [restartedMain] [org.springframework.scheduling.quartz.SchedulerFactoryBean] - Starting Quartz Scheduler now
-[2025-04-08 08:19:36.712] [INFO] [restartedMain] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED started.
-[2025-04-08 08:19:36.722] [INFO] [restartedMain] [org.springframework.boot.StartupInfoLogger] - Started HomeManagementApplication in 3.669 seconds (process running for 4.704)
-[2025-04-08 08:19:36.801] [INFO] [restartedMain] [com.chii.homemanagement.util.DbInitializer] - 系统设置已存在，无需初始化
-[2025-04-08 10:18:52.210] [INFO] [http-nio-26000-exec-1] [org.apache.juli.logging.DirectJDKLog] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-[2025-04-08 10:18:52.211] [INFO] [http-nio-26000-exec-1] [org.springframework.web.servlet.FrameworkServlet] - Initializing Servlet 'dispatcherServlet'
-[2025-04-08 10:18:52.219] [INFO] [http-nio-26000-exec-1] [org.springframework.web.servlet.FrameworkServlet] - Completed initialization in 8 ms
-[2025-04-08 10:55:10.484] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 10:55:10.513] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 10:55:10.523] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:01:52.441] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:01:52.469] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:01:52.479] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:02:48.425] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:02:48.439] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:02:48.446] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:02:48.455] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:02:48.459] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:02:48.470] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:02:51.322] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:02:51.343] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:02:51.357] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:02:58.440] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:02:58.461] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:02:58.472] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:03:14.257] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:03:14.270] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:03:14.276] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:03:14.289] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:03:14.296] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:03:14.305] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:03:24.996] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:03:25.018] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:03:25.028] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 12:49:10.098] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 12:49:10.122] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 12:49:10.132] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 14:58:11.362] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 14:58:11.383] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 14:58:11.392] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 14:58:12.855] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 14:58:12.873] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 14:58:43.828] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 14:58:43.869] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 14:58:43.880] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 14:58:46.307] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 14:58:46.325] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:00:36.224] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:00:36.249] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:00:36.259] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:00:49.977] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:00:50.008] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:00:50.020] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:01:18.158] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:01:18.183] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:01:18.194] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:03:34.292] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:03:34.316] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:03:34.326] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:03:57.310] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:03:57.334] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:03:57.344] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:04:00.727] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:04:00.758] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:04:00.772] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:05:23.215] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:05:23.233] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:05:23.242] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:07:15.518] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:07:15.539] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:07:15.547] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:07:32.017] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:07:32.040] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:07:32.055] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:08:06.672] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:08:06.692] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:08:06.705] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:09:19.469] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:09:19.487] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:09:19.495] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:11:11.254] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:11:11.272] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:11:11.281] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:11:22.677] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:11:22.701] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:11:22.726] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:11:23.284] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:11:23.309] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:13:48.597] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:13:48.617] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:13:48.627] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:13:52.743] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:13:52.764] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:13:52.775] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:14:48.895] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:14:56.319] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.525] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=3m5s981ms926µs200ns).
-[2025-04-08 15:17:44.547] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.547] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.551] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.547] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.552] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-12] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.557] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.561] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.565] [INFO] [http-nio-26000-exec-11] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.565] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.565] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:17:44.579] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.583] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.586] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.587] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.588] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.588] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.588] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.590] [INFO] [http-nio-26000-exec-12] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.595] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.595] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.596] [INFO] [http-nio-26000-exec-11] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.596] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.596] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.599] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:17:44.603] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.604] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.605] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.605] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.605] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.607] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.607] [INFO] [http-nio-26000-exec-12] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-11] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.612] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:17:44.615] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:18:16.966] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:18:16.990] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:18:17.000] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:18:20.521] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:18:20.538] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:20:04.131] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:20:04.160] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:20:04.171] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:20:05.253] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:20:05.271] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:21:24.252] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=1m39s700ms462µs500ns).
-[2025-04-08 15:21:24.275] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:21:24.293] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:21:24.301] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:22:29.006] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:22:29.031] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:22:29.040] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:22:29.981] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:22:30.001] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:35:25.419] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:35:25.448] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:35:25.461] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:35:51.809] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:35:51.831] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:35:51.842] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:37:03.119] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:37:03.148] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:37:03.158] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:37:11.300] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:37:11.323] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:37:11.340] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:37:20.931] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:37:20.959] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:37:20.970] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:37:42.986] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:37:43.008] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:37:43.018] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:39:26.561] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:39:26.597] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:39:26.613] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:39:38.109] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:39:38.139] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:39:38.151] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:43:15.199] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:43:15.219] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:43:15.231] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:43:17.795] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:43:17.814] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:43:32.988] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:43:33.009] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:43:33.018] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:43:33.891] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:43:33.911] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:44:54.926] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:44:54.953] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:44:54.964] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:44:55.739] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:44:55.758] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:53:48.355] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:53:48.417] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:53:48.474] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:53:49.269] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:53:49.286] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:55:43.378] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:55:43.396] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:55:43.407] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:55:44.753] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:55:44.773] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:57:11.591] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:57:11.620] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:57:11.630] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:57:17.693] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:57:17.723] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:57:17.738] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:57:26.858] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:57:26.878] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:57:26.887] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:57:33.055] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:57:33.079] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:57:33.092] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:58:02.352] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:58:02.382] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:58:02.408] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:58:15.873] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:58:15.906] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:58:15.916] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:58:28.119] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:58:28.141] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:58:28.150] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:58:58.025] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:58:58.047] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:58:58.060] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:59:26.628] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:59:26.646] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:59:29.830] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 15:59:29.878] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 15:59:29.887] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 15:59:30.681] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 15:59:30.699] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:02:20.838] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
-[2025-04-08 16:02:33.279] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
-[2025-04-08 16:02:52.161] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 16:02:52.195] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:02:52.205] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 16:03:42.530] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 16:03:42.548] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:03:42.679] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
-[2025-04-08 16:04:03.864] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 16:04:03.887] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:04:03.896] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 16:05:14.390] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 16:05:14.411] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:05:14.420] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 16:05:15.647] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 16:05:15.663] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:05:28.555] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
-[2025-04-08 16:06:15.858] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 16:06:15.881] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:06:15.893] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 16:06:18.726] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 16:06:18.745] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:16:20.493] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
-[2025-04-08 16:16:21.046] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
-[2025-04-08 16:16:21.065] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:16:21.074] [INFO] [http-nio-26000-exec-13] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
-[2025-04-08 16:16:25.048] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=6
-[2025-04-08 16:16:25.066] [INFO] [http-nio-26000-exec-14] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
-[2025-04-08 16:17:20.911] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityImageController] - 获取图片数据: imageId=1
-[2025-04-08 16:21:03.101] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 新增实体: 测试2
-[2025-04-08 20:34:21.030] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
-[2025-04-08 20:34:21.034] [INFO] [SpringApplicationShutdownHook] [org.springframework.boot.web.embedded.tomcat.GracefulShutdown] - Commencing graceful shutdown. Waiting for active requests to complete
-[2025-04-08 20:34:21.046] [INFO] [tomcat-shutdown] [org.springframework.boot.web.embedded.tomcat.GracefulShutdown] - Graceful shutdown complete
-[2025-04-08 20:34:21.051] [INFO] [SpringApplicationShutdownHook] [org.springframework.scheduling.quartz.SchedulerFactoryBean] - Shutting down Quartz Scheduler
-[2025-04-08 20:34:21.051] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
-[2025-04-08 20:34:21.052] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED paused.
-[2025-04-08 20:34:21.052] [INFO] [SpringApplicationShutdownHook] [org.quartz.core.QuartzScheduler] - Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
-[2025-04-08 20:34:21.055] [INFO] [SpringApplicationShutdownHook] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource start closing ....
-[2025-04-08 20:34:21.059] [INFO] [SpringApplicationShutdownHook] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown initiated...
-[2025-04-08 20:34:21.140] [INFO] [SpringApplicationShutdownHook] [com.zaxxer.hikari.HikariDataSource] - master - Shutdown completed.
-[2025-04-08 20:34:21.140] [INFO] [SpringApplicationShutdownHook] [com.baomidou.dynamic.datasource.destroyer.DefaultDataSourceDestroyer] - dynamic-datasource close the datasource named [master] success,
-[2025-04-08 20:34:21.140] [INFO] [SpringApplicationShutdownHook] [com.baomidou.dynamic.datasource.DynamicRoutingDataSource] - dynamic-datasource all closed success,bye
+[2025-04-09 00:02:44.239] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.246] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.247] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.716] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.719] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.730] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.739] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.742] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.743] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.750] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.754] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.755] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.765] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.767] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.768] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.778] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.781] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.783] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.796] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.800] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.801] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.809] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.812] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.813] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:02:44.821] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:02:44.824] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:02:44.825] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:03:29.142] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:03:29.145] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:03:29.147] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:03:59.567] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:03:59.571] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:03:59.573] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:03:59.654] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:03:59.656] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:03:59.658] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:05:40.510] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:05:40.513] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:05:40.514] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:07:46.517] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:07:46.520] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:07:46.522] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:09:09.031] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 新增实体: 444
+[2025-04-09 00:09:10.605] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:09:10.608] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:09:10.609] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:42.640] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 新增实体: 33
+[2025-04-09 00:15:43.701] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.705] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.706] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.808] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.812] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.813] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.823] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.826] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.827] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.836] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.839] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.840] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.850] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.852] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.853] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.863] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.866] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.868] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.877] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.880] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.881] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.890] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.892] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.893] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.902] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.905] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.906] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:15:43.916] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:15:43.919] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:15:43.921] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:21.320] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 新增实体: 法等风
+[2025-04-09 00:22:23.768] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.772] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.773] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.880] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.883] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.884] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.891] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.894] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.896] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.903] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.906] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.907] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.915] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.918] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.919] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.928] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.931] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.932] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.940] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.943] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.944] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:22:23.952] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:22:23.956] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:22:23.957] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:23:03.997] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 新增实体: 恶趣味色丢
+[2025-04-09 00:23:38.446] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:23:38.450] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:23:38.451] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:29:57.297] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:29:57.300] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:29:57.302] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:30:16.998] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:30:17.002] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:30:17.003] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:30:23.639] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 00:30:23.642] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 00:30:23.644] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 1, 总节点数量: 1
+[2025-04-09 00:31:09.772] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 新增实体: 3234
+[2025-04-09 12:34:50.831] [WARN] [master housekeeper] [com.zaxxer.hikari.pool.HikariPool$HouseKeeper] - master - Thread starvation or clock leap detected (housekeeper delta=11h16m38s930ms390µs900ns).
+[2025-04-09 12:40:15.088] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:40:15.091] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:40:15.093] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:40:15.094] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 2, 总节点数量: 2
+[2025-04-09 12:41:42.204] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 新增实体: 3122
+[2025-04-09 12:43:09.761] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:43:09.764] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:43:09.766] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:43:09.768] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:43:09.769] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 3, 总节点数量: 3
+[2025-04-09 12:43:21.384] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 新增实体: 333
+[2025-04-09 12:44:46.924] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=28
+[2025-04-09 12:44:46.928] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:44:46.948] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityImageController] - 获取实体图片列表: entityId=28
+[2025-04-09 12:45:42.996] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:45:43.000] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:45:43.001] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:45:43.002] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:45:43.004] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:45:43.005] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 4, 总节点数量: 4
+[2025-04-09 12:47:15.090] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:47:15.093] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:47:15.094] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:47:15.096] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:47:15.097] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:47:15.097] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 4, 总节点数量: 4
+[2025-04-09 12:53:00.825] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:53:00.829] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:53:00.831] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:53:00.832] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:53:00.834] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:53:00.835] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 4, 总节点数量: 4
+[2025-04-09 12:53:02.855] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:53:02.859] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:53:02.861] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:53:02.862] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:53:02.863] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:53:02.865] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 4, 总节点数量: 4
+[2025-04-09 12:53:03.898] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:53:03.901] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:53:03.903] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:53:03.904] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:53:03.906] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:53:03.907] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 4, 总节点数量: 4
+[2025-04-09 12:53:14.465] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.controller.EntityController] - 查询实体详情: id=27
+[2025-04-09 12:53:14.467] [INFO] [http-nio-26000-exec-8] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:53:14.498] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityImageController] - 获取实体图片列表: entityId=27
+[2025-04-09 12:53:30.746] [INFO] [http-nio-26000-exec-6] [com.chii.homemanagement.controller.EntityController] - 新增实体: 333333
+[2025-04-09 12:58:35.890] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 12:58:35.894] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 12:58:35.895] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 12:58:35.896] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 12:58:35.897] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 12:58:35.899] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 12:58:35.900] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:01:02.933] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:01:02.937] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:01:02.938] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:01:02.939] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:01:02.941] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:01:02.942] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:01:02.943] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:01:10.592] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:01:10.596] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:01:10.598] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:01:10.599] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:01:10.600] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:01:10.602] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:01:10.603] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:01:11.940] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:01:11.945] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:01:11.946] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:01:11.947] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:01:11.948] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:01:11.950] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:01:11.951] [INFO] [http-nio-26000-exec-1] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:01:21.303] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:01:21.307] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:01:21.309] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:01:21.310] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:01:21.312] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:01:21.313] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:01:21.314] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:01:21.857] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:01:21.860] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:01:21.862] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:01:21.863] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:01:21.864] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:01:21.866] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:01:21.868] [INFO] [http-nio-26000-exec-10] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:01:45.845] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:01:45.848] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:01:45.849] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:01:45.850] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:01:45.851] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:01:45.852] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:01:45.853] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:08:21.025] [WARN] [http-nio-26000-exec-3] [com.chii.homemanagement.config.JwtAuthenticationFilter] - JWT令牌解析失败: JWT expired at 2025-04-08T05:23:06Z. Current time: 2025-04-09T05:08:21Z, a difference of 85515023 milliseconds.  Allowed clock skew: 0 milliseconds.
+[2025-04-09 13:08:21.025] [WARN] [http-nio-26000-exec-10] [com.chii.homemanagement.config.JwtAuthenticationFilter] - JWT令牌解析失败: JWT expired at 2025-04-08T05:23:06Z. Current time: 2025-04-09T05:08:21Z, a difference of 85515023 milliseconds.  Allowed clock skew: 0 milliseconds.
+[2025-04-09 13:08:22.454] [INFO] [http-nio-26000-exec-5] [com.chii.homemanagement.controller.DashboardController] - 获取仪表盘统计数据: userId=1
+[2025-04-09 13:08:22.485] [INFO] [http-nio-26000-exec-9] [com.chii.homemanagement.controller.EntityController] - 获取最近添加的实体列表: days=5, userId=1
+[2025-04-09 13:08:26.868] [INFO] [http-nio-26000-exec-3] [com.chii.homemanagement.controller.DashboardController] - 获取仪表盘统计数据: userId=1
+[2025-04-09 13:08:26.887] [INFO] [http-nio-26000-exec-2] [com.chii.homemanagement.controller.EntityController] - 获取最近添加的实体列表: days=5, userId=1
+[2025-04-09 13:08:28.202] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取实体树: userId=1
+[2025-04-09 13:08:28.206] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=6
+[2025-04-09 13:08:28.207] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=26
+[2025-04-09 13:08:28.208] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=27
+[2025-04-09 13:08:28.209] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=28
+[2025-04-09 13:08:28.210] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.service.impl.EntityTagServiceImpl] - 获取实体标签: entityId=29
+[2025-04-09 13:08:28.211] [INFO] [http-nio-26000-exec-4] [com.chii.homemanagement.controller.EntityController] - 获取到实体树，根节点数量: 5, 总节点数量: 5
+[2025-04-09 13:08:29.609] [INFO] [http-nio-26000-exec-7] [com.chii.homemanagement.controller.EntityController] - 获取用户使用的物品列表: userId=1

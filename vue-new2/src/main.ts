@@ -55,10 +55,10 @@ app.use(VueTippy);
 
 getPlatformConfig(app).then(async config => {
   setupStore(app);
-  
+
   // 尝试恢复用户会话
   await useUserStoreHook().restoreSession();
-  
+
   app.use(router);
   await router.isReady();
   injectResponsiveStorage(app, config);
