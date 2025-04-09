@@ -88,10 +88,6 @@ export const exportEntities = (params: EntityQueryParams) => {
   });
 };
 
-// 获取所有标签
-export const getAllTags = () => {
-  return http.get<ResponseResult<string[]>>("/entities/tags");
-};
 
 // 获取所有类型
 export const getAllTypes = () => {

@@ -8,7 +8,8 @@ import {
   deleteEntity
 } from "@/api/entity";
 import { getEntityImages } from "@/api/image";
-import type { Entity, EntityFormData } from "@/types/entity";
+import { getAllTags } from "@/api/tag"; // 从tag.ts导入getAllTags
+import type { Entity, EntityFormData ,Tag } from "@/types/entity";
 import { useUserStoreHook } from "@/store/modules/user";
 import { useEntityImageUpload } from "../composables/useEntityImageUpload";
 
@@ -21,6 +22,7 @@ export function useEntityCRUD() {
   const currentEntity = ref<Entity | null>(null);
   const isEditing = ref(false);
   const isAdding = ref(false);
+  const entityTags = ref<Tag[]>([]);
 
   // 使用图片上传composable
   const { uploadImages } = useEntityImageUpload();
@@ -41,6 +43,34 @@ export function useEntityCRUD() {
       loading.value = false;
     }
   };
+
+  // 加载所有标签数据
+  const loadAllTags = async () => {
+    try {
+      // 从用户store获取userId
+      const userId = authStore.currentUser?.id;
+      console.log("当前用户ID:", userId);
+      
+      if (!userId) {
+        console.error("无法获取用户ID");
+        return;
+      }
+      
+      console.log("开始获取标签数据，userId:", userId);
+      const response = await getAllTags(userId);
+      console.log("标签API返回原始数据:", response);
+      
+      if (response && response.data && response.data.length > 0) {
+        console.log("标签API返回数据:", response.data);
+        entityTags.value = response.data|| []
+        console.log("处理后的标签列表:", entityTags.value);
+      }
+    } catch (error) {
+      console.error("加载标签失败:", error);
+      ElMessage.error("加载标签数据失败");
+    }
+  };
+
 
   // 处理节点点击
   const handleNodeClick = async (node: Entity) => {
@@ -142,20 +172,25 @@ export function useEntityCRUD() {
   const saveEntity = async (formData: EntityFormData) => {
     saving.value = true;
     try {
+      console.log("保存实体，表单数据:", formData);
+      
       // 特殊处理根空间的情况
       if (formData.parentId === "0") {
         // @ts-ignore - 忽略类型检查，因为服务端需要接收null值
         formData.parentId = null; // 发送null表示没有父节点
       }
+      
       // 临时保存图片数据，因为提交给后端时不需要这些数据
-      const images = [...formData.images];
-
+      const images = formData.images ? [...formData.images] : [];
+      console.log("准备上传的图片:", images);
+      
       // 从提交数据中移除images字段，避免发送大量无用数据到后端
-      delete formData.images;
+      const entityData = { ...formData };
+      delete entityData.images;
 
       const response = isAdding.value
-        ? await createEntity(formData)
-        : await updateEntity(currentEntity.value?.id || "", formData);
+        ? await createEntity(entityData)
+        : await updateEntity(currentEntity.value?.id || "", entityData);
 
       if (response.data) {
         // 将返回的数据转换为Entity类型
@@ -167,10 +202,12 @@ export function useEntityCRUD() {
 
         // 获取实体ID用于图片上传
         const entityId = savedEntity.id;
+        console.log("实体保存成功，ID:", entityId);
 
         // 上传图片（如果有）
-        if (entityId) {
+        if (entityId && images && images.length > 0) {
           try {
+            console.log("开始上传图片，数量:", images.length);
             const uploadSuccess = await uploadImages(entityId, images);
             if (uploadSuccess) {
               ElMessage.success(
@@ -249,6 +286,7 @@ export function useEntityCRUD() {
     currentEntity,
     isEditing,
     isAdding,
+    entityTags,
     loadTreeData,
     handleNodeClick,
     handleDelete,
@@ -256,6 +294,7 @@ export function useEntityCRUD() {
     openEditEntityForm,
     cancelEditOrAdd,
     saveEntity,
-    loadEntityDetail
+    loadEntityDetail,
+    loadAllTags,
   };
 }

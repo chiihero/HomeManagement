@@ -2,7 +2,8 @@ export default {
   path: "/reminder",
   redirect: "/reminder/index",
   meta: {
-    title: "提醒管理"
+    title: "提醒管理",
+    icon: "ep:clock"
   },
   children: [
     {

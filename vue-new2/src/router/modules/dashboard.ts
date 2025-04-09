@@ -2,7 +2,9 @@ export default {
   path: "/dashboard",
   redirect: "/dashboard/index",
   meta: {
-    title: "仪表盘"
+    title: "仪表盘",
+    icon: "ep:odometer"
+
   },
   children: [
     {

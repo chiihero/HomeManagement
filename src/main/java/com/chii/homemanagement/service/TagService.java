@@ -50,12 +50,4 @@ public interface TagService extends IService<Tag> {
      */
     boolean deleteTag(Long id);
 
-    /**
-     * 为物品设置标签
-     *
-     * @param itemId 物品ID
-     * @param tagIds 标签ID列表
-     * @return 是否成功
-     */
-    boolean setItemTags(Long itemId, List<Long> tagIds);
 } 

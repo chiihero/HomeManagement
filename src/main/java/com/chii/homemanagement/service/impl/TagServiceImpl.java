@@ -35,6 +35,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     public Long addTag(Tag tag) {
         // 设置创建和更新时间
         LocalDateTime now = LocalDateTime.now();
+        tag.setCreateUserId(tag.getUserId());
         tag.setCreateTime(now);
         tag.setUpdateTime(now);
         
@@ -59,13 +60,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteTag(Long id) {
-        return true;
+        return removeById(id);
 
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean setItemTags(Long itemId, List<Long> tagIds) {
-    return true;
     }
 } 

@@ -86,7 +86,7 @@ export type EntityFormData = {
   purchaseDate: string;
   warrantyPeriod: number;
   description: string;
-  tags: string[];
+  tags: Tag[];
   images: { file: File; url: string }[] | any[];
   userId?: string;
 };
@@ -101,7 +101,7 @@ export type EntityQueryParams = {
   maxPrice?: number;
   startDate?: string;
   endDate?: string;
-  tags?: string[];
+  tags?: Tag[];
   page: number;
   pageSize: number;
 };

@@ -13,6 +13,8 @@ import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.EntityTagService;
 import com.chii.homemanagement.service.TagService;
 import com.chii.homemanagement.service.UserService;
+import com.chii.homemanagement.exception.BusinessException;
+import com.chii.homemanagement.common.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -34,6 +36,10 @@ import java.util.stream.Collectors;
 
 /**
  * 实体服务实现类
+ * 提供实体（物品和空间）的增删改查、树形结构处理等功能
+ * 
+ * @author chii
+ * @since 1.0.0
  */
 @Service
 @Slf4j
@@ -54,11 +60,22 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
     @Autowired
     private TagService tagService;
 
+    /**
+     * 分页查询实体
+     *
+     * @param page 分页参数
+     * @param entity 查询条件
+     * @param userId 用户ID
+     * @return 分页结果
+     */
     @Override
     public IPage<Entity> pageEntities(Page<Entity> page, Entity entity, Long userId) {
         if (userId == null) {
-            throw new IllegalArgumentException("用户ID不能为空");
+            log.error("分页查询实体时用户ID为空");
+            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "用户ID不能为空");
         }
+        
+        log.info("开始分页查询实体: userId={}, page={}, size={}", userId, page.getCurrent(), page.getSize());
         
         // 默认分页参数
         page = Optional.ofNullable(page).orElse(new Page<>(1, 10));
@@ -78,25 +95,41 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
                        .eq(StringUtils.hasText(entity.getStatus()), Entity::getStatus, entity.getStatus());
         }
         
-        return page(page, queryWrapper);
+        IPage<Entity> result = page(page, queryWrapper);
+        log.info("分页查询实体完成: 总记录数={}, 总页数={}", result.getTotal(), result.getPages());
+        
+        return result;
     }
 
+    /**
+     * 获取实体详情
+     *
+     * @param id 实体ID
+     * @return 实体详情
+     */
     @Override
     public Entity getEntityDetail(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("实体ID不能为空");
+            log.error("获取实体详情时ID为空");
+            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "实体ID不能为空");
         }
+        
+        log.info("开始获取实体详情: id={}", id);
         
         Entity entity = getById(id);
         if (entity == null) {
+            log.warn("实体不存在: id={}", id);
             return null;
         }
+        
+        log.debug("获取到实体基本信息: id={}, name={}, type={}", id, entity.getName(), entity.getType());
         
         // 并行加载所有相关数据
         // 1. 加载子实体列表
         List<Entity> children = entityMapper.listChildren(id, entity.getUserId());
         if (!children.isEmpty()) {
             entity.setChildren(children);
+            log.debug("加载子实体列表: id={}, 子实体数量={}", id, children.size());
         }
         
         // 2. 加载父实体信息
@@ -104,6 +137,8 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
             Entity parent = getById(entity.getParentId());
             if (parent != null) {
                 entity.setParentName(parent.getName());
+                log.debug("加载父实体信息: id={}, parentId={}, parentName={}", 
+                          id, entity.getParentId(), parent.getName());
             }
         }
         
@@ -111,28 +146,44 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         List<Tag> tags = entityTagService.getTagsByEntityId(id);
         if (!tags.isEmpty()) {
             entity.setTags(tags);
+            log.debug("加载标签: id={}, 标签数量={}", id, tags.size());
         }
         
         // 4. 加载图片
         entity.setImages(entityImageService.getImagesByEntityId(id));
+        log.debug("加载图片: id={}, 图片数量={}", id, 
+                 entity.getImages() != null ? entity.getImages().size() : 0);
         
         // 5. 加载使用人信息
         if (entity.getUserId() != null) {
             User user = userService.getUserById(entity.getUserId());
             if (user != null) {
                 entity.setUserName(user.getUsername());
+                log.debug("加载使用人信息: id={}, userId={}, userName={}", 
+                         id, entity.getUserId(), user.getUsername());
             }
         }
         
+        log.info("获取实体详情完成: id={}, name={}", id, entity.getName());
         return entity;
     }
 
+    /**
+     * 添加实体
+     *
+     * @param entity 实体信息
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean addEntity(Entity entity) {
         if (entity == null) {
+            log.error("添加实体时实体对象为空");
             return false;
         }
+        
+        log.info("开始添加实体: name={}, type={}, userId={}", 
+                entity.getName(), entity.getType(), entity.getUserId());
         
         // 设置创建用户ID（如果未设置）
         if (entity.getCreateUserId() == null) {
@@ -141,30 +192,44 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
                 String username = authentication.getName();
                 User user = userService.getUserByUsername(username);
                 entity.setCreateUserId(user != null ? user.getId() : 1L);
+                log.debug("设置创建用户ID: name={}, createUserId={}", entity.getName(), entity.getCreateUserId());
             } else {
                 entity.setCreateUserId(1L);
+                log.debug("未获取到认证信息，使用默认用户ID: name={}, createUserId=1", entity.getName());
             }
         }
         
         // 处理实体的通用和特有字段
         processEntityFields(entity);
         
-        return save(entity);
+        boolean result = save(entity);
+        log.info("添加实体结果: id={}, name={}, success={}", entity.getId(), entity.getName(), result);
+        
+        return result;
     }
 
     /**
      * 处理实体特有字段
+     * 设置保修期、状态、层级和路径等信息
+     * 
+     * @param entity 实体对象
      */
     private void processEntityFields(Entity entity) {
+        log.debug("开始处理实体字段: name={}", entity.getName());
+        
         // 如果设置了保修期和购买日期，但未设置保修截止日期，则自动计算
         if (entity.getWarrantyPeriod() != null && entity.getWarrantyPeriod() > 0 
                 && entity.getPurchaseDate() != null && entity.getWarrantyEndDate() == null) {
             entity.setWarrantyEndDate(entity.getPurchaseDate().plusMonths(entity.getWarrantyPeriod()));
+            log.debug("设置保修截止日期: name={}, 购买日期={}, 保修期={}个月, 保修截止日期={}", 
+                     entity.getName(), entity.getPurchaseDate(), 
+                     entity.getWarrantyPeriod(), entity.getWarrantyEndDate());
         }
         
         // 确保设置了默认状态
         if (!StringUtils.hasText(entity.getStatus())) {
             entity.setStatus("normal");
+            log.debug("设置默认状态: name={}, status=normal", entity.getName());
         }
         
         // 计算层级和路径
@@ -174,37 +239,66 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
                 entity.setLevel(parentEntity.getLevel() + 1);
                 entity.setPath(StringUtils.hasText(parentEntity.getPath()) ? 
                     parentEntity.getPath() + "," + parentEntity.getId() : parentEntity.getId().toString());
+                log.debug("设置层级和路径: name={}, parentId={}, level={}, path={}", 
+                         entity.getName(), entity.getParentId(), entity.getLevel(), entity.getPath());
+            } else {
+                log.warn("未找到父实体: name={}, parentId={}", entity.getName(), entity.getParentId());
             }
         } else {
             entity.setLevel(0);
             entity.setPath("");
+            log.debug("根节点实体: name={}, level=0, path=''", entity.getName());
         }
+        
+        log.debug("实体字段处理完成: name={}", entity.getName());
     }
 
+    /**
+     * 更新实体
+     *
+     * @param entity 实体信息
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateEntity(Entity entity) {
         if (entity == null || entity.getId() == null) {
+            log.error("更新实体时实体对象为空或ID为空");
             return false;
         }
+        
+        log.info("开始更新实体: id={}, name={}", entity.getId(), entity.getName());
         
         // 获取原有实体信息
         Entity existingEntity = getById(entity.getId());
         if (existingEntity == null) {
+            log.warn("更新失败，实体不存在: id={}", entity.getId());
             return false;
         }
         
         // 处理实体的通用和特有字段
         processEntityFields(entity);
         
-        return updateById(entity);
+        boolean result = updateById(entity);
+        log.info("更新实体结果: id={}, name={}, success={}", entity.getId(), entity.getName(), result);
+        
+        return result;
     }
 
+    /**
+     * 删除实体
+     *
+     * @param id 实体ID
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteEntity(Long id) {
+        log.info("开始删除实体: id={}", id);
+        
         Entity entity = getById(id);
         if (entity == null) {
+            log.warn("删除失败，实体不存在: id={}", id);
             return false;
         }
         
@@ -212,40 +306,71 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         List<Entity> children = entityMapper.listChildren(id, entity.getUserId());
         if (!children.isEmpty()) {
             // 将子实体的父ID设为null
+            log.info("处理子实体: id={}, 子实体数量={}", id, children.size());
             children.forEach(child -> {
                 child.setParentId(null);
                 updateById(child);
+                log.debug("更新子实体父ID: childId={}, childName={}", child.getId(), child.getName());
             });
         }
         
         // 删除关联数据
+        log.info("开始删除关联数据: id={}", id);
         entityTagService.removeEntityTags(id);
         entityImageService.deleteByEntityId(id);
         
-        return removeById(id);
+        boolean result = removeById(id);
+        log.info("删除实体结果: id={}, name={}, success={}", id, entity.getName(), result);
+        
+        return result;
     }
 
+    /**
+     * 批量删除实体
+     *
+     * @param ids 实体ID列表
+     * @return 是否成功
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean batchDeleteEntities(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
+            log.error("批量删除实体时ID列表为空");
             return false;
         }
         
-        return ids.stream()
+        log.info("开始批量删除实体: ids数量={}", ids.size());
+        
+        boolean result = ids.stream()
                  .map(this::deleteEntity)
                  .allMatch(Boolean::booleanValue);
+        
+        log.info("批量删除实体结果: ids数量={}, success={}", ids.size(), result);
+        
+        return result;
     }
 
-
+    /**
+     * 获取所有者的所有实体
+     *
+     * @param userId 用户ID
+     * @return 实体列表
+     */
     @Override
     public List<Entity> getEntitiesByUserId(Long userId) {
         if (userId == null) {
-            throw new IllegalArgumentException("用户ID不能为空");
+            log.error("获取用户实体时用户ID为空");
+            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "用户ID不能为空");
         }
         
-        return list(new LambdaQueryWrapper<Entity>()
+        log.info("开始获取用户所有实体: userId={}", userId);
+        
+        List<Entity> entities = list(new LambdaQueryWrapper<Entity>()
                 .eq(Entity::getUserId, userId));
+        
+        log.info("获取用户所有实体完成: userId={}, 实体数量={}", userId, entities.size());
+        
+        return entities;
     }
 
     @Override

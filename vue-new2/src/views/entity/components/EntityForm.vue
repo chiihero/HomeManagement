@@ -117,13 +117,14 @@
           allow-create
           default-first-option
           placeholder="请选择或输入标签"
-          class="w-full"
+          @change="handleTagsChange"
         >
           <el-option
             v-for="tag in existingTags"
-            :key="tag"
-            :label="tag"
-            :value="tag"
+            :key="tag.id"
+            :label="tag.name"
+            :value="tag.id"
+            :style="{ backgroundColor: tag.color, color: getContrastColor(tag.color) }"
           />
         </el-select>
       </el-form-item>
@@ -131,10 +132,9 @@
       <el-form-item label="图片" prop="images">
         <el-upload
           ref="uploadRef"
-          v-model:file-list="form.images"
+          :file-list="imageList"
           action="#"
           list-type="picture-card"
-          drag
           multiple
           :auto-upload="false"
           :on-preview="handlePictureCardPreview"
@@ -165,19 +165,25 @@
 import { ref, reactive, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
+import { Folder, Goods, Plus } from "@element-plus/icons-vue";
+import { useEntityForm } from '../composables/useEntityForm';
+
 // 添加此注释，需要在项目中创建相应的类型定义
 // @ts-ignore
-import type { Entity, EntityFormData, EntityStatus } from "@/types/entity";
+import type { Entity, EntityFormData, EntityStatus, Tag } from "@/types/entity";
 import { useEntityImageUpload } from "../composables/useEntityImageUpload";
 import { useUserStoreHook } from "@/store/modules/user"; // 引入用户store
 
 interface Props {
   entity: Entity | null;
   treeData: Entity[];
-  existingTags: string[];
+  existingTags: Tag[];
   isEditing: boolean;
   saving: boolean;
+  
 }
+const { getContrastColor } = useEntityForm();
+
 // 获取用户store
 const userStore = useUserStoreHook();
 
@@ -226,7 +232,7 @@ const currentNodeKey = ref<string>("0");
 // 处理位置选择
 const handleLocationSelect = (data: any) => {
   if (data && data.id) {
-    form.value.parentId = data.id;
+    form.parentId = data.id;
     selectedLocationName.value = data.name;
   }
 };
@@ -270,7 +276,7 @@ const rules = {
 
 // 更新选中位置的名称
 const updateSelectedLocationName = () => {
-  if (!form.value.parentId) {
+  if (!form.parentId) {
     selectedLocationName.value = "根空间";
     return;
   }
@@ -278,7 +284,7 @@ const updateSelectedLocationName = () => {
   // 找出对应的位置名称
   const findNodeName = (nodes: any[]): string | null => {
     for (const node of nodes) {
-      if (node.id === form.value.parentId) {
+      if (node.id === form.parentId) {
         return node.name;
       }
       if (node.children && node.children.length > 0) {
@@ -305,11 +311,30 @@ const handleSubmit = async () => {
     if (valid) {
       try {
         // 确保userId正确设置
-        form.value.userId = userStore.userId?.toString() || "";
-        // 确保图片数据正确传递 - 添加此行
-        // form.value.images = imageList.value;
-        // 提交表单数据
-        const formData = { ...form.value };
+        form.userId = userStore.userId?.toString() || "";
+        
+        // 确保图片数据正确传递
+        console.log("提交前的图片列表:", imageList.value);
+        
+        // 创建一个新的表单数据对象，包含所有必要的字段
+        const formData = {
+          name: form.name,
+          type: form.type,
+          parentId: form.parentId,
+          status: form.status,
+          location: form.location,
+          price: form.price,
+          purchaseDate: form.purchaseDate,
+          warrantyPeriod: form.warrantyPeriod,
+          description: form.description,
+          tags: form.tags, // 确保这里传递的是标签ID数组
+          images: [...imageList.value], // 使用展开运算符创建新数组
+          userId: form.userId
+        };
+        
+        console.log("提交的表单数据:", formData);
+        // 添加标签信息的日志输出，帮助调试
+        console.log("提交的标签数据:", form.tags);
         emit("submit", formData);
       } catch (error) {
         console.error("提交表单失败:", error);
@@ -317,6 +342,13 @@ const handleSubmit = async () => {
       }
     }
   });
+};
+
+// 处理标签变化
+const handleTagsChange = (value: any) => {
+  console.log("标签变化:", value);
+  // 确保form.tags被正确更新
+  form.tags = value;
 };
 
 // 处理取消
@@ -330,23 +362,23 @@ watch(
   newEntity => {
     if (newEntity) {
       // 确保表单数据类型正确
-      form.value = {
-        name: newEntity.name || "",
-        type: newEntity.type || "item",
-        parentId: newEntity.parentId || "",
-        // @ts-ignore
-        status:
-          (newEntity.status as EntityStatus) || ("normal" as EntityStatus),
-        location: (newEntity as any).location || "",
-        price: newEntity.price || 0,
-        purchaseDate: newEntity.purchaseDate || "",
-        warrantyPeriod: newEntity.warrantyPeriod || 0,
-        description: newEntity.description || "",
-        // @ts-ignore
-        tags: Array.isArray(newEntity.tags) ? [...newEntity.tags] : [],
-        images: newEntity.images || [],
-        userId: newEntity.userId || userStore.userId?.toString() || "" // 保留原有userId或使用当前用户ID
-      };
+      form.name = newEntity.name || "";
+      form.type = newEntity.type || "item";
+      form.parentId = newEntity.parentId || "";
+      // @ts-ignore
+      form.status = (newEntity.status as EntityStatus) || ("normal" as EntityStatus);
+      form.location = (newEntity as any).location || "";
+      form.price = newEntity.price || 0;
+      form.purchaseDate = newEntity.purchaseDate || "";
+      form.warrantyPeriod = newEntity.warrantyPeriod || 0;
+      form.description = newEntity.description || "";
+      
+      // 确保正确设置标签数据
+      form.tags = Array.isArray(newEntity.tags) ? [...newEntity.tags] : [];
+      console.log("设置的标签数据:", form.tags);
+      
+      form.images = newEntity.images || [];
+      form.userId = newEntity.userId || userStore.userId?.toString() || ""; // 保留原有userId或使用当前用户ID
 
       // 更新图片列表
       if (newEntity.images) {
@@ -360,21 +392,19 @@ watch(
       updateSelectedLocationName();
     } else {
       // 重置表单
-      form.value = {
-        name: "",
-        type: "item",
-        parentId: "",
-        // @ts-ignore
-        status: "normal" as EntityStatus,
-        location: "",
-        price: 0,
-        purchaseDate: "",
-        warrantyPeriod: 0,
-        description: "",
-        tags: [],
-        images: [],
-        userId: userStore.userId?.toString() || "" // 重置为当前用户ID
-      };
+      form.name = "";
+      form.type = "item";
+      form.parentId = "";
+      // @ts-ignore
+      form.status = "normal" as EntityStatus;
+      form.location = "";
+      form.price = 0;
+      form.purchaseDate = "";
+      form.warrantyPeriod = 0;
+      form.description = "";
+      form.tags = [];
+      form.images = [];
+      form.userId = userStore.userId?.toString() || ""; // 重置为当前用户ID
       resetImageList();
       currentNodeKey.value = "0";
       selectedLocationName.value = "根空间";

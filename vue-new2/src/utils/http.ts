@@ -16,15 +16,8 @@ interface ErrorResponse {
   [key: string]: any;
 }
 
-// 请求缓存和去重实现
-interface CacheItem {
-  data: any;
-  timestamp: number;
-  expireTime: number;
-}
-
+// 请求去重实现
 const pendingRequests = new Map<string, AbortController>();
-const cacheMap = new Map<string, CacheItem>();
 
 // 创建请求Key
 const createRequestKey = (config: AxiosRequestConfig): string => {
@@ -53,19 +46,6 @@ const removePendingRequest = (config: AxiosRequestConfig): void => {
   }
 };
 
-// 清除过期缓存
-const clearExpiredCache = (): void => {
-  const now = Date.now();
-  cacheMap.forEach((item, key) => {
-    if (now - item.timestamp > item.expireTime) {
-      cacheMap.delete(key);
-    }
-  });
-};
-
-// 定期清理过期缓存
-setInterval(clearExpiredCache, 5 * 60 * 1000);
-
 // 创建axios实例
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
@@ -85,30 +65,6 @@ http.interceptors.request.use(
     // 添加请求到等待队列（实现请求去重）
     if (config.method?.toLowerCase() !== "get") {
       addPendingRequest(config);
-    }
-
-    // 缓存GET请求
-    if (config.method?.toLowerCase() === "get" && config.cache !== false) {
-      const requestKey = createRequestKey(config);
-      const cachedItem = cacheMap.get(requestKey);
-
-      if (cachedItem) {
-        const now = Date.now();
-        // 如果缓存未过期
-        if (now - cachedItem.timestamp < cachedItem.expireTime) {
-          // 设置一个标记，让响应拦截器知道是从缓存获取的数据
-          config.adapter = async () => {
-            return {
-              data: cachedItem.data,
-              status: 200,
-              statusText: "OK",
-              headers: config.headers,
-              config,
-              request: {}
-            };
-          };
-        }
-      }
     }
 
     // 如果有token，则添加到请求头
@@ -140,21 +96,6 @@ http.interceptors.response.use(
   (response: AxiosResponse) => {
     // 从等待队列中移除请求
     removePendingRequest(response.config);
-
-    // 缓存GET请求响应
-    if (
-      response.config.method?.toLowerCase() === "get" &&
-      response.config.cache !== false
-    ) {
-      const requestKey = createRequestKey(response.config);
-      // 默认缓存5分钟，可通过设置expireTime自定义
-      const expireTime = response.config.expireTime || 5 * 60 * 1000;
-      cacheMap.set(requestKey, {
-        data: response.data,
-        timestamp: Date.now(),
-        expireTime
-      });
-    }
 
     // 如果响应中包含成功消息，显示给用户
     if (response.data && response.data.msg && response.status === 200) {
@@ -242,13 +183,5 @@ http.interceptors.response.use(
     return Promise.reject(errMsg);
   }
 );
-
-// 扩展AxiosRequestConfig接口
-declare module "axios" {
-  interface AxiosRequestConfig {
-    cache?: boolean;
-    expireTime?: number;
-  }
-}
 
 export default http;

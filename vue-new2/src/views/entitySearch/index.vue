@@ -1,10 +1,8 @@
 <template>
   <div class="bg-gray-50 min-h-screen p-4 md:p-6">
     <!-- 头部 -->
-    <el-card class="mb-6 border-0 shadow-sm">
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-      >
+    <el-card class="mb-6 shadow-sm border-0">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
           <el-icon class="mr-2 text-primary"><Search /></el-icon>物品搜索
         </h1>
@@ -12,7 +10,7 @@
     </el-card>
 
     <!-- 搜索条件 -->
-    <el-card class="mb-6 border-0 shadow-sm">
+    <el-card class="mb-6 shadow-sm border-0">
       <template #header>
         <div class="flex items-center">
           <span class="text-gray-700 font-medium">搜索条件</span>
@@ -102,7 +100,7 @@
     </el-card>
 
     <!-- 表格 -->
-    <el-card class="border-0 shadow-sm">
+    <el-card class="shadow-sm border-0">
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-gray-700 font-medium">物品列表</span>
@@ -174,14 +172,14 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="getStatusType(row.status)" size="small">
-              {{ getStatusText(row.status) }}
+            <el-tag :type="statusTypeMap[row.status] || 'info'" size="small">
+              {{ statusTextMap[row.status] || row.status }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="usageFrequency" label="使用频率" width="100">
           <template #default="{ row }">
-            {{ getUsageFrequencyText(row.usageFrequency) }}
+            {{ usageFrequencyMap[row.usageFrequency] || row.usageFrequency }}
           </template>
         </el-table-column>
         <el-table-column
@@ -218,10 +216,10 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="{ row }">
-            <el-button type="primary" link size="small">
+            <el-button type="primary" link size="small" @click.stop="router.push(`/entity/${row.id}`)">
               <el-icon class="mr-1"><View /></el-icon>查看
             </el-button>
-            <el-button type="primary" link size="small">
+            <el-button type="primary" link size="small" @click.stop="router.push(`/entity/edit/${row.id}`)">
               <el-icon class="mr-1"><Edit /></el-icon>编辑
             </el-button>
             <el-popconfirm
@@ -256,590 +254,214 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, reactive, onMounted } from "vue";
+<script setup lang="ts">
+import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { useAuthStore } from "@/store/modules/auth";
-import { getEntities as pageEntities, getEntitiesByUser } from "@/api/entity";
+import { useUserStoreHook } from "@/store/modules/user";
+import { pageEntities, getEntitiesByUser } from "@/api/entity";
 import { getImageData } from "@/api/image";
 
-import { Entity, Tag } from "@/types/entity";
+import type { Entity } from "@/types/entity";
 import {
-  Plus,
   Search,
   Refresh,
   Edit,
   Delete,
   View,
   Picture,
-  Document,
-  UploadFilled,
-  Folder,
-  Goods,
-  Check,
-  Close
+  Document
 } from "@element-plus/icons-vue";
 import moment from "moment";
 
-export default defineComponent({
-  name: "EntityList",
-  components: {
-    Plus,
-    Search,
-    Refresh,
-    Edit,
-    Delete,
-    View,
-    Picture,
-    Document,
-    UploadFilled,
-    Folder,
-    Goods,
-    Check,
-    Close
-  },
-  setup() {
-    const router = useRouter();
-    const authStore = useAuthStore();
+const router = useRouter();
+const userStore = useUserStoreHook();
 
-    const loading = ref(false);
-    const saving = ref(false);
-    const entityList = ref<Entity[]>([]);
-    const spaceList = ref<Entity[]>([]);
-    const tagOptions = ref<Tag[]>([]);
-    const locationOptions = ref<any[]>([]);
-    const addEntityDialogVisible = ref(false);
-    const imageDialogVisible = ref(false);
-    const entityFormRef = ref<any>(null);
-    const tempImages = ref<{ file: File; url: string }[]>([]);
+const loading = ref(false);
+const entityList = ref<Entity[]>([]);
+const spaceList = ref<Entity[]>([]);
+const imageUrlCache = ref<Record<number, string>>({});
 
-    // 分页参数
-    const pagination = reactive({
-      current: 1,
-      size: 10,
-      total: 0
-    });
+// 分页参数
+const pagination = reactive({
+  current: 1,
+  size: 10,
+  total: 0
+});
 
-    // 搜索表单
-    const searchForm = reactive({
-      name: "",
-      type: "",
-      specification: "",
-      status: "",
-      usageFrequency: "",
-      parentId: "" as string | undefined
-    });
+// 搜索表单
+const searchForm = reactive({
+  name: "",
+  type: "",
+  specification: "",
+  status: "",
+  usageFrequency: "",
+  userId: userStore.currentUser.id || "",
+  parentId: "" as string | undefined
+});
 
-    // 新增状态
-    const isEditing = ref(false);
-    const isAdding = ref(false);
+// 状态映射
+const statusTypeMap = {
+  normal: "success",
+  damaged: "warning",
+  discarded: "danger",
+  expired: "danger"
+} as const;
 
-    // 图片URL缓存
-    const imageUrlCache = ref<Record<number, string>>({});
+const statusTextMap = {
+  normal: "正常",
+  damaged: "损坏",
+  discarded: "丢弃",
+  expired: "过期"
+};
 
-    // 获取图片URL
-    const getImageUrl = async (imageId: number) => {
-      if (imageUrlCache.value[imageId]) {
-        return imageUrlCache.value[imageId];
-      }
+// 使用频率映射
+const usageFrequencyMap = {
+  high: "高",
+  medium: "中",
+  low: "低",
+  rare: "很少",
+  never: "从不",
+  rarely: "很少",
+  occasionally: "偶尔",
+  frequently: "经常",
+  daily: "每天"
+};
 
-      try {
-        const blob = await getImageData(imageId);
-        const url = URL.createObjectURL(blob);
-        imageUrlCache.value[imageId] = url;
-        return url;
-      } catch (error) {
-        console.error("获取图片数据失败:", error);
-        return "";
-      }
-    };
-
-    // 加载实体图片
-    const loadEntityImage = async (entity: Entity) => {
-      if (entity.images && entity.images[0] && entity.images[0].id) {
-        await getImageUrl(entity.images[0].id);
-      }
-    };
-
-    // 加载实体列表
-    const loadEntityList = async () => {
-      if (!authStore.currentUser?.id) return;
-
-      loading.value = true;
-      try {
-        const response = await pageEntities({
-          current: pagination.current,
-          size: pagination.size,
-          ...searchForm,
-          userId: authStore.currentUser.id
-        });
-
-        if (response.data && response.data.records) {
-          entityList.value = response.data.records;
-          pagination.total = response.data.total;
-
-          // 加载每个实体的第一张图片
-          for (const entity of entityList.value) {
-            await loadEntityImage(entity);
-          }
-        }
-      } catch (error) {
-        console.error("加载实体列表失败:", error);
-        ElMessage.error("加载实体列表失败，请检查网络连接");
-      } finally {
-        loading.value = false;
-      }
-    };
-
-    // 加载搜索的空间列表
-    const loadSpaceList = async () => {
-      if (!authStore.currentUser?.id) return;
-
-      try {
-        const response = await getEntitiesByUser(authStore.currentUser.id);
-
-        if (response.data) {
-          spaceList.value = response.data;
-        }
-      } catch (error) {
-        console.error("加载空间列表失败:", error);
-      }
-    };
-
-    // 处理搜索
-    const handleSearch = () => {
-      pagination.current = 1;
-      loadEntityList();
-    };
-
-    // 重置搜索
-    const resetSearch = () => {
-      Object.assign(searchForm, {
-        name: "",
-        type: "",
-        specification: "",
-        status: "",
-        usageFrequency: "",
-        parentId: ""
-      });
-      pagination.current = 1;
-      loadEntityList();
-    };
-
-    // 处理表格行点击
-    const handleRowClick = (row: Entity) => {
-      router.push(`/entity/${row.id}`);
-    };
-
-    // 处理分页大小改变
-    const handleSizeChange = (size: number) => {
-      pagination.size = size;
-      loadEntityList();
-    };
-
-    // 处理当前页改变
-    const handleCurrentChange = (current: number) => {
-      pagination.current = current;
-      loadEntityList();
-    };
-
-    // 格式化日期
-    const formatDate = (date: string) => {
-      if (!date) return "-";
-      return moment(date).format("YYYY-MM-DD");
-    };
-
-    // 获取状态对应的类型
-    const getStatusType = (status: string) => {
-      const statusMap: Record<string, string> = {
-        normal: "success",
-        damaged: "warning",
-        discarded: "danger",
-        expired: "danger"
-      };
-      return statusMap[status] || "info";
-    };
-
-    // 获取状态对应的文本
-    const getStatusText = (status: string) => {
-      const statusMap: Record<string, string> = {
-        normal: "正常",
-        damaged: "损坏",
-        discarded: "丢弃",
-        expired: "过期"
-      };
-      return statusMap[status] || status;
-    };
-
-    // 获取使用频率文本
-    const getUsageFrequencyText = (usageFrequency: string) => {
-      const usageMap: Record<string, string> = {
-        high: "高",
-        medium: "中",
-        low: "低",
-        rare: "很少",
-        never: "从不",
-        rarely: "很少",
-        occasionally: "偶尔",
-        frequently: "经常",
-        daily: "每天"
-      };
-      return usageMap[usageFrequency] || usageFrequency;
-    };
-
-    // 获取标签文字颜色
-    const getContrastColor = (bgColor: string) => {
-      if (!bgColor) return "#ffffff";
-
-      // 将十六进制颜色转换为RGB
-      let color = bgColor.charAt(0) === "#" ? bgColor.substring(1) : bgColor;
-      let r = parseInt(color.substr(0, 2), 16);
-      let g = parseInt(color.substr(2, 2), 16);
-      let b = parseInt(color.substr(4, 2), 16);
-
-      // 计算亮度
-      let yiq = (r * 299 + g * 587 + b * 114) / 1000;
-
-      // 如果亮度高于128，返回黑色，否则返回白色
-      return yiq >= 128 ? "#000000" : "#ffffff";
-    };
-
-    // 在组件挂载时加载数据
-    onMounted(() => {
-      loadEntityList();
-      // 加载空间列表用于筛选
-      loadSpaceList();
-    });
-
-    // 新增两个新变量和两个新方法
-    const selectedLocationName = ref<string>("");
-
-    return {
-      loading,
-      saving,
-      entityList,
-      spaceList,
-      pagination,
-      searchForm,
-      entityFormRef,
-      addEntityDialogVisible,
-      imageDialogVisible,
-      tempImages,
-      tagOptions,
-      locationOptions,
-      handleSearch,
-      resetSearch,
-      handleRowClick,
-      handleSizeChange,
-      handleCurrentChange,
-      formatDate,
-      getStatusType,
-      getStatusText,
-      getUsageFrequencyText,
-      getContrastColor,
-      isEditing,
-      isAdding,
-      selectedLocationName,
-      imageUrlCache
-    };
+// 获取图片URL
+const getImageUrl = async (imageId: number) => {
+  if (imageUrlCache.value[imageId]) {
+    return imageUrlCache.value[imageId];
   }
+
+  try {
+    // 根据API需要转换为字符串类型
+    const blob = await getImageData(String(imageId));
+    const url = URL.createObjectURL(blob);
+    imageUrlCache.value[imageId] = url;
+    return url;
+  } catch (error) {
+    console.error("获取图片数据失败:", error);
+    return "";
+  }
+};
+
+// 加载实体图片
+const loadEntityImage = async (entity: Entity) => {
+  if (entity.images && entity.images[0] && entity.images[0].id) {
+    await getImageUrl(entity.images[0].id);
+  }
+};
+
+// 加载实体列表
+const loadEntityList = async () => {
+  if (!userStore.currentUser?.id) return;
+
+  loading.value = true;
+  try {
+    const response = await pageEntities({
+      current: pagination.current,
+      size: pagination.size,
+      ...searchForm
+    });
+
+    if (response.data) {
+      // 适配不同的API返回结构
+      entityList.value = response.data.records || response.data.list || [];
+      pagination.total = response.data.total || 0;
+
+      // 加载每个实体的第一张图片
+      for (const entity of entityList.value) {
+        await loadEntityImage(entity);
+      }
+    }
+  } catch (error) {
+    console.error("加载实体列表失败:", error);
+    ElMessage.error("加载实体列表失败，请检查网络连接");
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 加载搜索的空间列表
+const loadSpaceList = async () => {
+  if (!userStore.currentUser?.id) return;
+
+  try {
+    const response = await getEntitiesByUser(userStore.currentUser.id);
+
+    if (response.data) {
+      spaceList.value = response.data;
+    }
+  } catch (error) {
+    console.error("加载空间列表失败:", error);
+  }
+};
+
+// 处理搜索
+const handleSearch = () => {
+  pagination.current = 1;
+  loadEntityList();
+};
+
+// 重置搜索
+const resetSearch = () => {
+  Object.assign(searchForm, {
+    name: "",
+    type: "",
+    specification: "",
+    status: "",
+    usageFrequency: "",
+    parentId: ""
+  });
+  pagination.current = 1;
+  loadEntityList();
+};
+
+// 处理表格行点击
+const handleRowClick = (row: Entity) => {
+  router.push(`/entity/${row.id}`);
+};
+
+// 处理分页大小改变
+const handleSizeChange = (size: number) => {
+  pagination.size = size;
+  loadEntityList();
+};
+
+// 处理当前页改变
+const handleCurrentChange = (current: number) => {
+  pagination.current = current;
+  loadEntityList();
+};
+
+// 格式化日期
+const formatDate = (date: string) => {
+  if (!date) return "-";
+  return moment(date).format("YYYY-MM-DD");
+};
+
+// 获取标签文字颜色
+const getContrastColor = (bgColor: string) => {
+  if (!bgColor) return "#ffffff";
+
+  // 将十六进制颜色转换为RGB
+  let color = bgColor.charAt(0) === "#" ? bgColor.substring(1) : bgColor;
+  let r = parseInt(color.substr(0, 2), 16);
+  let g = parseInt(color.substr(2, 2), 16);
+  let b = parseInt(color.substr(4, 2), 16);
+
+  // 计算亮度
+  let yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+  // 如果亮度高于128，返回黑色，否则返回白色
+  return yiq >= 128 ? "#000000" : "#ffffff";
+};
+
+// 在组件挂载时加载数据
+onMounted(() => {
+  loadEntityList();
+  // 加载空间列表用于筛选
+  loadSpaceList();
 });
 </script>
-
-<style scoped>
-.entity-container {
-  width: 100%;
-  padding: 0;
-}
-
-.entity-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: 500;
-  margin: 0;
-}
-
-.search-card {
-  margin-bottom: 16px;
-}
-
-.search-form {
-  padding: 10px 0;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.table-card {
-  margin-bottom: 16px;
-}
-
-.entity-name {
-  display: flex;
-  align-items: center;
-}
-
-.entity-image {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  margin-right: 8px;
-  object-fit: cover;
-}
-
-.entity-image-placeholder,
-.image-placeholder {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f7fa;
-  color: #909399;
-}
-
-.tag-item {
-  margin-right: 4px;
-  margin-bottom: 4px;
-}
-
-.pagination-container {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* 添加物品对话框样式 */
-.entity-form {
-  width: 100%;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.image-container {
-  height: 300px;
-  margin-bottom: 20px;
-}
-
-.image-item {
-  height: 100%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.image-item img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.image-actions {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-}
-
-.no-image {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
-.upload-box {
-  width: 100%;
-  margin-top: 20px;
-}
-
-.upload-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.preview-item {
-  width: 120px;
-  height: 120px;
-  border: 1px solid #eee;
-  position: relative;
-}
-
-.preview-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.preview-actions {
-  position: absolute;
-  right: 5px;
-  top: 5px;
-}
-
-.main-content {
-  display: flex;
-  gap: 20px;
-  width: 100%;
-}
-
-.tree-container {
-  width: 25%;
-  min-width: 200px;
-  transition: all 0.3s ease;
-}
-
-.tree-card {
-  height: 100%;
-  min-height: 400px;
-}
-
-.detail-container {
-  flex: 1;
-}
-
-.detail-card {
-  height: calc(100vh - 200px);
-  overflow-y: auto;
-}
-
-.custom-tree-node {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.entity-detail {
-  padding: 16px;
-}
-
-.detail-section {
-  margin-bottom: 24px;
-}
-
-.detail-section h3 {
-  margin: 0 0 16px 0;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.description {
-  margin: 0;
-  color: #606266;
-  line-height: 1.6;
-}
-
-.detail-image {
-  width: 100%;
-  height: 100%;
-}
-
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.tree-loading {
-  padding: 20px;
-}
-
-/* 位置树样式 */
-.location-tree {
-  max-height: 250px;
-  overflow-y: auto;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  padding: 10px;
-  background-color: #fff;
-}
-
-.location-tree .el-tree-node__content {
-  height: 32px;
-}
-
-.selected-location {
-  margin-top: 8px;
-  padding: 8px 10px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* 响应式设计 */
-@media screen and (max-width: 992px) {
-  .main-content {
-    flex-direction: column;
-  }
-
-  .tree-container {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .entity-form {
-    padding: 0;
-  }
-
-  .info-item {
-    flex: 1 0 100%;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .entity-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .header-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .detail-image-container {
-    height: 150px;
-  }
-
-  .el-form-item {
-    margin-bottom: 18px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .detail-card .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .detail-card .header-actions {
-    margin-top: 10px;
-  }
-}
-</style>

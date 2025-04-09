@@ -10,7 +10,8 @@ import type { PageResult, ResponseResult } from "@/types/entity";
 export const getTags = (
   params: any
 ): Promise<ResponseResult<PageResult<Tag>>> => {
-  return http.get("/tags", { params });
+  console.log('调用getTags API，参数:', params);
+  return http.get("/tags", { params }) as Promise<ResponseResult<PageResult<Tag>>>;
 };
 
 /**
@@ -38,7 +39,8 @@ export const getTagDetail = (id: string): Promise<ResponseResult<Tag>> => {
 export const createTag = (
   tagData: Omit<Tag, "id">
 ): Promise<ResponseResult<Tag>> => {
-  return http.post("/tags", tagData);
+  console.log('调用createTag API，参数:', tagData);
+  return http.post("/tags", tagData) as Promise<ResponseResult<Tag>>;
 };
 
 /**
@@ -51,7 +53,8 @@ export const updateTag = (
   id: string,
   tagData: Partial<Tag>
 ): Promise<ResponseResult<Tag>> => {
-  return http.put(`/tags/${id}`, tagData);
+  console.log('调用updateTag API，参数:', { id, tagData });
+  return http.put(`/tags/${id}`, tagData) as Promise<ResponseResult<Tag>>;
 };
 
 /**
@@ -60,7 +63,8 @@ export const updateTag = (
  * @returns 删除结果
  */
 export const deleteTag = (id: string): Promise<ResponseResult<null>> => {
-  return http.delete(`/tags/${id}`);
+  console.log('调用deleteTag API，参数:', id);
+  return http.delete(`/tags/${id}`) as Promise<ResponseResult<null>>;
 };
 
 /**

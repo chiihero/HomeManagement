@@ -2,6 +2,8 @@ export default {
   path: "/entity",
   redirect: "/entity/index",
   meta: {
+    icon: "ep:folder",
+
     title: "物品管理"
   },
   children: [

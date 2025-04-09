@@ -2,6 +2,7 @@ package com.chii.homemanagement.exception;
 
 import com.chii.homemanagement.common.ApiResponse;
 import com.chii.homemanagement.common.ErrorCode;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -26,14 +27,19 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器
+ * 统一处理项目中的异常，将详细日志记录并返回友好提示给前端
+ * 
+ * @author chii
+ * @since 1.0.0
  */
-@Slf4j
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @Value("${spring.profiles.active:prod}")
@@ -58,18 +64,16 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理业务异常
+     * 
+     * @param e 业务异常
+     * @return 错误响应
      */
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleBusinessException(HttpServletRequest request, BusinessException e) {
-        String requestInfo = getRequestInfo(request);
-        log.warn("业务异常: {}, {}", e.getMessage(), requestInfo);
-        
-        ApiResponse<Object> response = ApiResponse.error(e.getCode(), e.getMessage());
-        if (isDev()) {
-            response.setData(e.getMessage());
-        }
-        return response;
+    @Hidden
+    public ApiResponse<Void> handleBusinessException(BusinessException e) {
+        log.warn("业务异常: {}", e.getMessage());
+        return ApiResponse.error(e.getCode(), e.getMessage());
     }
 
     /**
@@ -89,28 +93,41 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理参数验证异常
+     * 处理参数校验异常
+     * 
+     * @param e 参数校验异常
+     * @return 错误响应
      */
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResponse<Object> handleValidationException(HttpServletRequest request, Exception e) {
-        String requestInfo = getRequestInfo(request);
-        log.warn("参数验证异常: {}, {}", e.getMessage(), requestInfo);
+    @Hidden
+    public ApiResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        String errorMessage = fieldErrors.stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
         
-        String errorMessage;
-        if (e instanceof MethodArgumentNotValidException) {
-            FieldError fieldError = ((MethodArgumentNotValidException) e).getBindingResult().getFieldError();
-            errorMessage = fieldError != null ? fieldError.getDefaultMessage() : "参数校验错误";
-        } else {
-            FieldError fieldError = ((BindException) e).getBindingResult().getFieldError();
-            errorMessage = fieldError != null ? fieldError.getDefaultMessage() : "参数绑定错误";
-        }
+        log.warn("参数校验异常: {}", errorMessage);
+        return ApiResponse.error(ErrorCode.PARAM_NOT_VALID.getCode(), errorMessage);
+    }
+
+    /**
+     * 处理参数绑定异常
+     * 
+     * @param e 参数绑定异常
+     * @return 错误响应
+     */
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Hidden
+    public ApiResponse<Void> handleBindException(BindException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        String errorMessage = fieldErrors.stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
         
-        ApiResponse<Object> response = ApiResponse.error(ErrorCode.PARAM_TYPE_ERROR.getCode(), errorMessage);
-        if (isDev()) {
-            response.setData(e.getMessage());
-        }
-        return response;
+        log.warn("参数绑定异常: {}", errorMessage);
+        return ApiResponse.error(ErrorCode.PARAM_NOT_VALID.getCode(), errorMessage);
     }
 
     /**
@@ -186,14 +203,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理上传文件过大异常
+     * 处理文件上传超过大小限制异常
+     * 
+     * @param e 文件上传超过大小限制异常
+     * @return 错误响应
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
-    public ApiResponse<Object> handleMaxUploadSizeExceededException(HttpServletRequest request, MaxUploadSizeExceededException e) {
-        String requestInfo = getRequestInfo(request);
-        log.warn("上传文件过大: {}, {}", e.getMessage(), requestInfo);
-        return ApiResponse.error(ErrorCode.FILE_UPLOAD_ERROR.getCode(), "上传文件大小超过限制");
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @Hidden
+    public ApiResponse<Void> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        log.warn("文件上传超过大小限制: {}", e.getMessage());
+        return ApiResponse.error(ErrorCode.FILE_UPLOAD_ERROR.getCode(), "文件大小超过限制");
     }
 
     /**
@@ -229,18 +249,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理其他未捕获的异常
+     * 处理所有未捕获的异常
+     * 
+     * @param e 未知异常
+     * @return 错误响应
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiResponse<Object> handleException(HttpServletRequest request, Exception e) {
-        String requestInfo = getRequestInfo(request);
-        log.error("未捕获的异常: {}, {}", e.getMessage(), requestInfo, e);
-        
-        ApiResponse<Object> response = ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "系统异常，请稍后重试");
-        if (isDev()) {
-            response.setData(e.getMessage());
-        }
-        return response;
+    @Hidden
+    public ApiResponse<Void> handleException(Exception e) {
+        log.error("系统异常: ", e);
+        return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "系统异常，请联系管理员");
     }
 } 

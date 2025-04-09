@@ -43,10 +43,11 @@ public class SpringDocSwaggerConfig {
         components.addSecuritySchemes(headerName,
                 new SecurityScheme()
                         .type(SecurityScheme.Type.APIKEY)
-                        .scheme("basic")
                         .name(headerName)
                         .in(SecurityScheme.In.HEADER)
-                        .description("请求头")
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .description("在下方输入JWT令牌")
         );
 
         return new OpenAPI()

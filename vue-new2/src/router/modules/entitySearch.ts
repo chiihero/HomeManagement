@@ -2,7 +2,9 @@ export default {
   path: "/entitySearch",
   redirect: "/entitySearch/index",
   meta: {
-    title: "物品搜索"
+    title: "物品搜索",
+    icon: "ep:search"
+
   },
   children: [
     {

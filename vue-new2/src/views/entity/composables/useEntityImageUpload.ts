@@ -40,9 +40,9 @@ export function useEntityImageUpload() {
 
   // 处理图片上传成功
   const handleImageChange = (response: any, file: any) => {
+    console.log("图片变更:", file);
     // 将文件对象保存到imageList中，等待表单提交时上传
     imageList.value.push(file);
-
     return file;
   };
 
@@ -52,31 +52,50 @@ export function useEntityImageUpload() {
    * @param images 图片列表，含有file属性的对象数组
    * @returns 是否全部上传成功
    */
-  const uploadImages = async (entityId: string, images: any[]) => {
+  const uploadImages = async (entityId: string, images: UploadFile[]) => {
     if (!entityId || !images || images.length === 0) {
-      return true; // 没有图片需要上传，视为成功
+      console.log("没有图片需要上传");
+      return { success: true };
     }
 
     try {
-      // 过滤出有文件对象的图片
-      // const imagesToUpload = images.filter(
-      //   img => img.raw && img.raw instanceof File
-      // );
+      console.log("开始上传图片，实体ID:", entityId);
+      console.log("原始图片数据:", images);
 
-      // if (imagesToUpload.length === 0) {
-      //   return true; // 没有新图片需要上传
-      // }
+      // 递归处理嵌套的数组
+      const flattenImages = (arr: any[]): any[] => {
+        return arr.reduce((flat: any[], item: any) => {
+          if (Array.isArray(item)) {
+            return flat.concat(flattenImages(item));
+          }
+          return flat.concat(item);
+        }, []);
+      };
 
+      // 展平图片数组
+      const flattenedImages = flattenImages(images);
+      console.log("展平后的图片数组:", flattenedImages);
+
+      // 过滤出需要上传的图片（只包含raw属性的图片）
+      const imagesToUpload = flattenedImages.filter((image: any) => {
+        const hasRaw = image && image.raw instanceof File;
+        console.log("检查图片:", image, "是否有raw属性:", hasRaw);
+        return hasRaw;
+      });
+
+      console.log("需要上传的图片:", imagesToUpload);
+
+      if (imagesToUpload.length === 0) {
+        console.log("没有新图片需要上传");
+        return { success: true };
+      }
+      
       // 创建上传任务
-      const uploadTasks = images.map(async (image, index) => {
+      const uploadTasks = imagesToUpload.map(async (image, index) => {
         try {
-          const imageType = image.imageType || "normal"; // 默认为普通图片
-          const response = await uploadEntityImage(
-            entityId,
-            image.raw, // 使用raw属性而不是file属性
-            imageType
-          );
-
+          const imageType = image.imageType || 'normal'; // 默认为普通图片
+          const response = await uploadEntityImage(entityId, image.raw, imageType);
+          
           if (response && response.data) {
             console.log(`图片 ${index + 1} 上传成功:`, response.data);
             return true;
@@ -89,27 +108,25 @@ export function useEntityImageUpload() {
           return false;
         }
       });
-
+      
       // 等待所有上传任务完成
       const results = await Promise.all(uploadTasks);
-
+      
       // 判断是否所有图片都上传成功
       const allSuccess = results.every(result => result === true);
-
+      
       if (allSuccess) {
-        ElMessage.success("所有图片上传成功");
+        ElMessage.success('所有图片上传成功');
         return true;
       } else {
         const successCount = results.filter(r => r === true).length;
-        // ElMessage.warning(
-        //   `部分图片上传失败，成功 ${successCount}/${imagesToUpload.length}`
-        // );
+        ElMessage.warning(`部分图片上传失败，成功 ${successCount}/${imagesToUpload.length}`);
         return false;
       }
-    } catch (error) {
-      console.error("上传实体图片时发生错误:", error);
-      ElMessage.error("图片上传过程中出现错误");
-      return false;
+    } catch (error: any) {
+      console.error("上传图片失败:", error);
+      ElMessage.error(error.response?.data?.message || "上传图片失败");
+      return { success: false, error };
     }
   };
 
@@ -120,12 +137,48 @@ export function useEntityImageUpload() {
 
   // 设置图片列表
   const setImageList = (images: any[]) => {
-    imageList.value = images.map((url: string) => ({
-      name: typeof url === "string" ? url.split("/").pop() || "" : "",
-      url,
-      uid: Date.now() + Math.random(),
-      status: "success"
-    }));
+    if (!images || images.length === 0) {
+      imageList.value = [];
+      return;
+    }
+    
+    console.log("设置图片列表:", images);
+    
+    // 处理不同类型的图片数据
+    imageList.value = images.map((image: any) => {
+      // 如果已经是UploadFile类型，直接返回
+      if (image.uid && image.url) {
+        return image;
+      }
+      
+      // 如果是字符串URL
+      if (typeof image === 'string') {
+        return {
+          name: image.split("/").pop() || "",
+          url: image,
+          uid: Date.now() + Math.random(),
+          status: "success"
+        };
+      }
+      
+      // 如果是EntityImage对象
+      if (image.imageUrl) {
+        return {
+          name: image.fileName || image.imageUrl.split("/").pop() || "",
+          url: image.imageUrl,
+          uid: Date.now() + Math.random(),
+          status: "success"
+        };
+      }
+      
+      // 默认情况
+      return {
+        name: "未知图片",
+        url: "",
+        uid: Date.now() + Math.random(),
+        status: "error"
+      };
+    });
   };
 
   return {

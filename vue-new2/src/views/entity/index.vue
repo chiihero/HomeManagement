@@ -16,11 +16,10 @@
             <el-icon><Plus /></el-icon>添加物品
           </el-button>
           <el-button
-            :icon="Refresh"
-            circle
+            type="primary"
             :loading="loading"
             @click="loadTreeData"
-          />
+            ><el-icon><Refresh /></el-icon>刷新</el-button>
         </div>
       </div>
     </el-card>
@@ -65,13 +64,12 @@
                 <el-icon class="mr-1"><Delete /></el-icon>删除
               </el-button>
               <el-tooltip effect="dark" content="刷新" placement="top">
+
                 <el-button
-                  :icon="Refresh"
-                  circle
-                  plain
-                  size="small"
-                  @click="refreshCurrentEntity"
-                />
+            type="primary"
+            :loading="loading"
+            @click="refreshCurrentEntity"
+            ><el-icon><Refresh /></el-icon>刷新</el-button>
               </el-tooltip>
             </div>
           </div>
@@ -82,7 +80,7 @@
           v-if="isEditing || isAdding"
           :entity="currentEntity || null"
           :tree-data="treeData"
-          :existing-tags="[]"
+          :existing-tags="entityTags"
           :is-editing="isEditing"
           :saving="saving"
           @cancel="cancelEditOrAdd"
@@ -138,6 +136,7 @@ const {
   currentEntity,
   isEditing,
   isAdding,
+  entityTags,
   loadTreeData,
   handleNodeClick,
   handleDelete,
@@ -145,7 +144,8 @@ const {
   openEditEntityForm,
   cancelEditOrAdd,
   saveEntity,
-  loadEntityDetail
+  loadEntityDetail,
+  loadAllTags
 } = useEntityCRUD();
 
 // 搜索关键词
@@ -197,6 +197,7 @@ const refreshCurrentEntity = () => {
 // 在组件挂载时加载数据
 onMounted(() => {
   loadTreeData();
+  loadAllTags(); // 加载所有标签
 });
 </script>
 
