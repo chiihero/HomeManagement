@@ -57,8 +57,14 @@
             <span class="text-gray-700 font-medium">
               {{ getDetailTitle }}
             </span>
-            <el-tooltip
-              v-if="currentEntity && !isEditing && !isAdding"
+            <div v-if="currentEntity" class="flex gap-2 mt-1">
+              <el-button type="primary" @click="buttonEdit">
+                <el-icon class="mr-1"><Edit /></el-icon>编辑
+              </el-button>
+              <el-button type="danger" @click="buttonDelete">
+                <el-icon class="mr-1"><Delete /></el-icon>删除
+              </el-button>
+              <el-tooltip
               effect="dark"
               content="刷新"
               placement="top"
@@ -71,6 +77,8 @@
                 @click="refreshCurrentEntity"
               />
             </el-tooltip>
+            </div>
+            
           </div>
         </template>
 
@@ -110,7 +118,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { Plus, Folder, Refresh, Search, Select } from "@element-plus/icons-vue";
 import { useEntityCRUD } from "./composables/useEntityCRUD";
-import { useEntityForm } from "./composables/useEntityForm";
+import { useEntityImageUpload } from "./composables/useEntityImageUpload";
 import EntityTree from "./components/EntityTree.vue";
 import EntityDetail from "./components/EntityDetail.vue";
 import EntityForm from "./components/EntityForm.vue";
@@ -119,6 +127,13 @@ import type { Entity } from "@/types/entity";
 defineOptions({
   name: "Entity"
 });
+const emit = defineEmits<{
+  (e: "edit"): void;
+  (e: "delete"): void;
+}>();
+
+// 使用图片上传相关逻辑
+const { uploadImages } = useEntityImageUpload();
 
 // 使用实体CRUD相关逻辑
 const {
@@ -135,11 +150,7 @@ const {
   openEditEntityForm,
   cancelEditOrAdd,
   saveEntity
-} = useEntityCRUD();
-
-// 使用实体表单相关逻辑
-const { entityForm, entityFormRef, resetForm, fillFormWithEntity } =
-  useEntityForm();
+} = useEntityCRUD(uploadImages);
 
 // 搜索关键词
 const searchKeyword = ref("");
@@ -188,19 +199,15 @@ const refreshCurrentEntity = () => {
   }
 };
 
-// 监听当前实体变化，如果是编辑状态则填充表单
-watch(currentEntity, newEntity => {
-  if (newEntity && isEditing.value) {
-    fillFormWithEntity(newEntity);
-  }
-});
+// 处理编辑
+const buttonEdit = () => {
+  emit("edit");
+};
 
-// 监听添加状态，如果添加则重置表单
-watch(isAdding, newVal => {
-  if (newVal) {
-    resetForm();
-  }
-});
+// 处理删除
+const buttonDelete = () => {
+  emit("delete");
+};
 
 // 在组件挂载时加载数据
 onMounted(() => {

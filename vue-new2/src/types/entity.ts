@@ -75,11 +75,6 @@ export enum EntityStatus {
   DISPOSED = "DISPOSED" // 已处置
 }
 
-// 附件类型
-export type Attachment = {
-  name: string;
-  url: string;
-};
 
 // 物品表单数据类型
 export type EntityFormData = {
@@ -93,8 +88,7 @@ export type EntityFormData = {
   warrantyPeriod: number;
   description: string;
   tags: string[];
-  images: string[];
-  attachments: Attachment[];
+  images: {file: File, url: string}[] | any[];
 };
 
 // 物品查询参数类型

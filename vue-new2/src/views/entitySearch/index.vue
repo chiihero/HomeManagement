@@ -261,7 +261,9 @@ import { defineComponent, ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useAuthStore } from "@/store/modules/auth";
-import { getEntities as pageEntities, getEntitiesByUser, getImageData } from "@/api/entity";
+import { getEntities as pageEntities, getEntitiesByUser } from "@/api/entity";
+import { getImageData } from "@/api/image";
+
 import { Entity, Tag } from "@/types/entity";
 import {
   Plus,

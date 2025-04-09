@@ -124,18 +124,17 @@
         </el-select>
       </el-form-item>
 
-      <el-divider content-position="left">图片与附件</el-divider>
-
       <el-form-item label="图片" prop="images">
         <el-upload
           v-model:file-list="imageList"
-          action="/api/entity-images/entity"
+          action="#"
           list-type="picture-card"
+          :auto-upload="false"
           :on-preview="handlePictureCardPreview"
           :on-remove="handleRemove"
           :before-upload="beforeImageUpload"
-          :on-success="handleImageUploadSuccess"
-        >
+          :on-change="handleImageChange"
+          >
           <el-icon><Plus /></el-icon>
         </el-upload>
         <el-dialog v-model="dialogVisible" append-to-body>
@@ -157,11 +156,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { Plus, Upload } from "@element-plus/icons-vue";
+import { Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import type { FormInstance, UploadProps, UploadFile } from "element-plus";
-import type { Entity, EntityFormData, EntityStatus } from "@/types/entity";
-import { getImageData } from "@/api/entity";
+import type { FormInstance } from "element-plus";
+import type { Entity, EntityFormData } from "@/types/entity";
+import { useEntityImageUpload } from "../composables/useEntityImageUpload";
 
 interface Props {
   entity: Entity | null;
@@ -178,17 +177,27 @@ const emit = defineEmits<{
 }>();
 
 const formRef = ref<FormInstance>();
-const dialogVisible = ref(false);
-const dialogImageUrl = ref("");
-const imageList = ref<UploadFile[]>([]);
-const attachmentList = ref<UploadFile[]>([]);
+
+// 使用图片上传composable
+const {
+  dialogVisible,
+  dialogImageUrl,
+  imageList,
+  handlePictureCardPreview,
+  handleRemove,
+  beforeImageUpload,
+  handleImageChange,
+  uploadImages,
+  resetImageList,
+  setImageList
+} = useEntityImageUpload();
 
 // 表单数据
 const form = ref<EntityFormData>({
   name: "",
   type: "item",
   parentId: "",
-  status: "AVAILABLE" as EntityStatus,
+  status: "AVAILABLE",
   location: "",
   price: 0,
   purchaseDate: "",
@@ -196,7 +205,6 @@ const form = ref<EntityFormData>({
   description: "",
   tags: [],
   images: [],
-  attachments: []
 });
 
 // 表单验证规则
@@ -211,96 +219,20 @@ const rules = {
 
 };
 
-// 处理图片预览
-const handlePictureCardPreview: UploadProps["onPreview"] = file => {
-  dialogImageUrl.value = file.url!;
-  dialogVisible.value = true;
-};
-
-// 处理文件预览
-const handlePreview: UploadProps["onPreview"] = file => {
-  window.open(file.url);
-};
-
-// 处理文件移除
-const handleRemove: UploadProps["onRemove"] = file => {
-  if (file.raw?.type.startsWith("image/")) {
-    const index = imageList.value.findIndex(item => item.uid === file.uid);
-    if (index !== -1) {
-      imageList.value.splice(index, 1);
-    }
-  } else {
-    const index = attachmentList.value.findIndex(item => item.uid === file.uid);
-    if (index !== -1) {
-      attachmentList.value.splice(index, 1);
-    }
-  }
-};
-
-// 图片上传前检查
-const beforeImageUpload: UploadProps["beforeUpload"] = file => {
-  const isImage = file.type.startsWith("image/");
-  const isLt2M = file.size / 1024 / 1024 < 2;
-
-  if (!isImage) {
-    ElMessage.error("只能上传图片文件!");
-    return false;
-  }
-  if (!isLt2M) {
-    ElMessage.error("图片大小不能超过 2MB!");
-    return false;
-  }
-  return true;
-};
-
-// 附件上传前检查
-const beforeAttachmentUpload: UploadProps["beforeUpload"] = file => {
-  const isLt10M = file.size / 1024 / 1024 < 10;
-
-  if (!isLt10M) {
-    ElMessage.error("文件大小不能超过 10MB!");
-    return false;
-  }
-  return true;
-};
-
-// 处理图片上传成功
-const handleImageUploadSuccess = async (response: any, file: any) => {
-  if (response.code === 200 && response.data) {
-    // 保存图片ID到表单数据
-    if (!form.value.images) {
-      form.value.images = [];
-    }
-    form.value.images.push(response.data.id);
-    
-    // 获取图片数据并创建URL
-    try {
-      const blob = await getImageData(response.data.id);
-      const url = URL.createObjectURL(blob);
-      file.url = url;
-    } catch (error) {
-      console.error("获取图片数据失败:", error);
-      ElMessage.error("获取图片数据失败");
-    }
-  } else {
-    ElMessage.error("图片上传失败");
-  }
-};
-
 // 处理提交
 const handleSubmit = async () => {
   if (!formRef.value) return;
 
-  await formRef.value.validate(valid => {
+  await formRef.value.validate(async valid => {
     if (valid) {
-      // 更新图片和附件列表
-      form.value.images = imageList.value.map(file => file.url!);
-      form.value.attachments = attachmentList.value.map(file => ({
-        name: file.name,
-        url: file.url!
-      }));
-
-      emit("submit", form.value);
+      try {
+        // 先提交表单数据，获取entityId
+        const formData = { ...form.value };
+        emit("submit", formData);
+      } catch (error) {
+        console.error("提交表单失败:", error);
+        ElMessage.error("提交表单失败，请重试");
+      }
     }
   });
 };
@@ -321,8 +253,8 @@ watch(
         type: newEntity.type || "item",
         parentId: newEntity.parentId || "",
         status:
-          (newEntity.status as unknown as EntityStatus) ||
-          ("AVAILABLE" as EntityStatus),
+          (newEntity.status as unknown as string) ||
+          ("AVAILABLE" as string),
         location: (newEntity as any).location || "",
         price: newEntity.price || 0,
         purchaseDate: newEntity.purchaseDate || "",
@@ -330,33 +262,21 @@ watch(
         description: newEntity.description || "",
         tags: ((newEntity.tags || []) as any) || [],
         images: ((newEntity.images || []) as any) || [],
-        attachments: (newEntity as any).attachments || []
       };
 
-      // 更新图片和附件列表
-      imageList.value =
-        (newEntity.images as any)?.map((url: string) => ({
-          name: typeof url === "string" ? url.split("/").pop() || "" : "",
-          url,
-          uid: Date.now() + Math.random(),
-          status: "success"
-        })) || [];
-
-      attachmentList.value = ((newEntity as any).attachments || []).map(
-        (attachment: any) => ({
-          name: attachment.name,
-          url: attachment.url,
-          uid: Date.now() + Math.random(),
-          status: "success"
-        })
-      );
+      // 更新图片列表
+      if (newEntity.images) {
+        setImageList(newEntity.images);
+      } else {
+        resetImageList();
+      }
     } else {
       // 重置表单
       form.value = {
         name: "",
         type: "item",
         parentId: "",
-        status: "AVAILABLE" as EntityStatus,
+        status: "AVAILABLE",
         location: "",
         price: 0,
         purchaseDate: "",
@@ -364,12 +284,11 @@ watch(
         description: "",
         tags: [],
         images: [],
-        attachments: []
       };
-      imageList.value = [];
-      attachmentList.value = [];
+      resetImageList();
     }
   },
   { immediate: true }
 );
 </script>
+
