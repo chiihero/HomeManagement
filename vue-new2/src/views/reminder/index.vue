@@ -256,7 +256,7 @@
               <el-checkbox
                 v-for="method in notificationMethods"
                 :key="method.value"
-                :label="method.value"
+                :value="method.value"
               >
                 {{ method.label }}
               </el-checkbox>
@@ -316,7 +316,10 @@ import {
   NotificationMethod,
   RecurringCycle
 } from "@/types/reminder";
-import { searchItems as searchItemsApi } from "@/api/reminder";
+import { searchEntities } from "@/api/entity";
+import { Entity } from "@/types/entity";
+import { useUserStoreHook } from "@/store/modules/user";
+
 import {
   Plus,
   Search,
@@ -330,6 +333,7 @@ import {
 defineOptions({
   name: "Reminder"
 });
+const authStore = useUserStoreHook();
 
 // 使用组合式函数
 const {
@@ -397,7 +401,7 @@ const recurringCycles = [
 ];
 
 // 物品选项
-const itemOptions = ref<Array<{ id: number; name: string }>>([]);
+const itemOptions = ref<Entity[]>([]);
 const itemLoading = ref(false);
 
 // 搜索物品
@@ -405,8 +409,8 @@ const searchItems = async (query: string) => {
   if (query) {
     itemLoading.value = true;
     try {
-      const data = await searchItemsApi(query);
-      itemOptions.value = data;
+      const data = await searchEntities(authStore.userId, query);
+      itemOptions.value = data.data;
     } catch (error) {
       console.error("搜索物品失败:", error);
     } finally {

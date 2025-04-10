@@ -209,4 +209,13 @@ public interface EntityService extends IService<Entity> {
      * @return 实体列表
      */
     List<Entity> getRecentEntitiesByDays(Long userId, Integer days);
+    
+    /**
+     * 根据关键词搜索实体
+     *
+     * @param userId 用户ID
+     * @param keyword 关键词
+     * @return 实体列表
+     */
+    List<Entity> searchEntities(Long userId, String keyword);
 } 

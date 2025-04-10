@@ -257,6 +257,22 @@ public class EntityController {
         }
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "搜索实体", description = "根据关键词搜索实体")
+    public ApiResponse<List<Entity>> searchEntities(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
+            @Parameter(description = "关键词") @RequestParam(value = "keyword") String keyword) {
+        
+        try {
+            log.info("搜索实体: userId={}, keyword={}", userId, keyword);
+            List<Entity> entities = entityService.searchEntities(userId, keyword);
+            return ApiResponse.success(entities);
+        } catch (Exception e) {
+            log.error("搜索实体异常: userId={}, keyword={}", userId, keyword, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "搜索实体失败: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/list/by-status")
     @Operation(summary = "根据状态获取物品列表", description = "获取指定状态的物品列表")
     public ApiResponse<List<Entity>> listEntitiesByStatus(
@@ -351,66 +367,6 @@ public class EntityController {
         } catch (Exception e) {
             log.error("根据价格范围获取物品列表异常: minPrice={}, maxPrice={}, userId={}", minPrice, maxPrice, userId, e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取物品列表失败: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/stat/by-parent")
-    @Operation(summary = "根据父实体统计子实体", description = "根据父实体统计子实体数量和价值")
-    public ApiResponse<List<Object>> statEntitiesByParent(
-            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
-        
-        try {
-            log.info("根据父实体统计子实体: userId={}", userId);
-            List<Object> stats = entityService.statEntitiesByParent(userId);
-            return ApiResponse.success(stats);
-        } catch (Exception e) {
-            log.error("根据父实体统计子实体异常: userId={}", userId, e);
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/stat/by-tag")
-    @Operation(summary = "根据标签统计物品", description = "根据标签统计物品数量和价值")
-    public ApiResponse<List<Object>> statEntitiesByTag(
-            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
-        
-        try {
-            log.info("根据标签统计物品: userId={}", userId);
-            List<Object> stats = entityService.statEntitiesByTag(userId);
-            return ApiResponse.success(stats);
-        } catch (Exception e) {
-            log.error("根据标签统计物品异常: userId={}", userId, e);
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/stat/by-usage-frequency")
-    @Operation(summary = "根据使用频率统计物品", description = "根据使用频率统计物品数量")
-    public ApiResponse<List<Object>> statEntitiesByUsageFrequency(
-            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
-        
-        try {
-            log.info("根据使用频率统计物品: userId={}", userId);
-            List<Object> stats = entityService.statEntitiesByUsageFrequency(userId);
-            return ApiResponse.success(stats);
-        } catch (Exception e) {
-            log.error("根据使用频率统计物品异常: userId={}", userId, e);
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/sum-value")
-    @Operation(summary = "统计物品总价值", description = "统计所有者物品总价值")
-    public ApiResponse<Double> sumEntitiesValue(
-            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
-        
-        try {
-            log.info("统计物品总价值: userId={}", userId);
-            double totalValue = entityService.sumEntitiesValue(userId);
-            return ApiResponse.success(totalValue);
-        } catch (Exception e) {
-            log.error("统计物品总价值异常: userId={}", userId, e);
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
         }
     }
 

@@ -839,4 +839,49 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         
         return list(queryWrapper);
     }
+
+    /**
+     * 根据关键词搜索实体
+     *
+     * @param userId 用户ID
+     * @param keyword 关键词
+     * @return 实体列表
+     */
+    @Override
+    public List<Entity> searchEntities(Long userId, String keyword) {
+        if (userId == null) {
+            log.error("搜索实体时用户ID为空");
+            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "用户ID不能为空");
+        }
+        
+        log.info("开始搜索实体: userId={}, keyword={}", userId, keyword);
+        
+        // 构建查询条件
+        LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<Entity>()
+                .eq(Entity::getUserId, userId)
+                // 排除已丢弃的实体
+                .ne(Entity::getStatus, "discarded")
+                .and(StringUtils.hasText(keyword), wrapper -> wrapper
+                    // 搜索名称
+                    .like(Entity::getName, keyword)
+                    // 或搜索编码
+                    .or().like(Entity::getCode, keyword)
+                    // 或搜索规格
+                    .or().like(Entity::getSpecification, keyword)
+                    // 或搜索描述
+                    .or().like(Entity::getDescription, keyword)
+                )
+                .orderByDesc(Entity::getUpdateTime);
+        
+        List<Entity> result = list(queryWrapper);
+        
+        log.info("搜索实体完成: userId={}, keyword={}, 结果数量={}", userId, keyword, result.size());
+        
+        // 加载额外信息
+        if (!result.isEmpty()) {
+            enrichEntityDetails(result);
+        }
+        
+        return result;
+    }
 } 

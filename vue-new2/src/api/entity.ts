@@ -115,9 +115,9 @@ export const batchDeleteEntities = (ids: string[]) => {
 };
 
 // 搜索物品
-export const searchEntities = (keyword: string) => {
+export const searchEntities = (userId: number, keyword: string) => {
   return http.get<ResponseResult<Entity[]>>("/entities/search", {
-    params: { keyword }
+    params: { userId, keyword }
   });
 };
 

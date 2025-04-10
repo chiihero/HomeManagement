@@ -29,6 +29,7 @@ public class SpringDocSwaggerConfig {
         return GroupedOpenApi.builder()
                 .group("users")
                 .addOperationCustomizer((operation, handlerMethod) -> {
+                    // 为每个操作添加安全要求
                     operation.addSecurityItem(new SecurityRequirement().addList(headerName));
                     return operation;
                 })
@@ -42,9 +43,7 @@ public class SpringDocSwaggerConfig {
         //添加右上角的统一安全认证
         components.addSecuritySchemes(headerName,
                 new SecurityScheme()
-                        .type(SecurityScheme.Type.APIKEY)
-                        .name(headerName)
-                        .in(SecurityScheme.In.HEADER)
+                        .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer")
                         .bearerFormat("JWT")
                         .description("在下方输入JWT令牌")
@@ -52,6 +51,7 @@ public class SpringDocSwaggerConfig {
 
         return new OpenAPI()
                 .components(components)
+                .addSecurityItem(new SecurityRequirement().addList(headerName)) // 添加全局安全要求
                 .info(apiInfo());
     }
 

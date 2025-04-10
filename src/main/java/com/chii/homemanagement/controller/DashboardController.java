@@ -8,6 +8,7 @@ import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.ReminderService;
 import com.chii.homemanagement.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -156,4 +157,65 @@ public class DashboardController {
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取数据失败: " + e.getMessage());
         }
     }
+
+    @GetMapping("/stat/by-parent")
+    @Operation(summary = "根据父实体统计子实体", description = "根据父实体统计子实体数量和价值")
+    public ApiResponse<List<Object>> statEntitiesByParent(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+
+        try {
+            log.info("根据父实体统计子实体: userId={}", userId);
+            List<Object> stats = entityService.statEntitiesByParent(userId);
+            return ApiResponse.success(stats);
+        } catch (Exception e) {
+            log.error("根据父实体统计子实体异常: userId={}", userId, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/stat/by-tag")
+    @Operation(summary = "根据标签统计物品", description = "根据标签统计物品数量和价值")
+    public ApiResponse<List<Object>> statEntitiesByTag(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+
+        try {
+            log.info("根据标签统计物品: userId={}", userId);
+            List<Object> stats = entityService.statEntitiesByTag(userId);
+            return ApiResponse.success(stats);
+        } catch (Exception e) {
+            log.error("根据标签统计物品异常: userId={}", userId, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/stat/by-usage-frequency")
+    @Operation(summary = "根据使用频率统计物品", description = "根据使用频率统计物品数量")
+    public ApiResponse<List<Object>> statEntitiesByUsageFrequency(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+
+        try {
+            log.info("根据使用频率统计物品: userId={}", userId);
+            List<Object> stats = entityService.statEntitiesByUsageFrequency(userId);
+            return ApiResponse.success(stats);
+        } catch (Exception e) {
+            log.error("根据使用频率统计物品异常: userId={}", userId, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/sum-value")
+    @Operation(summary = "统计物品总价值", description = "统计所有者物品总价值")
+    public ApiResponse<Double> sumEntitiesValue(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+
+        try {
+            log.info("统计物品总价值: userId={}", userId);
+            double totalValue = entityService.sumEntitiesValue(userId);
+            return ApiResponse.success(totalValue);
+        } catch (Exception e) {
+            log.error("统计物品总价值异常: userId={}", userId, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "统计失败: " + e.getMessage());
+        }
+    }
+
 } 
