@@ -188,7 +188,7 @@ const { getContrastColor } = useEntityForm();
 const userStore = useUserStoreHook();
 
 // 表单数据
-const form = reactive<EntityFormData>({
+const form = reactive<Omit<EntityFormData, 'tags'> & { tags: any[] }>({
   name: "",
   type: "item",
   parentId: "",
@@ -198,7 +198,7 @@ const form = reactive<EntityFormData>({
   purchaseDate: "",
   warrantyPeriod: 0,
   description: "",
-  tags: [],
+  tags: [], // 这里存储标签ID数组
   images: [],
   userId: "" // 添加userId字段
 });
@@ -303,6 +303,38 @@ const updateSelectedLocationName = () => {
   }
 };
 
+// 处理标签变化
+const handleTagsChange = (value: any) => {
+  console.log("标签变化:", value);
+  // 确保form.tags被正确更新
+  form.tags = value;
+};
+
+// 处理取消
+const handleCancel = () => {
+  emit("cancel");
+};
+
+// 格式化标签数据为后端需要的格式
+const formatTagsForSubmit = (tagIds: any[]) => {
+  if (!Array.isArray(tagIds) || tagIds.length === 0) return [];
+  
+  // 将标签ID数组转换为完整的Tag对象数组
+  return tagIds.map(tagId => {
+    const foundTag = props.existingTags.find(tag => tag.id === tagId);
+    if (foundTag) {
+      return foundTag; // 返回完整的Tag对象
+    }
+    // 如果是新创建的标签，提供一个默认值
+    return { 
+      id: tagId, 
+      name: String(tagId), // 使用ID作为名称
+      color: "#909399", // 默认颜色
+      userId: Number(userStore.userId) || 1 // 当前用户ID
+    };
+  });
+};
+
 // 处理提交
 const handleSubmit = async () => {
   if (!formRef.value) return;
@@ -327,14 +359,14 @@ const handleSubmit = async () => {
           purchaseDate: form.purchaseDate,
           warrantyPeriod: form.warrantyPeriod,
           description: form.description,
-          tags: form.tags, // 确保这里传递的是标签ID数组
+          tags: formatTagsForSubmit(form.tags), // 格式化标签数据
           images: [...imageList.value], // 使用展开运算符创建新数组
           userId: form.userId
         };
         
         console.log("提交的表单数据:", formData);
         // 添加标签信息的日志输出，帮助调试
-        console.log("提交的标签数据:", form.tags);
+        console.log("提交的标签数据:", formData.tags);
         emit("submit", formData);
       } catch (error) {
         console.error("提交表单失败:", error);
@@ -342,18 +374,6 @@ const handleSubmit = async () => {
       }
     }
   });
-};
-
-// 处理标签变化
-const handleTagsChange = (value: any) => {
-  console.log("标签变化:", value);
-  // 确保form.tags被正确更新
-  form.tags = value;
-};
-
-// 处理取消
-const handleCancel = () => {
-  emit("cancel");
 };
 
 // 监听实体变化
@@ -373,8 +393,19 @@ watch(
       form.warrantyPeriod = newEntity.warrantyPeriod || 0;
       form.description = newEntity.description || "";
       
-      // 确保正确设置标签数据
-      form.tags = Array.isArray(newEntity.tags) ? [...newEntity.tags] : [];
+      // 确保正确设置标签数据 - 如果标签是对象数组则使用它们的ID
+      if (Array.isArray(newEntity.tags)) {
+        // 检查标签数据的格式
+        if (newEntity.tags.length > 0 && typeof newEntity.tags[0] === 'object' && newEntity.tags[0].id) {
+          // 如果是Tag对象数组，提取ID数组
+          form.tags = newEntity.tags.map(tag => tag.id);
+        } else {
+          // 直接使用，可能是ID数组
+          form.tags = [...newEntity.tags];
+        }
+      } else {
+        form.tags = [];
+      }
       console.log("设置的标签数据:", form.tags);
       
       form.images = newEntity.images || [];

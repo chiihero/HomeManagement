@@ -209,13 +209,12 @@ import { getDashboardStatistics } from "@/api/dashboard";
 import { getRemindersByDateRange } from "@/api/reminder";
 import { getRecentEntities } from "@/api/entity";
 import { useUserStoreHook } from "@/store/modules/user";
-import type { PageResult } from "@/types/common";
 import type { Entity } from "@/types/entity";
 import type { Reminder } from "@/types/reminder";
 
 const router = useRouter();
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.currentUser || {});
+const userInfo = computed(() => userStore.currentUser || { nickname: '', username: '' });
 
 // 当前日期和欢迎语
 const currentDate = computed(() => moment().format("YYYY年MM月DD日"));
@@ -326,26 +325,40 @@ const fetchStatistics = async () => {
       statistics.categoriesCount = data.categoriesCount;
 
       // 更新分类图表数据
-      categoryChartData.value = {
-        labels: data.categoryDistribution.map(item => item.name),
-        datasets: [
-          {
-            backgroundColor: data.categoryDistribution.map(item => item.color),
-            data: data.categoryDistribution.map(item => item.count)
-          }
-        ]
-      };
+      if (data.categoryDistribution && Array.isArray(data.categoryDistribution)) {
+        categoryChartData.value = {
+          labels: data.categoryDistribution.map(item => item.name),
+          datasets: [
+            {
+              backgroundColor: data.categoryDistribution.map(item => item.color),
+              data: data.categoryDistribution.map(item => item.count)
+            }
+          ]
+        };
+      } else {
+        categoryChartData.value = {
+          labels: [],
+          datasets: [{ backgroundColor: [], data: [] }]
+        };
+      }
 
       // 更新状态图表数据
-      statusChartData.value = {
-        labels: data.statusDistribution.map(item => item.name),
-        datasets: [
-          {
-            backgroundColor: data.statusDistribution.map(item => item.color),
-            data: data.statusDistribution.map(item => item.count)
-          }
-        ]
-      };
+      if (data.statusDistribution && Array.isArray(data.statusDistribution)) {
+        statusChartData.value = {
+          labels: data.statusDistribution.map(item => item.name),
+          datasets: [
+            {
+              backgroundColor: data.statusDistribution.map(item => item.color),
+              data: data.statusDistribution.map(item => item.count)
+            }
+          ]
+        };
+      } else {
+        statusChartData.value = {
+          labels: [],
+          datasets: [{ backgroundColor: [], data: [] }]
+        };
+      }
     }
   } catch (error) {
     console.error("Failed to fetch statistics:", error);
@@ -357,13 +370,9 @@ const fetchStatistics = async () => {
 // 获取最近提醒
 const fetchRecentReminders = async () => {
   try {
-    const response = await getRemindersByDateRange({
-      startDate: moment().format("YYYY-MM-DD"),
-      endDate: moment().add(7, "days").format("YYYY-MM-DD"),
-      limit: 5
-    });
-    if (response.code === 200 && response.data) {
-      recentReminders.value = response.data;
+    const response = await getRemindersByDateRange(userStore.currentUser?.id || 0, moment().format("YYYY-MM-DD"), moment().add(7, "days").format("YYYY-MM-DD"));
+    if (response?.data?.code === 200 && response?.data?.data) {
+      recentReminders.value = response.data.data;
     }
   } catch (error) {
     console.error("Failed to fetch recent reminders:", error);
@@ -375,9 +384,9 @@ const fetchRecentReminders = async () => {
 // 获取最近物品
 const fetchRecentItems = async () => {
   try {
-    const response = await getRecentEntities(5);
-    if (response.code === 200 && response.data) {
-      recentItems.value = response.data;
+    const response = await getRecentEntities(userStore.currentUser?.id || 0, 5);
+    if (response?.data?.code === 200 && response?.data?.data) {
+      recentItems.value = response.data.data;
     }
   } catch (error) {
     console.error("Failed to fetch recent items:", error);

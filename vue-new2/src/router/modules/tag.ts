@@ -11,7 +11,7 @@ export default {
       name: "Tag",
       component: () => import("@/views/tag/index.vue"),
       meta: {
-        title: "标签列表"
+        title: "标签管理"
       }
     }
   ]

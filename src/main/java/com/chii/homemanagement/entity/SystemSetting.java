@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,66 +16,48 @@ import java.time.LocalDateTime;
 @Data
 @TableName("system_settings")
 @NoArgsConstructor
+@Schema(description = "系统设置信息")
 public class SystemSetting {
-    
+
     @TableId(type = IdType.AUTO)
+    @Schema(description = "主键ID")
     private Long id;
-    
-    /**
-     * 设置类型：SYSTEM-系统设置, USER-用户个人设置
-     */
+
+    @Schema(description = "设置类型：SYSTEM-系统设置, USER-用户个人设置", allowableValues = {"SYSTEM", "USER"}, required = true)
     private String type;
-    
-    /**
-     * 用户ID（对于用户个人设置）
-     */
+
+    @Schema(description = "用户ID（对于用户个人设置）")
     @TableField("user_id")
     private Long userId;
-    
-    /**
-     * 设置键
-     */
+
+    @Schema(description = "设置键", required = true)
     @TableField("setting_key")
     private String settingKey;
-    
-    /**
-     * 设置值
-     */
+
+    @Schema(description = "设置值", required = true)
     @TableField("setting_value")
     private String settingValue;
-    
-    /**
-     * 设置名称/描述
-     */
+
+    @Schema(description = "设置名称/描述")
     private String name;
-    
-    /**
-     * 创建时间
-     */
+
+    @Schema(description = "创建时间", example = "2023-01-01 12:00:00")
     @TableField("created_at")
     private LocalDateTime createdAt;
-    
-    /**
-     * 更新时间
-     */
+
+    @Schema(description = "更新时间", example = "2023-01-01 12:00:00")
     @TableField("updated_at")
     private LocalDateTime updatedAt;
-    
-    /**
-     * 创建人ID
-     */
+
+    @Schema(description = "创建人ID")
     @TableField("created_by")
     private Long createdBy;
-    
-    /**
-     * 更新人ID
-     */
+
+    @Schema(description = "更新人ID")
     @TableField("updated_by")
     private Long updatedBy;
-    
-    /**
-     * 预设值
-     */
+
+    @Schema(description = "预设值")
     @TableField("default_value")
     private String defaultValue;
-} 
+}

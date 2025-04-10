@@ -3,8 +3,6 @@ import type {
   Entity,
   EntityFormData,
   EntityQueryParams,
-  EntityStats,
-  EntityImportExport
 } from "@/types/entity";
 import type { ResponseResult } from "@/types/http";
 
@@ -25,6 +23,12 @@ export function pageEntities(params: any) {
   return http.get("/entities/page", { params });
 }
 
+// 获取物品树
+export const getRecentEntities = (days: number ,userId: number) => {
+  return http.get<ResponseResult<Entity[]>>("/entities/recent", {
+    params: { days,userId }
+  });
+};
 // 获取物品树
 export const getEntityTree = (userId: number) => {
   return http.get<ResponseResult<Entity[]>>("/entities/tree", {
@@ -58,10 +62,6 @@ export const deleteEntity = (id: string) => {
   return http.delete<ResponseResult<void>>(`/entities/${id}`);
 };
 
-// 获取物品统计
-export const getEntityStats = () => {
-  return http.get<ResponseResult<EntityStats>>("/entities/stats");
-};
 
 // 导入物品
 export const importEntities = (file: File) => {
