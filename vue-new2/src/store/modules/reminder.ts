@@ -10,7 +10,7 @@ import {
   createReminder,
   updateReminder,
   deleteReminder,
-  completeReminder
+  processReminder
 } from "@/api/reminder";
 
 interface ReminderState {
@@ -127,7 +127,7 @@ export const useReminderStore = defineStore("reminder", {
     async completeReminder(id: number) {
       this.setLoading(true);
       try {
-        const res = await completeReminder(id);
+        const res = await processReminder(id);
         if (this.currentReminder?.id === id) {
           this.currentReminder = res.data;
         }

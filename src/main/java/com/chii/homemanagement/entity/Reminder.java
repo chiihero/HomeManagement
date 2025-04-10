@@ -1,6 +1,7 @@
 package com.chii.homemanagement.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,10 +41,11 @@ public class Reminder {
     private Long entityId;
 
     /**
-     * 提醒标题
+     * 用于返回物品名称（非数据库字段）
      */
-    @Schema(description = "提醒标题", required = true, example = "保修到期提醒")
-    private String title;
+    @TableField(exist = false)
+    @Schema(description = "物品名称")
+    private String entityName;
 
     /**
      * 提醒内容
@@ -70,10 +72,28 @@ public class Reminder {
     private Long userId;
     
     /**
-     * 创建用户ID
+     * 通知方式: system-系统通知，email-邮箱通知，sms-短信通知，多个用逗号分隔
      */
-    @Schema(description = "创建用户ID")
-    private Long createUserId;
+    @Schema(description = "通知方式", example = "system,email", defaultValue = "system")
+    private String notificationMethods;
+    
+    /**
+     * 提前提醒天数
+     */
+    @Schema(description = "提前提醒天数", example = "3", defaultValue = "0")
+    private Integer daysInAdvance;
+    
+    /**
+     * 是否重复提醒
+     */
+    @Schema(description = "是否重复提醒", example = "false", defaultValue = "false")
+    private Boolean isRecurring;
+    
+    /**
+     * 重复周期: daily-每日, weekly-每周, monthly-每月, yearly-每年
+     */
+    @Schema(description = "重复周期", allowableValues = {"daily", "weekly", "monthly", "yearly"})
+    private String recurringCycle;
 
     /**
      * 创建时间

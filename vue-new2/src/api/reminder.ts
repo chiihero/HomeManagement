@@ -11,10 +11,19 @@ import type { ResponseResult } from "@/types/http";
  * @param params 查询参数
  */
 export const fetchReminders = (params: ReminderQueryParams) => {
-  return http.get<ResponseResult<{ list: Reminder[]; total: number }>>(
-    "/reminders",
-    { params }
-  );
+  // 适配后端分页参数
+  const queryParams = {
+    userId: params.userId,
+    entityName: params.entityName,
+    type: params.type,
+    status: params.status,
+    page: params.page,
+    size: params.size
+  };
+  
+  // 处理日期范围参数，如果需要使用日期范围，应该调用getRemindersByDateRange方法
+  
+  return http.get<ResponseResult<Reminder[]>>("/reminders", { params: queryParams });
 };
 
 /**
@@ -29,7 +38,7 @@ export const fetchReminderDetail = (id: number) => {
  * 创建提醒
  * @param data 提醒信息
  */
-export const createReminder = (data: ReminderFormData) => {
+export const createReminder = (data: Reminder) => {
   return http.post<ResponseResult<Reminder>>("/reminders", data);
 };
 
@@ -38,7 +47,7 @@ export const createReminder = (data: ReminderFormData) => {
  * @param id 提醒ID
  * @param data 提醒信息
  */
-export const updateReminder = (id: number, data: ReminderFormData) => {
+export const updateReminder = (id: number, data: Reminder) => {
   return http.put<ResponseResult<Reminder>>(`/reminders/${id}`, data);
 };
 
@@ -47,18 +56,16 @@ export const updateReminder = (id: number, data: ReminderFormData) => {
  * @param id 提醒ID
  */
 export const deleteReminder = (id: number) => {
-  return http.delete<ResponseResult<void>>(`/reminders/${id}`);
+  return http.delete<ResponseResult<Boolean>>(`/reminders/${id}`);
 };
 
 /**
- * 完成提醒
+ * 处理提醒（标记为已处理）
  * @param id 提醒ID
  */
-export const completeReminder = (id: number) => {
-  return http.put<ResponseResult<Reminder>>(`/reminders/${id}/complete`);
+export const processReminder = (id: number) => {
+  return http.put<ResponseResult<Reminder>>(`/reminders/${id}/process`);
 };
-
-
 
 /**
  * 搜索提醒
@@ -93,7 +100,7 @@ export const fetchExpiredReminders = () => {
  * @param status 状态
  */
 export const updateBatchReminderStatus = (ids: number[], status: string) => {
-  return http.patch<ResponseResult<void>>("/reminders/batch/status", {
+  return http.patch<ResponseResult<Boolean>>("/reminders/batch/status", {
     ids,
     status
   });
@@ -104,7 +111,7 @@ export const updateBatchReminderStatus = (ids: number[], status: string) => {
  * @param ids 提醒ID数组
  */
 export const deleteBatchReminders = (ids: number[]) => {
-  return http.delete<ResponseResult<void>>("/reminders/batch", {
+  return http.delete<ResponseResult<Boolean>>("/reminders/batch", {
     data: { ids }
   });
 };
@@ -139,7 +146,7 @@ export const getRemindersByDateRange = (
  * 获取物品的提醒
  * @param entityId 物品ID
  */
-export const getRemindersByEntityId = (entityId: string) => {
+export const getRemindersByEntityId = (entityId: number) => {
   return http.get<ResponseResult<Reminder[]>>(`/reminders/entity/${entityId}`);
 };
 
@@ -158,6 +165,6 @@ export const getRemindersByStatus = (userId: number, status: string) => {
  * 为物品生成提醒
  * @param itemId 物品ID
  */
-export const generateRemindersForItem = (itemId: string) => {
+export const generateRemindersForItem = (itemId: number) => {
   return http.post<ResponseResult<void>>(`/reminders/generate/${itemId}`, {});
 };

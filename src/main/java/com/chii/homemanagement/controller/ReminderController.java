@@ -5,7 +5,6 @@ import com.chii.homemanagement.common.ApiResponse;
 import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.service.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -70,29 +68,8 @@ public class ReminderController {
         return ApiResponse.success(reminderService.getReminder(id));
     }
 
-    /**
-     * 获取当天提醒
-     */
-    @Operation(summary = "获取当天提醒", description = "获取指定用户当天的提醒列表")
-    @GetMapping("/today")
-    public ApiResponse<List<Reminder>> getTodayReminders(@RequestParam Long userId) {
-        logger.info("Fetching today's reminders for user ID: {}", userId);
-        return ApiResponse.success(reminderService.getTodayReminders(userId));
-    }
 
-    /**
-     * 获取日期范围内的提醒
-     */
-    @Operation(summary = "获取日期范围内的提醒", description = "获取指定用户在日期范围内的提醒列表")
-    @GetMapping("/date-range")
-    public ApiResponse<List<Reminder>> getRemindersByDateRange(
-            @Parameter(description = "用户ID") @RequestParam Long userId,
-            @Parameter(description = "开始日期") @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @Parameter(description = "结束日期") @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-        logger.info("Fetching reminders for user ID: {} from {} to {}", userId, startDate, endDate);
-        return ApiResponse.success(reminderService.getRemindersByDateRange(userId, startDate, endDate));
-    }
-
+   
     /**
      * 获取物品相关的提醒
      */
@@ -114,18 +91,7 @@ public class ReminderController {
         return ApiResponse.success();
     }
 
-    /**
-     * 获取指定状态的提醒
-     */
-    @Operation(summary = "获取指定状态的提醒", description = "根据状态获取指定用户的提醒列表")
-    @GetMapping("/status")
-    public ApiResponse<List<Reminder>> getRemindersByStatus(
-            @Parameter(description = "用户ID") @RequestParam Long userId,
-            @Parameter(description = "提醒状态") @RequestParam String status) {
-        logger.info("Fetching reminders for user ID: {} with status: {}", userId, status);
-        return ApiResponse.success(reminderService.getRemindersByStatus(userId, status));
-    }
-
+   
     /**
      * 处理提醒（标记为已处理）
      */
@@ -138,6 +104,24 @@ public class ReminderController {
             logger.warn("Reminder with ID: {} not found", id);
             return ApiResponse.error(ErrorCode.DATA_NOT_EXIST.getCode(), "提醒不存在");
         }
-        return ApiResponse.success(reminderService.updateReminder(reminder));
+        return ApiResponse.success(reminderService.processReminder(reminder));
+    }
+
+    /**
+     * 获取提醒列表
+     */
+    @Operation(summary = "获取提醒列表", description = "获取提醒列表，支持分页和筛选")
+    @GetMapping
+    public ApiResponse<List<Reminder>> getReminders(
+            @Parameter(description = "用户ID") @RequestParam(required = false) Long userId,
+            @Parameter(description = "物品ID") @RequestParam(required = false) Long entityId,
+            @Parameter(description = "物品名称") @RequestParam(required = false) String entityName,
+            @Parameter(description = "提醒类型") @RequestParam(required = false) String type,
+            @Parameter(description = "提醒状态") @RequestParam(required = false) String status,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer page,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer size) {
+        logger.info("Fetching reminders with filters: userId={}, entityId={}, entityName={}, type={}, status={}, page={}, size={}",
+                userId, entityId, entityName, type, status, page, size);
+        return ApiResponse.success(reminderService.getReminders(userId, entityId,entityName , type, status, page, size));
     }
 }

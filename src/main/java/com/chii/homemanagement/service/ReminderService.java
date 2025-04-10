@@ -104,4 +104,26 @@ public interface ReminderService {
      * @return 提醒列表
      */
     List<Reminder> getRemindersByStatus(Long userId, String status);
+
+    /**
+     * 处理提醒（标记为已处理）
+     *
+     * @param reminder 提醒
+     * @return 处理后的提醒对象
+     */
+    Reminder processReminder(Reminder reminder);
+
+    /**
+     * 获取提醒列表
+     *
+     * @param userId     用户ID
+     * @param entityId   物品ID
+     * @param entityName 物品名称
+     * @param type       提醒类型
+     * @param status     提醒状态
+     * @param page       页码
+     * @param size       每页大小
+     * @return 提醒列表
+     */
+    List<Reminder> getReminders(Long userId, Long entityId, String entityName, String type, String status, Integer page, Integer size);
 } 

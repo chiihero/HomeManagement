@@ -83,8 +83,8 @@
             <div class="flex justify-between items-center">
               <span>物品分类统计</span>
               <el-radio-group v-model="chartViewType" size="small">
-                <el-radio-button label="category">物品分类</el-radio-button>
-                <el-radio-button label="status">状态分布</el-radio-button>
+                <el-radio-button value="category">物品分类</el-radio-button>
+                <el-radio-button value="status">状态分布</el-radio-button>
               </el-radio-group>
             </div>
           </template>
@@ -371,8 +371,8 @@ const fetchStatistics = async () => {
 const fetchRecentReminders = async () => {
   try {
     const response = await getRemindersByDateRange(userStore.currentUser?.id || 0, moment().format("YYYY-MM-DD"), moment().add(7, "days").format("YYYY-MM-DD"));
-    if (response?.data?.code === 200 && response?.data?.data) {
-      recentReminders.value = response.data.data;
+    if (response.code === 200 && response.data.length >0) {
+      recentReminders.value = response.data;
     }
   } catch (error) {
     console.error("Failed to fetch recent reminders:", error);
@@ -397,6 +397,9 @@ const fetchRecentItems = async () => {
 
 // 工具函数
 const formatNumber = (num: number) => {
+  if (num === undefined || num === 0) {
+    return "0.00";
+  }
   return num.toLocaleString("zh-CN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2

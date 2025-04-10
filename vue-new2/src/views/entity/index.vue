@@ -1,5 +1,5 @@
 <template>
-  <div class="entity-container bg-gray-50 min-h-screen p-4 md:p-6">
+  <div class="bg-gray-50 min-h-screen p-4 md:p-6">
     <el-card class="header-card mb-6 border-0 shadow-sm">
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
@@ -202,9 +202,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.entity-container {
-  width: 100%;
-}
+
 
 .header-card {
   background-color: rgba(255, 255, 255, 0.95);

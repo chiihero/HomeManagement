@@ -3,7 +3,8 @@ import type { ReminderQueryParams } from "@/types/reminder";
 
 export function useReminderSearch() {
   const searchForm = reactive<ReminderQueryParams>({
-    itemName: "",
+    entityId: undefined,
+    entityName: "",
     type: undefined,
     status: undefined,
     dateRange: undefined,
@@ -17,7 +18,9 @@ export function useReminderSearch() {
   // 重置搜索表单
   const resetSearchForm = () => {
     Object.assign(searchForm, {
-      itemName: "",
+      entityId: "",
+      entityName: "",
+
       type: undefined,
       status: undefined,
       dateRange: undefined,

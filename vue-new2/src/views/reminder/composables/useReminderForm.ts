@@ -6,23 +6,22 @@ export function useReminderForm() {
   const reminderFormRef = ref<FormInstance>();
 
   const reminderForm = reactive<ReminderFormData>({
-    itemId: "",
-    itemName: "",
+    entityId: "",
     userId: 0,
-    type: "EXPIRATION",
-    reminderDate: "",
-    status: "PENDING",
+    type: "warranty",
+    remindDate: "",
+    status: "pending",
     content: "",
-    notificationMethods: ["SYSTEM"],
+    notificationMethods: ["system"],
     daysInAdvance: 1,
     isRecurring: false,
     recurringCycle: undefined
   });
 
   const rules = reactive<FormRules>({
-    itemId: [{ required: true, message: "请选择物品", trigger: "change" }],
+    entityId: [{ required: true, message: "请选择物品", trigger: "change" }],
     type: [{ required: true, message: "请选择提醒类型", trigger: "change" }],
-    reminderDate: [
+    remindDate: [
       { required: true, message: "请选择提醒日期", trigger: "change" }
     ],
     content: [{ required: true, message: "请输入提醒内容", trigger: "blur" }],
@@ -46,14 +45,13 @@ export function useReminderForm() {
       reminderFormRef.value.resetFields();
     }
     Object.assign(reminderForm, {
-      itemId: "",
-      itemName: "",
+      entityId: "",
       userId: 0,
-      type: "EXPIRATION",
-      reminderDate: "",
-      status: "PENDING",
+      type: "warranty",
+      remindDate: "",
+      status: "pending",
       content: "",
-      notificationMethods: ["SYSTEM"],
+      notificationMethods: ["system"],
       daysInAdvance: 1,
       isRecurring: false,
       recurringCycle: undefined
@@ -64,14 +62,13 @@ export function useReminderForm() {
   const fillFormWithReminder = (reminder: Reminder) => {
     Object.assign(reminderForm, {
       id: reminder.id,
-      itemId: reminder.itemId,
-      itemName: reminder.itemName,
+      entityId: reminder.entityId,
       userId: reminder.userId,
       type: reminder.type,
-      reminderDate: reminder.reminderDate,
+      remindDate: reminder.remindDate,
       status: reminder.status,
       content: reminder.content,
-      notificationMethods: reminder.notificationMethods,
+      notificationMethods: reminder.notificationMethods ? reminder.notificationMethods.split(',') : ['system'],
       daysInAdvance: reminder.daysInAdvance,
       isRecurring: reminder.isRecurring,
       recurringCycle: reminder.recurringCycle

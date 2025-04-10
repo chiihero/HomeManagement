@@ -1,24 +1,24 @@
-import type { PageParams } from "@/types/entity";
+// import type { PageParams } from "@/types/entity";
 
 /**
  * 提醒类型
  */
-export type ReminderType = "EXPIRATION" | "MAINTENANCE" | "CUSTOM";
+export type ReminderType = "warranty" | "maintenance" | "lending" | "expiry" | "other";
 
 /**
  * 提醒状态
  */
-export type ReminderStatus = "PENDING" | "COMPLETED" | "CANCELLED";
+export type ReminderStatus = "pending" | "sent" | "processed" | "ignored";
 
 /**
  * 通知方式
  */
-export type NotificationMethod = "SYSTEM" | "EMAIL" | "SMS";
+export type NotificationMethod = "system" | "email" | "sms";
 
 /**
  * 重复周期
  */
-export type RecurringCycle = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+export type RecurringCycle = "daily" | "weekly" | "monthly" | "yearly";
 
 /**
  * 提醒实体
@@ -31,11 +31,11 @@ export interface Reminder {
   /**
    * 物品ID
    */
-  itemId: number;
+  entityId: number;
   /**
    * 物品名称
    */
-  itemName: string;
+  entityName?: string;
   /**
    * 用户ID
    */
@@ -47,7 +47,7 @@ export interface Reminder {
   /**
    * 提醒日期
    */
-  reminderDate: string;
+  remindDate: string;
   /**
    * 提醒状态
    */
@@ -57,7 +57,73 @@ export interface Reminder {
    */
   content: string;
   /**
-   * 通知方式
+   * 通知方式 (逗号分隔的字符串)
+   */
+  notificationMethods: string;
+  /**
+   * 提前提醒天数
+   */
+  daysInAdvance: number;
+  /**
+   * 是否重复提醒
+   */
+  isRecurring: boolean;
+  /**
+   * 重复周期
+   */
+  recurringCycle?: RecurringCycle;
+  /**
+   * 创建者ID
+   */
+  createUserId: number;
+  /**
+   * 创建时间
+   */
+  createTime: string;
+  /**
+   * 更新时间
+   */
+  updateTime: string;
+}
+
+/**
+ * 前端展示用的提醒对象
+ */
+export interface ReminderDisplay {
+  /**
+   * 提醒ID
+   */
+  id: number;
+  /**
+   * 物品ID
+   */
+  entityId: number;
+  /**
+   * 物品名称
+   */
+  entityName: string;
+  /**
+   * 用户ID
+   */
+  userId: number;
+  /**
+   * 提醒类型
+   */
+  type: ReminderType;
+  /**
+   * 提醒日期
+   */
+  remindDate: string;
+  /**
+   * 提醒状态
+   */
+  status: ReminderStatus;
+  /**
+   * 提醒内容
+   */
+  content: string;
+  /**
+   * 通知方式数组
    */
   notificationMethods: NotificationMethod[];
   /**
@@ -75,11 +141,11 @@ export interface Reminder {
   /**
    * 创建时间
    */
-  createdAt: string;
+  createTime: string;
   /**
    * 更新时间
    */
-  updatedAt: string;
+  updateTime: string;
 }
 
 /**
@@ -89,7 +155,11 @@ export interface ReminderQueryParams {
   /**
    * 物品名称
    */
-  itemName?: string;
+  entityId?: number;
+    /**
+   * 物品名称
+   */
+  entityName: string;
   /**
    * 提醒类型
    */
@@ -121,17 +191,18 @@ export interface ReminderQueryParams {
  */
 export interface ReminderFormData {
   id?: number;
-  itemId: number;
-  itemName: string;
+  entityId: number;
+  entityName: string;
   userId: number;
   type: ReminderType;
-  reminderDate: string;
+  remindDate: string;
   status: ReminderStatus;
   content: string;
   notificationMethods: NotificationMethod[];
   daysInAdvance: number;
   isRecurring: boolean;
   recurringCycle?: RecurringCycle;
+  createUserId?: number;
 }
 
 /**

@@ -30,7 +30,7 @@
         <div class="flex flex-wrap gap-4">
           <el-form-item label="物品名称">
             <el-input
-              v-model="searchForm.itemName"
+              v-model="searchForm.entityName"
               placeholder="请输入物品名称"
               clearable
             />
@@ -99,7 +99,7 @@
         </div>
       </template>
       <el-table v-loading="loading" :data="reminderList" border class="w-full">
-        <el-table-column prop="itemName" label="物品名称" min-width="120" />
+        <el-table-column prop="entityName" label="物品名称" min-width="120" />
         <el-table-column prop="type" label="提醒类型" width="100">
           <template #default="{ row }">
             <el-tag size="small" :type="getTypeColor(row.type)">
@@ -107,7 +107,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="reminderDate" label="提醒日期" width="120" />
+        <el-table-column prop="remindDate" label="提醒日期" width="120" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-tag size="small" :type="getStatusType(row.status)">
@@ -142,7 +142,7 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button
-              v-if="row.status === 'PENDING'"
+              v-if="row.status === 'pending'"
               type="primary"
               link
               size="small"
@@ -151,7 +151,7 @@
               <el-icon class="mr-1"><Edit /></el-icon>编辑
             </el-button>
             <el-button
-              v-if="row.status === 'PENDING'"
+              v-if="row.status === 'pending'"
               type="success"
               link
               size="small"
@@ -201,9 +201,9 @@
         status-icon
         class="max-w-3xl mx-auto"
       >
-        <el-form-item label="物品" prop="itemId">
+        <el-form-item label="物品" prop="entityId">
           <el-select
-            v-model="reminderForm.itemId"
+            v-model="reminderForm.entityId"
             filterable
             remote
             :remote-method="searchItems"
@@ -233,9 +233,9 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="提醒日期" prop="reminderDate">
+        <el-form-item label="提醒日期" prop="remindDate">
           <el-date-picker
-            v-model="reminderForm.reminderDate"
+            v-model="reminderForm.remindDate"
             type="date"
             placeholder="请选择提醒日期"
             value-format="YYYY-MM-DD"
@@ -314,7 +314,8 @@ import {
   ReminderType,
   ReminderStatus,
   NotificationMethod,
-  RecurringCycle
+  RecurringCycle,
+  ReminderDisplay
 } from "@/types/reminder";
 import { searchEntities } from "@/api/entity";
 import { Entity } from "@/types/entity";
@@ -373,31 +374,34 @@ const {
 
 // 提醒类型选项
 const reminderTypes = [
-  { label: "到期提醒", value: "EXPIRATION" },
-  { label: "维护提醒", value: "MAINTENANCE" },
-  { label: "自定义提醒", value: "CUSTOM" }
+  { label: "保修到期", value: "warranty" },
+  { label: "维护提醒", value: "maintenance" },
+  { label: "借出归还", value: "lending" },
+  { label: "物品过期", value: "expiry" },
+  { label: "其他提醒", value: "other" }
 ];
 
 // 提醒状态选项
 const reminderStatuses = [
-  { label: "待提醒", value: "PENDING" },
-  { label: "已完成", value: "COMPLETED" },
-  { label: "已取消", value: "CANCELLED" }
+  { label: "待提醒", value: "pending" },
+  { label: "已发送", value: "sent" },
+  { label: "已处理", value: "processed" },
+  { label: "已忽略", value: "ignored" }
 ];
 
 // 通知方式选项
 const notificationMethods = [
-  { label: "系统通知", value: "SYSTEM" },
-  { label: "邮件通知", value: "EMAIL" },
-  { label: "短信通知", value: "SMS" }
+  { label: "系统通知", value: "system" },
+  { label: "邮件通知", value: "email" },
+  { label: "短信通知", value: "sms" }
 ];
 
 // 重复周期选项
 const recurringCycles = [
-  { label: "每天", value: "DAILY" },
-  { label: "每周", value: "WEEKLY" },
-  { label: "每月", value: "MONTHLY" },
-  { label: "每年", value: "YEARLY" }
+  { label: "每天", value: "daily" },
+  { label: "每周", value: "weekly" },
+  { label: "每月", value: "monthly" },
+  { label: "每年", value: "yearly" }
 ];
 
 // 物品选项
@@ -434,11 +438,13 @@ const getStatusLabel = (status: ReminderStatus) => {
 // 获取状态类型
 const getStatusType = (status: ReminderStatus) => {
   switch (status) {
-    case "PENDING":
+    case "pending":
       return "warning";
-    case "COMPLETED":
+    case "sent":
       return "success";
-    case "CANCELLED":
+    case "processed":
+      return "info";
+    case "ignored":
       return "info";
     default:
       return "";
@@ -448,12 +454,16 @@ const getStatusType = (status: ReminderStatus) => {
 // 获取提醒类型颜色
 const getTypeColor = (type: ReminderType) => {
   switch (type) {
-    case "EXPIRATION":
+    case "warranty":
       return "danger";
-    case "MAINTENANCE":
+    case "maintenance":
       return "warning";
-    case "CUSTOM":
+    case "lending":
       return "primary";
+    case "expiry":
+      return "danger";
+    case "other":
+      return "info";
     default:
       return "info";
   }
