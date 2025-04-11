@@ -1,6 +1,6 @@
 import http from "@/utils/http";
 import type { User } from "@/types/user";
-import type { ResponseResult } from "@/types/entity";
+import type { ResponseResult } from "@/types/http";
 
 // 用户个人资料接口
 export interface UserProfile {

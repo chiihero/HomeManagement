@@ -8,6 +8,7 @@ export interface Entity {
   quantity?: number;
   price?: number;
   purchaseDate?: string;
+  productionDate?: string;
   warrantyPeriod?: number;
   warrantyEndDate?: string;
   usageFrequency?: "daily" | "weekly" | "monthly" | "rarely";
@@ -51,22 +52,6 @@ export interface EntityImage {
   createdTime: string;
 }
 
-// 分页数据类型
-export interface PageResult<T> {
-  records: T[];
-  total: number;
-  size: number;
-  current: number;
-  pages: number;
-}
-
-// 响应类型
-export interface ResponseResult<T> {
-  code: number;
-  msg: string;
-  data: T;
-}
-
 // 物品状态枚举 状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出
 export enum EntityStatus {
   normal = "normal",
@@ -83,8 +68,10 @@ export type EntityFormData = {
   status: EntityStatus;
   location: string;
   price: number;
+  productionDate?: string;
   purchaseDate: string;
   warrantyPeriod: number;
+  warrantyEndDate?: string;
   description: string;
   tags: Tag[];
   images: { file: File; url: string }[] | any[];

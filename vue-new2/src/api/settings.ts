@@ -1,5 +1,5 @@
 import http from "@/utils/http";
-import type { ResponseResult } from "@/types/entity";
+import type { ResponseResult } from "@/types/http";
 
 /**
  * 系统设置接口

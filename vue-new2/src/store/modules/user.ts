@@ -13,7 +13,7 @@ import { login, logout, refreshToken } from "@/api/auth";
 import { getUserInfo, updateUserInfo } from "@/api/user";
 import { ElMessage } from "element-plus";
 import type { User } from "@/types/user";
-import type { ResponseResult } from "@/types/entity";
+import type { ResponseResult } from "@/types/http";
 
 // 扩展userType类型
 interface UserState extends userType {
@@ -287,7 +287,7 @@ export const useUserStore = defineStore("pure-user", {
           return { success: true, data: response.data };
         }
 
-        ElMessage.error(response.msg || "登录失败，请检查用户名和密码");
+        ElMessage.error(response.message || "登录失败，请检查用户名和密码");
         return { success: false, data: null };
       } catch (error) {
         console.error("Login error:", error);

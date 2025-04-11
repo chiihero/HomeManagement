@@ -4,7 +4,14 @@ export interface ResponseResult<T = any> {
   message: string;
   data: T;
 }
-
+// 分页数据类型
+export interface PageResult<T> {
+  records: T[];
+  total: number;
+  size: number;
+  current: number;
+  pages: number;
+}
 // HTTP 请求配置类型
 export interface RequestConfig {
   baseURL?: string;

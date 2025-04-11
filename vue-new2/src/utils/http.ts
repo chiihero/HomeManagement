@@ -6,7 +6,6 @@ import axios, {
 } from "axios";
 import { ElMessage } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
-import { getCookie } from "@/utils/auth";
 import { router } from "@/router";
 
 // 定义错误响应类型

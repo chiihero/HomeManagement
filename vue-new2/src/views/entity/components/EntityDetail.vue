@@ -32,9 +32,15 @@
           <el-descriptions-item label="购买日期">{{
             formatDate(entity.purchaseDate)
           }}</el-descriptions-item>
+          <el-descriptions-item label="生产日期">{{
+            formatDate(entity.productionDate)
+          }}</el-descriptions-item>
           <el-descriptions-item label="保修期"
-            >{{ entity.warrantyPeriod }}个月</el-descriptions-item
-          >
+            >{{ entity.warrantyPeriod }}个月
+          </el-descriptions-item>
+          <el-descriptions-item label="保修截止日期">{{
+            formatDate(entity.warrantyEndDate)
+          }}</el-descriptions-item>
           <el-descriptions-item label="父级物品">{{
             entity.parentId ? getParentName(entity.parentId, treeData) : "无"
           }}</el-descriptions-item>
@@ -63,8 +69,8 @@
           </h3>
         </div>
         <div class="flex flex-wrap gap-2">
-          <el-tag 
-            v-for="(tag, index) in entity.tags" 
+          <el-tag
+            v-for="(tag, index) in entity.tags"
             :key="index"
             :color="tag.color"
             :style="{ color: getContrastColor(tag.color) }"
@@ -139,14 +145,17 @@ const {
 // 计算对比色，确保文字在背景色上可见
 const getContrastColor = (hexColor: string) => {
   // 如果没有颜色或颜色格式不正确，默认返回黑色
-  if (!hexColor || !hexColor.startsWith('#')) {
-    return '#000000';
+  if (!hexColor || !hexColor.startsWith("#")) {
+    return "#000000";
   }
 
   // 移除#前缀并处理不同格式的颜色（#RGB和#RRGGBB）
   let hex = hexColor.slice(1);
   if (hex.length === 3) {
-    hex = hex.split('').map(x => x + x).join('');
+    hex = hex
+      .split("")
+      .map(x => x + x)
+      .join("");
   }
 
   // 转换为RGB
@@ -155,10 +164,10 @@ const getContrastColor = (hexColor: string) => {
   const b = parseInt(hex.substring(4, 6), 16);
 
   // 计算亮度 (YIQ方程式)
-  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
 
   // 根据亮度返回黑色或白色
-  return yiq >= 150 ? '#000000' : '#ffffff';
+  return yiq >= 150 ? "#000000" : "#ffffff";
 };
 
 // 获取位置信息

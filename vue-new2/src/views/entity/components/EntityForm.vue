@@ -4,50 +4,23 @@
       ref="formRef"
       :model="form"
       :rules="rules"
-      label-width="100px"
+      label-width="auto"
       class="max-w-3xl mx-auto"
+      style="max-width: 600px"
       status-icon
     >
       <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="名称" prop="name">
             <el-input v-model="form.name" placeholder="请输入物品名称" />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="类型" prop="type">
             <el-input v-model="form.type" placeholder="请输入物品类型" />
           </el-form-item>
         </el-col>
-      </el-row>
-
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <el-form-item label="所属位置" prop="parentId">
-            <el-tree
-              :current-node-key="currentNodeKey"
-              :data="computedTreeData"
-              :props="{ label: 'name', children: 'children' }"
-              node-key="id"
-              highlight-current
-              default-expand-all
-              :expand-on-click-node="false"
-              class="location-tree"
-              @current-change="handleLocationSelect"
-            >
-              <template #default="{ node, data }">
-                <div class="custom-tree-node">
-                  <span>
-                    <el-icon v-if="data.type === 'space'"><Folder /></el-icon>
-                    <el-icon v-else><Goods /></el-icon>
-                    {{ node.label }}
-                  </span>
-                </div>
-              </template>
-            </el-tree>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="form.status"
@@ -61,7 +34,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="价格" prop="price">
             <el-input-number
               v-model="form.price"
@@ -73,10 +46,7 @@
             />
           </el-form-item>
         </el-col>
-      </el-row>
-
-      <el-row :gutter="20">
-        <el-col :span="12">
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="购买日期" prop="purchaseDate">
             <el-date-picker
               v-model="form.purchaseDate"
@@ -87,7 +57,18 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24" :sm="12" :md="10">
+          <el-form-item label="生产日期" prop="productionDate">
+            <el-date-picker
+              v-model="form.productionDate"
+              type="date"
+              placeholder="请选择生产日期"
+              value-format="YYYY-MM-DD"
+              class="w-full"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="保修期" prop="warrantyPeriod">
             <el-input-number
               v-model="form.warrantyPeriod"
@@ -98,8 +79,41 @@
             />
           </el-form-item>
         </el-col>
+        <el-col :xs="24" :sm="12" :md="10">
+          <el-form-item label="保修截止日期" prop="warrantyEndDate">
+            <el-date-picker
+              v-model="form.warrantyEndDate"
+              type="date"
+              placeholder="请选择保修截止日期"
+              value-format="YYYY-MM-DD"
+              class="w-full"
+            />
+          </el-form-item>
+        </el-col>
       </el-row>
-
+      <el-form-item label="所属位置" prop="parentId">
+        <el-tree
+          :current-node-key="currentNodeKey"
+          :data="computedTreeData"
+          :props="{ label: 'name', children: 'children' }"
+          node-key="id"
+          highlight-current
+          default-expand-all
+          :expand-on-click-node="false"
+          class="location-tree"
+          @current-change="handleLocationSelect"
+        >
+          <template #default="{ node, data }">
+            <div class="custom-tree-node">
+              <span>
+                <el-icon v-if="data.type === 'space'"><Folder /></el-icon>
+                <el-icon v-else><Goods /></el-icon>
+                {{ node.label }}
+              </span>
+            </div>
+          </template>
+        </el-tree>
+      </el-form-item>
       <el-form-item label="描述" prop="description">
         <el-input
           v-model="form.description"
@@ -124,7 +138,10 @@
             :key="tag.id"
             :label="tag.name"
             :value="tag.id"
-            :style="{ backgroundColor: tag.color, color: getContrastColor(tag.color) }"
+            :style="{
+              backgroundColor: tag.color,
+              color: getContrastColor(tag.color)
+            }"
           />
         </el-select>
       </el-form-item>
@@ -166,7 +183,7 @@ import { ref, reactive, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 import { Folder, Goods, Plus } from "@element-plus/icons-vue";
-import { useEntityForm } from '../composables/useEntityForm';
+import { useEntityForm } from "../composables/useEntityForm";
 
 // 添加此注释，需要在项目中创建相应的类型定义
 // @ts-ignore
@@ -180,7 +197,6 @@ interface Props {
   existingTags: Tag[];
   isEditing: boolean;
   saving: boolean;
-  
 }
 const { getContrastColor } = useEntityForm();
 
@@ -188,14 +204,15 @@ const { getContrastColor } = useEntityForm();
 const userStore = useUserStoreHook();
 
 // 表单数据
-const form = reactive<Omit<EntityFormData, 'tags'> & { tags: any[] }>({
+const form = reactive<Omit<EntityFormData, "tags"> & { tags: any[] }>({
   name: "",
   type: "item",
   parentId: "",
-  status: "normal" as EntityStatus,
+  status: "AVAILABLE" as EntityStatus,
   location: "",
   price: 0,
   purchaseDate: "",
+  productionDate: "",
   warrantyPeriod: 0,
   description: "",
   tags: [], // 这里存储标签ID数组
@@ -228,7 +245,6 @@ const {
 const selectedLocationName = ref<string>("根空间");
 const currentNodeKey = ref<string>("0");
 
-
 // 处理位置选择
 const handleLocationSelect = (data: any) => {
   if (data && data.id) {
@@ -236,6 +252,102 @@ const handleLocationSelect = (data: any) => {
     selectedLocationName.value = data.name;
   }
 };
+
+/**
+ * 日期计算相关函数和监听器
+ * 实现生产日期、保修期和保修截止日期之间的联动计算
+ * 当用户填写其中任意两个值时，自动计算第三个值
+ */
+
+/**
+ * 根据生产日期和保修期计算保修截止日期
+ * 计算公式: 保修截止日期 = 生产日期 + 保修期(月)
+ */
+const calculateWarrantyEndDate = () => {
+  if (form.productionDate && form.warrantyPeriod > 0) {
+    const date = new Date(form.productionDate);
+    date.setMonth(date.getMonth() + form.warrantyPeriod);
+    form.warrantyEndDate = date.toISOString().split("T")[0];
+  }
+};
+
+/**
+ * 根据生产日期和保修截止日期计算保修期(月数)
+ * 计算公式: 保修期 = (保修截止日期年份 - 生产日期年份) * 12 + (保修截止日期月份 - 生产日期月份)
+ */
+const calculateWarrantyPeriod = () => {
+  if (form.productionDate && form.warrantyEndDate) {
+    const startDate = new Date(form.productionDate);
+    const endDate = new Date(form.warrantyEndDate);
+    const diffMonths =
+      (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+      (endDate.getMonth() - startDate.getMonth());
+    form.warrantyPeriod = diffMonths > 0 ? diffMonths : 0;
+  }
+};
+
+/**
+ * 根据保修截止日期和保修期计算生产日期
+ * 计算公式: 生产日期 = 保修截止日期 - 保修期(月)
+ * 注意: 仅在未提供生产日期时才进行此计算
+ */
+const calculateProductionDate = () => {
+  if (form.warrantyEndDate && form.warrantyPeriod > 0) {
+    const endDate = new Date(form.warrantyEndDate);
+    endDate.setMonth(endDate.getMonth() - form.warrantyPeriod);
+    form.productionDate = endDate.toISOString().split("T")[0];
+  }
+};
+
+/**
+ * 监听生产日期和保修期的变化，计算保修截止日期
+ * 当生产日期和保修期都有效时，自动计算保修截止日期
+ */
+watch(
+  [() => form.productionDate, () => form.warrantyPeriod],
+  ([newProductionDate, newWarrantyPeriod]) => {
+    if (newProductionDate && newWarrantyPeriod > 0) {
+      calculateWarrantyEndDate();
+    }
+  }
+);
+
+/**
+ * 监听生产日期和保修截止日期的变化，计算保修期
+ * 当生产日期和保修截止日期都有效时，自动计算保修期(月数)
+ */
+watch(
+  [() => form.productionDate, () => form.warrantyEndDate],
+  ([newProductionDate, newWarrantyEndDate]) => {
+    if (
+      newProductionDate &&
+      newWarrantyEndDate &&
+      !isNaN(new Date(newProductionDate).getTime()) &&
+      !isNaN(new Date(newWarrantyEndDate).getTime())
+    ) {
+      calculateWarrantyPeriod();
+    }
+  }
+);
+
+/**
+ * 监听保修期和保修截止日期的变化，计算生产日期
+ * 当保修期和保修截止日期都有效且生产日期未填写时，自动计算可能的生产日期
+ * 注意: 此计算仅在生产日期未提供时进行，避免覆盖用户已输入的生产日期
+ */
+watch(
+  [() => form.warrantyPeriod, () => form.warrantyEndDate],
+  ([newWarrantyPeriod, newWarrantyEndDate]) => {
+    if (
+      newWarrantyPeriod > 0 &&
+      newWarrantyEndDate &&
+      !form.productionDate &&
+      !isNaN(new Date(newWarrantyEndDate).getTime())
+    ) {
+      calculateProductionDate();
+    }
+  }
+);
 
 // 确保树中有根空间节点
 const ensureRootSpace = (data: any[]) => {
@@ -262,12 +374,11 @@ const computedTreeData = computed(() => {
   return ensureRootSpace(props.treeData);
 });
 
-
 // 表单验证规则
 const rules = {
   name: [
     { required: true, message: "请输入物品名称", trigger: "blur" },
-    { min: 2, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" }
+    { min: 1, max: 50, message: "长度在 2 到 50 个字符", trigger: "blur" }
   ],
   type: [{ required: true, message: "请输入物品类型", trigger: "blur" }],
   status: [{ required: true, message: "请选择状态", trigger: "change" }],
@@ -318,7 +429,7 @@ const handleCancel = () => {
 // 格式化标签数据为后端需要的格式
 const formatTagsForSubmit = (tagIds: any[]) => {
   if (!Array.isArray(tagIds) || tagIds.length === 0) return [];
-  
+
   // 将标签ID数组转换为完整的Tag对象数组
   return tagIds.map(tagId => {
     const foundTag = props.existingTags.find(tag => tag.id === tagId);
@@ -326,8 +437,8 @@ const formatTagsForSubmit = (tagIds: any[]) => {
       return foundTag; // 返回完整的Tag对象
     }
     // 如果是新创建的标签，提供一个默认值
-    return { 
-      id: tagId, 
+    return {
+      id: tagId,
       name: String(tagId), // 使用ID作为名称
       color: "#909399", // 默认颜色
       userId: Number(userStore.userId) || 1 // 当前用户ID
@@ -344,10 +455,10 @@ const handleSubmit = async () => {
       try {
         // 确保userId正确设置
         form.userId = userStore.userId?.toString() || "";
-        
+
         // 确保图片数据正确传递
         console.log("提交前的图片列表:", imageList.value);
-        
+
         // 创建一个新的表单数据对象，包含所有必要的字段
         const formData = {
           name: form.name,
@@ -357,13 +468,14 @@ const handleSubmit = async () => {
           location: form.location,
           price: form.price,
           purchaseDate: form.purchaseDate,
+          productionDate: form.productionDate,
           warrantyPeriod: form.warrantyPeriod,
           description: form.description,
           tags: formatTagsForSubmit(form.tags), // 格式化标签数据
           images: [...imageList.value], // 使用展开运算符创建新数组
           userId: form.userId
         };
-        
+
         console.log("提交的表单数据:", formData);
         // 添加标签信息的日志输出，帮助调试
         console.log("提交的标签数据:", formData.tags);
@@ -386,17 +498,25 @@ watch(
       form.type = newEntity.type || "item";
       form.parentId = newEntity.parentId || "";
       // @ts-ignore
-      form.status = (newEntity.status as EntityStatus) || ("normal" as EntityStatus);
+      form.status =
+        (newEntity.status as EntityStatus) || ("AVAILABLE" as EntityStatus);
       form.location = (newEntity as any).location || "";
       form.price = newEntity.price || 0;
       form.purchaseDate = newEntity.purchaseDate || "";
+      form.productionDate = newEntity.productionDate || "";
       form.warrantyPeriod = newEntity.warrantyPeriod || 0;
+      form.warrantyEndDate = newEntity.warrantyEndDate || "";
+
       form.description = newEntity.description || "";
-      
+
       // 确保正确设置标签数据 - 如果标签是对象数组则使用它们的ID
       if (Array.isArray(newEntity.tags)) {
         // 检查标签数据的格式
-        if (newEntity.tags.length > 0 && typeof newEntity.tags[0] === 'object' && newEntity.tags[0].id) {
+        if (
+          newEntity.tags.length > 0 &&
+          typeof newEntity.tags[0] === "object" &&
+          newEntity.tags[0].id
+        ) {
           // 如果是Tag对象数组，提取ID数组
           form.tags = newEntity.tags.map(tag => tag.id);
         } else {
@@ -407,7 +527,7 @@ watch(
         form.tags = [];
       }
       console.log("设置的标签数据:", form.tags);
-      
+
       form.images = newEntity.images || [];
       form.userId = newEntity.userId || userStore.userId?.toString() || ""; // 保留原有userId或使用当前用户ID
 
@@ -427,11 +547,12 @@ watch(
       form.type = "item";
       form.parentId = "";
       // @ts-ignore
-      form.status = "normal" as EntityStatus;
+      form.status = "AVAILABLE" as EntityStatus;
       form.location = "";
       form.price = 0;
       form.purchaseDate = "";
       form.warrantyPeriod = 0;
+      form.warrantyEndDate = "";
       form.description = "";
       form.tags = [];
       form.images = [];
@@ -460,19 +581,5 @@ watch(
   align-items: center;
   justify-content: space-between;
   width: 100%;
-}
-
-.location-tree .el-tree-node__content {
-  height: 32px;
-}
-
-.selected-location {
-  margin-top: 8px;
-  padding: 8px 10px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 </style>

@@ -194,7 +194,7 @@ const loadTagList = async () => {
       }
     } else {
       console.error('加载标签列表失败', response);
-      ElMessage.error(response.msg || '加载标签列表失败');
+      ElMessage.error(response.message || '加载标签列表失败');
       tagList.value = [];
       pagination.total = 0;
     }
@@ -249,7 +249,7 @@ const submitTagForm = async () => {
               dialogVisible.value = false;
               loadTagList();
             } else {
-              ElMessage.error(response.msg || '添加失败');
+              ElMessage.error(response.message || '添加失败');
             }
           } else {
             ElMessage.error('用户信息缺失');
@@ -266,7 +266,7 @@ const submitTagForm = async () => {
               dialogVisible.value = false;
               loadTagList();
             } else {
-              ElMessage.error(response.msg || '更新失败');
+              ElMessage.error(response.message || '更新失败');
             }
           }
         }
@@ -286,7 +286,7 @@ const handleDelete = async (tag: Tag) => {
       ElMessage.success('删除成功');
       loadTagList();
     } else {
-      ElMessage.error(response.msg || '删除失败');
+      ElMessage.error(response.message || '删除失败');
     }
   } catch (error) {
     console.error('删除标签失败', error);

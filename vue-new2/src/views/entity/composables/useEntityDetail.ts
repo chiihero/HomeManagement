@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from "vue";
+import { ref } from "vue";
 import type { Entity } from "@/types/entity";
 import { getImageData } from "@/api/image";
 
@@ -78,6 +78,9 @@ export function useEntityDetail() {
 
   // 格式化日期
   const formatDate = (date: string) => {
+    if (!date) {
+      return null;
+    }
     return new Date(date).toLocaleDateString();
   };
 

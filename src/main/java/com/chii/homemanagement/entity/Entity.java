@@ -78,6 +78,13 @@ public class Entity {
     private BigDecimal price;
 
     /**
+     * 生产日期
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Schema(description = "生产日期", example = "2023-01-01")
+    private LocalDate productionDate;
+    /**
      * 购买日期
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd")

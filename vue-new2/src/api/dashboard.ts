@@ -1,5 +1,5 @@
 import http from "@/utils/http";
-import type { ResponseResult } from "@/types/entity";
+import type { ResponseResult } from "@/types/http";
 import type { Entity } from "@/types/entity";
 import type { Reminder } from "@/types/reminder";
 import { useUserStoreHook } from "@/store/modules/user";

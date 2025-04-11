@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `entity` (
     `specification` VARCHAR(100) DEFAULT NULL COMMENT '规格',
     `quantity` INT DEFAULT 1 COMMENT '数量',
     `price` DECIMAL(10, 2) DEFAULT NULL COMMENT '价格',
+    `production_date` DATE DEFAULT NULL COMMENT '生产日期',
     `purchase_date` DATE DEFAULT NULL COMMENT '购买日期',
     `warranty_period` INT DEFAULT NULL COMMENT '保修期(月)',
     `warranty_end_date` DATE DEFAULT NULL COMMENT '保修截止日期',

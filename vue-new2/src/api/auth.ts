@@ -1,6 +1,6 @@
 import http from "@/utils/http";
 import type { RegisterRequest } from "@/types/user";
-import type { ResponseResult } from "@/types/entity";
+import type { ResponseResult } from "@/types/http";
 
 // 登录响应数据类型
 export interface LoginResponse {

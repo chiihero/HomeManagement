@@ -1,6 +1,6 @@
 import http from "@/utils/http";
 import type { Tag } from "@/types/entity";
-import type { PageResult, ResponseResult } from "@/types/entity";
+import type { PageResult, ResponseResult } from "@/types/http";
 
 /**
  * 分页查询标签
