@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 明确允许所有OPTIONS请求
-                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/**", "/api/auth/**", "/css/**", "/js/**", "/img/**", "/static/**", "/webjars/**", "/uploads/**").permitAll()
+//                                .requestMatchers("/test","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/auth/**", "/api/auth/**", "/css/**", "/js/**", "/img/**", "/static/**", "/webjars/**", "/uploads/**").permitAll()
+                                .requestMatchers("/test","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api/auth/**","/uploads/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 // 禁用Spring Security表单登录，我们使用自定义的REST API登录

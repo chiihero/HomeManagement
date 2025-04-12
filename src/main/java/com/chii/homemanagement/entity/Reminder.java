@@ -72,7 +72,7 @@ public class Reminder {
     private Long userId;
     
     /**
-     * 通知方式: system-系统通知，email-邮箱通知，sms-短信通知，多个用逗号分隔
+     * 通知方式: system-系统通知，email-邮箱通知，sms-短信通知 ， wx-微信通知，多个用逗号分隔
      */
     @Schema(description = "通知方式", example = "system,email", defaultValue = "system")
     private String notificationMethods;

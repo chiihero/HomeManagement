@@ -1,7 +1,6 @@
 import http from "@/utils/http";
 import type {
   Entity,
-  EntityFormData,
   EntityQueryParams,
 } from "@/types/entity";
 import type { ResponseResult } from "@/types/http";
@@ -48,12 +47,12 @@ export const getEntity = (id: string) => {
 };
 
 // 创建物品
-export const createEntity = (data: EntityFormData) => {
+export const createEntity = (data: Entity) => {
   return http.post<ResponseResult<Entity>>("/entities", data);
 };
 
 // 更新物品
-export const updateEntity = (id: string, data: EntityFormData) => {
+export const updateEntity = (id: string, data: Entity) => {
   return http.put<ResponseResult<Entity>>(`/entities/${id}`, data);
 };
 

@@ -161,13 +161,18 @@ export function useEntityImageUpload() {
         };
       }
       
-      // 如果是EntityImage对象
-      if (image.imageUrl) {
+      // 如果是EntityImage对象 - 使用后端直接引用图片
+      if (image.id) {
+        // 构建API URL
+        console.log("添加图片，ID:", image.id, "URL:", image.imageUrl);
+        
         return {
-          name: image.fileName || image.imageUrl.split("/").pop() || "",
+          name: image.fileName || `图片${image.id}`,
           url: image.imageUrl,
-          uid: Date.now() + Math.random(),
-          status: "success"
+          uid: `${image.id}-${Date.now()}`,  // 确保UID唯一
+          status: "success",
+          id: image.id,
+          response: { id: image.id }
         };
       }
       
@@ -179,6 +184,8 @@ export function useEntityImageUpload() {
         status: "error"
       };
     });
+    
+    console.log("处理后的图片列表:", imageList.value);
   };
 
   return {

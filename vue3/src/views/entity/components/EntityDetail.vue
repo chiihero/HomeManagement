@@ -23,9 +23,6 @@
               {{ getStatusText(entity.status) }}
             </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="位置">{{
-            getLocation(entity)
-          }}</el-descriptions-item>
           <el-descriptions-item label="价格">{{
             formatPrice(entity.price)
           }}</el-descriptions-item>
@@ -170,10 +167,7 @@ const getContrastColor = (hexColor: string) => {
   return yiq >= 150 ? "#000000" : "#ffffff";
 };
 
-// 获取位置信息
-const getLocation = (entity: Entity) => {
-  return entity && "location" in entity ? entity.location : "未设置";
-};
+
 
 // 预览图片URL列表
 const previewImageUrls = computed(() => {

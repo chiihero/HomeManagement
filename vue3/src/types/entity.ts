@@ -2,7 +2,7 @@
 export interface Entity {
   id?: string;
   name: string;
-  type: "item" | "space"; // item-物品, space-空间
+  type: string;
   code?: string;
   specification?: string;
   quantity?: number;
@@ -13,7 +13,7 @@ export interface Entity {
   warrantyEndDate?: string;
   usageFrequency?: "daily" | "weekly" | "monthly" | "rarely";
   usageYears?: number;
-  status?: "normal" | "damaged" | "discarded"; // normal-正常, damaged-损坏, discarded-丢弃
+  status?: EntityStatus; // normal-正常, damaged-损坏, discarded-丢弃，expired-过期，lent-借出
   description?: string;
   userId?: string;
   userName?: string;
@@ -25,10 +25,11 @@ export interface Entity {
   createUserId?: string;
   tags?: Tag[];
   tagIds?: string[];
-  images?: EntityImage[];
+  images?: EntityImage[] | { file: File; url: string }[] | any[];
   children?: Entity[];
   createTime?: string;
   updateTime?: string;
+  location?: string;
 }
 
 // 定义标签类型
@@ -52,38 +53,20 @@ export interface EntityImage {
   createdTime: string;
 }
 
-// 物品状态枚举 状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出
+// 物品状态枚举
 export enum EntityStatus {
-  normal = "normal",
-  damaged = "damaged",
-  discarded = "discarded",
-  lent = "lent"
+  normal = "normal",     // 正常
+  damaged = "damaged",   // 损坏
+  discarded = "discarded", // 丢弃
+  expired = "expired",   // 过期
+  lent = "lent"          // 借出
 }
-
-// 物品表单数据类型
-export type EntityFormData = {
-  name: string;
-  type: string;
-  parentId: string | null;
-  status: EntityStatus;
-  location: string;
-  price: number;
-  productionDate?: string;
-  purchaseDate: string;
-  warrantyPeriod: number;
-  warrantyEndDate?: string;
-  description: string;
-  tags: Tag[];
-  images: { file: File; url: string }[] | any[];
-  userId?: string;
-};
 
 // 物品查询参数类型
 export type EntityQueryParams = {
   name?: string;
   type?: string;
   status?: EntityStatus;
-  location?: string;
   minPrice?: number;
   maxPrice?: number;
   startDate?: string;

@@ -80,10 +80,10 @@ const handleNodeClick = (data: Entity) => {
 // 获取状态类型
 const getStatusType = (status: string) => {
   const types = {
-    AVAILABLE: "success",
-    IN_USE: "primary",
-    MAINTENANCE: "warning",
-    DISPOSED: "info"
+    normal: "success",
+    damaged: "primary",
+    discarded: "warning",
+    expired: "info"
   };
   return types[status] || "info";
 };
@@ -94,6 +94,7 @@ const getStatusText = (status: string) => {
     normal: "正常",
     damaged: "损坏",
     discarded: "丢弃",
+    expired: "过期",
     lent: "借出"
   };
   return texts[status] || "未知状态";

@@ -1,6 +1,6 @@
 import { ref, reactive } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type { Entity, EntityFormData, EntityStatus } from "@/types/entity";
+import type { Entity, EntityStatus } from "@/types/entity";
 import { useUserStoreHook } from "@/store/modules/user";
 import { getEntitiesByUser } from "@/api/entity";
 

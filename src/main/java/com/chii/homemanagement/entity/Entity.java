@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Data
 @TableName("entity")
-@Schema(description = "实体信息（物品/空间）")
+@Schema(description = "实体信息")
 public class Entity {
 
     /**
@@ -45,11 +45,11 @@ public class Entity {
     private String name;
 
     /**
-     * 类型：item-物品, space-空间
+     * 类型
      */
     @NotBlank(message = "类型不能为空")
-    @Schema(description = "类型", defaultValue = "item")
-    private String type = "item";
+    @Schema(description = "类型", defaultValue = "物品")
+    private String type = "物品";
 
     /**
      * 编码
@@ -171,9 +171,9 @@ public class Entity {
     private List<Entity> children;
 
     /**
-     * 状态：normal-正常，damaged-损坏，discarded-丢弃
+     * 状态：normal-正常，damaged-损坏，discarded-丢弃， lent-借出， expired-过期
      */
-    @Pattern(regexp = "normal|damaged|discarded", message = "状态只能是正常、损坏或丢弃")
+    @Pattern(regexp = "normal|damaged|discarded|expired|lent", message = "状态只能是正常、损坏、借出或过期")
     @Schema(description = "状态", defaultValue = "normal")
     private String status = "normal";
 

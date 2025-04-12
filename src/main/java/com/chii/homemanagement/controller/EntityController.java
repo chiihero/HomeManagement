@@ -53,7 +53,7 @@ public class EntityController {
             @Parameter(description = "当前页码") @RequestParam(value = "current", defaultValue = "1") Integer current,
             @Parameter(description = "每页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
             @Parameter(description = "名称") @RequestParam(value = "name", required = false) String name,
-            @Parameter(description = "类型: item-物品, space-空间") @RequestParam(value = "type", required = false) String type,
+            @Parameter(description = "类型") @RequestParam(value = "type", required = false) String type,
             @Parameter(description = "规格") @RequestParam(value = "specification", required = false) String specification,
             @Parameter(description = "状态") @RequestParam(value = "status", required = false) String status,
             @Parameter(description = "使用频率") @RequestParam(value = "usageFrequency", required = false) String usageFrequency,
@@ -276,7 +276,7 @@ public class EntityController {
     @GetMapping("/list/by-status")
     @Operation(summary = "根据状态获取物品列表", description = "获取指定状态的物品列表")
     public ApiResponse<List<Entity>> listEntitiesByStatus(
-            @Parameter(description = "状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出") @RequestParam(value = "status") String status,
+            @Parameter(description = "状态: normal-正常, damaged-损坏, discarded-丢弃, expired-过期") @RequestParam(value = "status") String status,
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {

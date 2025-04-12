@@ -9,7 +9,7 @@ import {
 } from "@/api/entity";
 import { getEntityImages } from "@/api/image";
 import { getAllTags } from "@/api/tag"; // 从tag.ts导入getAllTags
-import type { Entity, EntityFormData ,Tag } from "@/types/entity";
+import type { Entity, Tag } from "@/types/entity";
 import { useUserStoreHook } from "@/store/modules/user";
 import { useEntityImageUpload } from "../composables/useEntityImageUpload";
 
@@ -169,7 +169,7 @@ export function useEntityCRUD() {
   };
 
   // 保存实体
-  const saveEntity = async (formData: EntityFormData) => {
+  const saveEntity = async (formData: Entity) => {
     saving.value = true;
     try {
       console.log("保存实体，表单数据:", formData);

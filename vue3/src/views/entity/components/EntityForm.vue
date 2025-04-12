@@ -9,6 +9,15 @@
       style="max-width: 600px"
       status-icon
     >
+      <el-form-item class="mt-8">
+        <div class="flex justify-end gap-4">
+          <el-button type="primary" :loading="saving" @click="handleSubmit"
+            >保存</el-button
+          >
+          <el-button @click="handleCancel">取消</el-button>
+
+        </div>
+      </el-form-item>
       <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="名称" prop="name">
@@ -27,10 +36,11 @@
               placeholder="请选择状态"
               class="w-full"
             >
-              <el-option label="可用" value="AVAILABLE" />
-              <el-option label="使用中" value="IN_USE" />
-              <el-option label="维护中" value="MAINTENANCE" />
-              <el-option label="已处置" value="DISPOSED" />
+              <el-option label="正常" value="normal" />
+              <el-option label="损坏" value="damaged" />
+              <el-option label="丢弃" value="discarded" />
+              <el-option label="过期" value="expired" />
+              <el-option label="借出" value="lent" />
             </el-select>
           </el-form-item>
         </el-col>
@@ -165,15 +175,6 @@
           <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
         </el-dialog>
       </el-form-item>
-
-      <el-form-item class="mt-8">
-        <div class="flex justify-end gap-4">
-          <el-button @click="handleCancel">取消</el-button>
-          <el-button type="primary" :loading="saving" @click="handleSubmit"
-            >保存</el-button
-          >
-        </div>
-      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -187,7 +188,7 @@ import { useEntityForm } from "../composables/useEntityForm";
 
 // 添加此注释，需要在项目中创建相应的类型定义
 // @ts-ignore
-import type { Entity, EntityFormData, EntityStatus, Tag } from "@/types/entity";
+import type { Entity, EntityStatus, Tag } from "@/types/entity";
 import { useEntityImageUpload } from "../composables/useEntityImageUpload";
 import { useUserStoreHook } from "@/store/modules/user"; // 引入用户store
 
@@ -204,11 +205,11 @@ const { getContrastColor } = useEntityForm();
 const userStore = useUserStoreHook();
 
 // 表单数据
-const form = reactive<Omit<EntityFormData, "tags"> & { tags: any[] }>({
+const form = reactive<Omit<Entity, "tags"> & { tags: any[] }>({
   name: "",
   type: "item",
   parentId: "",
-  status: "AVAILABLE" as EntityStatus,
+  status: "normal" as EntityStatus,
   location: "",
   price: 0,
   purchaseDate: "",
@@ -222,7 +223,7 @@ const form = reactive<Omit<EntityFormData, "tags"> & { tags: any[] }>({
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  (e: "submit", form: EntityFormData): void;
+  (e: "submit", form: Entity): void;
   (e: "cancel"): void;
 }>();
 
@@ -495,11 +496,11 @@ watch(
     if (newEntity) {
       // 确保表单数据类型正确
       form.name = newEntity.name || "";
-      form.type = newEntity.type || "item";
+      form.type = newEntity.type || "物品";
       form.parentId = newEntity.parentId || "";
       // @ts-ignore
       form.status =
-        (newEntity.status as EntityStatus) || ("AVAILABLE" as EntityStatus);
+        (newEntity.status as EntityStatus) || ("normal" as EntityStatus);
       form.location = (newEntity as any).location || "";
       form.price = newEntity.price || 0;
       form.purchaseDate = newEntity.purchaseDate || "";
@@ -544,10 +545,10 @@ watch(
     } else {
       // 重置表单
       form.name = "";
-      form.type = "item";
+      form.type = "物品";
       form.parentId = "";
       // @ts-ignore
-      form.status = "AVAILABLE" as EntityStatus;
+      form.status = "normal" as EntityStatus;
       form.location = "";
       form.price = 0;
       form.purchaseDate = "";
