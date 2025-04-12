@@ -205,16 +205,20 @@ import { Box, Wallet, CircleClose, Refresh } from "@element-plus/icons-vue";
 import moment from "moment";
 import Pie from "@/components/charts/Pie.vue";
 import Bar from "@/components/charts/Bar.vue";
-import { getDashboardStatistics } from "@/api/dashboard";
-import { getRemindersByDateRange } from "@/api/reminder";
-import { getRecentEntities } from "@/api/entity";
+import {
+  getDashboardStatistics,
+  getRecentReminders,
+  getRecentEntities
+} from "@/api/dashboard";
 import { useUserStoreHook } from "@/store/modules/user";
 import type { Entity } from "@/types/entity";
 import type { Reminder } from "@/types/reminder";
 
 const router = useRouter();
 const userStore = useUserStoreHook();
-const userInfo = computed(() => userStore.currentUser || { nickname: '', username: '' });
+const userInfo = computed(
+  () => userStore.currentUser || { nickname: "", username: "" }
+);
 
 // 当前日期和欢迎语
 const currentDate = computed(() => moment().format("YYYY年MM月DD日"));
@@ -325,12 +329,17 @@ const fetchStatistics = async () => {
       statistics.categoriesCount = data.categoriesCount;
 
       // 更新分类图表数据
-      if (data.categoryDistribution && Array.isArray(data.categoryDistribution)) {
+      if (
+        data.categoryDistribution &&
+        Array.isArray(data.categoryDistribution)
+      ) {
         categoryChartData.value = {
           labels: data.categoryDistribution.map(item => item.name),
           datasets: [
             {
-              backgroundColor: data.categoryDistribution.map(item => item.color),
+              backgroundColor: data.categoryDistribution.map(
+                item => item.color
+              ),
               data: data.categoryDistribution.map(item => item.count)
             }
           ]
@@ -370,8 +379,11 @@ const fetchStatistics = async () => {
 // 获取最近提醒
 const fetchRecentReminders = async () => {
   try {
-    const response = await getRemindersByDateRange(userStore.currentUser?.id || 0, moment().format("YYYY-MM-DD"), moment().add(7, "days").format("YYYY-MM-DD"));
-    if (response.code === 200 && response.data.length >0) {
+    const response = await getRecentReminders(
+      5,
+      userStore.currentUser?.id || 0
+    );
+    if (response.code === 200 && response.data.length > 0) {
       recentReminders.value = response.data;
     }
   } catch (error) {
@@ -384,9 +396,9 @@ const fetchRecentReminders = async () => {
 // 获取最近物品
 const fetchRecentItems = async () => {
   try {
-    const response = await getRecentEntities(userStore.currentUser?.id || 0, 5);
-    if (response?.data?.code === 200 && response?.data?.data) {
-      recentItems.value = response.data.data;
+    const response = await getRecentEntities(5, userStore.currentUser?.id || 0);
+    if (response?.code === 200 && response?.data) {
+      recentItems.value = response.data;
     }
   } catch (error) {
     console.error("Failed to fetch recent items:", error);

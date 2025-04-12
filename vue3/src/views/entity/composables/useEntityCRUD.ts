@@ -31,10 +31,19 @@ export function useEntityCRUD() {
   const loadTreeData = async () => {
     loading.value = true;
     try {
+      // 获取当前展开的节点ID，如果访问树组件ref的话
+      // 保存当前选中的物品
+      const currentId = currentEntity.value?.id;
+      
       const response = await getEntityTree(authStore.currentUser.id);
       if (response.data) {
         // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         treeData.value = response.data;
+        
+        // 如果当前有选中的物品，重新加载详情以保持选中状态
+        if (currentId) {
+          await loadEntityDetail(currentId);
+        }
       }
     } catch (error) {
       console.error("Failed to load entity tree:", error);
@@ -232,12 +241,17 @@ export function useEntityCRUD() {
           ElMessage.success(isAdding.value ? "添加成功" : "更新成功");
         }
 
+        // 保存操作类型
+        const wasAdding = isAdding.value;
+        
         // 操作完成后重置状态
         isEditing.value = false;
         isAdding.value = false;
 
-        // 重新加载树形数据
-        loadTreeData();
+        // 只有在添加新物品时才重新加载树形数据
+        if (wasAdding) {
+          loadTreeData();
+        }
 
         // 如果是添加操作，重新加载实体详情
         if (entityId) {

@@ -2,6 +2,7 @@ export default {
   path: "/test",
   redirect: "/test/index",
   meta: {
+    showLink: false,
     title: "测试"
   },
   children: [

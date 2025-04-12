@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import type {
   Reminder,
-  ReminderFormData,
   ReminderQueryParams
 } from "@/types/reminder";
 import {
@@ -76,7 +75,7 @@ export const useReminderStore = defineStore("reminder", {
     },
 
     // 创建提醒
-    async createReminder(data: ReminderFormData) {
+    async createReminder(data: Reminder) {
       this.setLoading(true);
       try {
         const res = await createReminder(data);
@@ -90,7 +89,7 @@ export const useReminderStore = defineStore("reminder", {
     },
 
     // 更新提醒
-    async updateReminder(id: number, data: ReminderFormData) {
+    async updateReminder(id: number, data: Reminder) {
       this.setLoading(true);
       try {
         const res = await updateReminder(id, data);

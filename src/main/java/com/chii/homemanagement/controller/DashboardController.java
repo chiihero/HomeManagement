@@ -3,6 +3,7 @@ package com.chii.homemanagement.controller;
 import com.chii.homemanagement.common.ApiResponse;
 import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.Entity;
+import com.chii.homemanagement.entity.Reminder;
 import com.chii.homemanagement.entity.Tag;
 import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.ReminderService;
@@ -145,12 +146,12 @@ public class DashboardController {
      */
     @GetMapping("/recent-reminders")
     @Operation(summary = "获取最近的提醒", description = "获取最近的提醒数据")
-    public ApiResponse<List<Object>> getRecentReminders(
+    public ApiResponse<List<Reminder>> getRecentReminders(
             @RequestParam(defaultValue = "5") Integer limit,
             @RequestParam Long userId) {
         try {
             // 这里需要实现获取最近提醒的逻辑
-            List<Object> recentReminders = reminderService.getRecentReminders(userId, limit);
+            List<Reminder> recentReminders = reminderService.getRecentReminders(userId, limit);
             return ApiResponse.success(recentReminders);
         } catch (Exception e) {
             log.error("获取最近的提醒异常", e);

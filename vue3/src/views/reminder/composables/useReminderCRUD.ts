@@ -2,8 +2,6 @@ import { ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import type {
   Reminder,
-  ReminderDisplay,
-  ReminderFormData,
   ReminderQueryParams,
   NotificationMethod
 } from "@/types/reminder";
@@ -20,55 +18,11 @@ import {
 export function useReminderCRUD() {
   const loading = ref(false);
   const saving = ref(false);
-  const reminderList = ref<ReminderDisplay[]>([]);
+  const reminderList = ref<Reminder[]>([]);
   const total = ref(0);
   const currentReminder = ref<Reminder | null>(null);
   const isEditing = ref(false);
   const isAdding = ref(false);
-
-  // 将后端返回的提醒数据转换为前端显示格式
-  const convertToDisplayReminder = (reminder: Reminder): ReminderDisplay => {
-    return {
-      id: reminder.id,
-      entityId: reminder.entityId,
-      entityName: reminder.entityName || "",
-      userId: reminder.userId,
-      type: reminder.type,
-      remindDate: reminder.remindDate,
-      status: reminder.status,
-      content: reminder.content,
-      // 将逗号分隔的通知方式字符串转为前端的枚举数组
-      notificationMethods: reminder.notificationMethods 
-        ? reminder.notificationMethods.split(',').map(method => method.trim() as NotificationMethod)
-        : ['system' as NotificationMethod],
-      daysInAdvance: reminder.daysInAdvance,
-      isRecurring: reminder.isRecurring,
-      recurringCycle: reminder.recurringCycle,
-      createTime: reminder.createTime,
-      updateTime: reminder.updateTime
-    };
-  };
-
-  // 将前端表单数据转换为发送到后端的格式
-  const convertFormToBackendData = (formData: ReminderFormData): Partial<Reminder> => {
-    return {
-      id: formData.id,
-      entityId: formData.entityId,
-      entityName: formData.entityName,
-      userId: formData.userId,
-      type: formData.type,
-      remindDate: formData.remindDate,
-      status: formData.status,
-      content: formData.content,
-      notificationMethods: formData.notificationMethods.join(','),
-      daysInAdvance: formData.daysInAdvance,
-      isRecurring: formData.isRecurring,
-      recurringCycle: formData.recurringCycle,
-      createUserId: formData.createUserId,
-      createTime: new Date().toISOString(),
-      updateTime: new Date().toISOString()
-    };
-  };
 
   // 加载提醒列表
   const loadReminders = async (params: ReminderQueryParams) => {
@@ -77,7 +31,7 @@ export function useReminderCRUD() {
       const response = await fetchReminders(params);
       
       // 正确处理响应
-      reminderList.value = (response.data || []).map(convertToDisplayReminder);
+      reminderList.value = response.data || [];
       total.value = (response.data || []).length; // 由于后端没有返回总数，暂时使用数组长度
     } catch (error) {
       ElMessage.error("加载提醒列表失败");
@@ -127,20 +81,19 @@ export function useReminderCRUD() {
   };
 
   // 保存提醒
-  const saveReminder = async (formData: ReminderFormData) => {
+  const saveReminder = async (formData: Reminder) => {
     try {
       saving.value = true;
-      const backendData = convertFormToBackendData(formData);
-      
+      formData.notificationMethods= formData.notificationMethods.join(',');
       if (isEditing.value && currentReminder.value) {
-        const response = await updateReminder(currentReminder.value.id, backendData as Reminder);
+        const response = await updateReminder(currentReminder.value.id, formData);
         if (response.code === 200) {
           ElMessage.success("更新提醒成功");
         } else {
           ElMessage.error(response.message || "更新提醒失败");
         }
       } else {
-        const response = await createReminder(backendData as Reminder);
+        const response = await createReminder(formData);
         if (response.code === 200) {
           ElMessage.success("创建提醒成功");
         } else {

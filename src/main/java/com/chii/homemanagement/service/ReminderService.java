@@ -57,7 +57,7 @@ public interface ReminderService {
      * @param limit 数量限制
      * @return 提醒列表
      */
-    List<Object> getRecentReminders(Long userId, Integer limit);
+    List<Reminder> getRecentReminders(Long userId, Integer limit);
 
     /**
      * 获取指定日期范围的提醒

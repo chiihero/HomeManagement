@@ -794,7 +794,6 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         // 构建查询条件
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Entity::getUserId, userId)
-                   .eq(Entity::getType, "item")  // 只查询物品类型的实体
                    .ne(Entity::getStatus, "discarded")  // 排除已丢弃的实体
                    .orderByDesc(Entity::getCreateTime)  // 按创建时间降序排列
                    .last("LIMIT " + limit);  // 限制结果数量
