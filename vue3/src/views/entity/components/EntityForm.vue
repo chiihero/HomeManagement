@@ -32,7 +32,23 @@
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="类型" prop="type">
-            <el-input v-model="form.type" placeholder="请输入物品类型" />
+            <!-- <el-input v-model="form.type" placeholder="请输入物品类型" /> -->
+            <el-select
+              v-model="form.type"
+              filterable
+              allow-create
+              default-first-option
+              :reserve-keyword="false"
+              placeholder="Choose tags for your article"
+              style="width: 240px"
+            >
+              <el-option value="物品" />
+              <el-option value="空间" />
+              <el-option value="药品" />
+              <el-option value="耗材" />
+              <el-option value="食品" />
+            </el-select>
+
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
@@ -144,7 +160,6 @@
           v-model="form.tags"
           multiple
           filterable
-          allow-create
           default-first-option
           placeholder="请选择或输入标签"
           @change="handleTagsChange"
@@ -154,11 +169,12 @@
             :key="tag.id"
             :label="tag.name"
             :value="tag.id"
-            :style="{
-              backgroundColor: tag.color,
-              color: getContrastColor(tag.color)
-            }"
-          />
+          >     
+          <div class="flex items-center">
+            <el-tag :color="tag.color" style="margin-right: 12px"/>
+            <span :style="{ color: tag.color }">{{ tag.name }}</span>
+          </div>
+        </el-option>
         </el-select>
       </el-form-item>
 

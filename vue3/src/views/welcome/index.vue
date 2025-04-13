@@ -5,6 +5,20 @@ defineOptions({
 
 const updateNotes = [
   {
+    version: "v0.1.2",
+    date: "2025年4月14日",
+    notes: [
+      "优化物品管理的表单选项样式"
+    ]
+  },
+  {
+    version: "v0.1.1",
+    date: "2025年4月14日",
+    notes: [
+      "优化axios请求"
+    ]
+  },
+  {
     version: "v0.1.0",
     date: "2025年4月13日",
     notes: [
