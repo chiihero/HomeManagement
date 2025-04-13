@@ -216,10 +216,10 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="{ row }">
-            <el-button type="primary" link size="small" @click.stop="router.push(`/entity/${row.id}`)">
+            <el-button type="primary" link size="small" @click.stop="router.push(`/entitySearch/view/${row.id}`)">
               <el-icon class="mr-1"><View /></el-icon>查看
             </el-button>
-            <el-button type="primary" link size="small" @click.stop="router.push(`/entity/edit/${row.id}`)">
+            <el-button type="primary" link size="small" @click.stop="router.push(`/entitySearch/edit/${row.id}`)">
               <el-icon class="mr-1"><Edit /></el-icon>编辑
             </el-button>
             <el-popconfirm
