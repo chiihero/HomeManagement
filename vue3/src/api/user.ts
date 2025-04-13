@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 import type { User } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
 
@@ -38,21 +38,21 @@ export function changePassword(data: {
   currentPassword: string;
   newPassword: string;
 }): Promise<ResponseResult<boolean>> {
-  return http.post("/auth/change-password", data);
+  return http.post("/auth/change-password", {data: data});
 }
 
 // 更新用户信息
 export function updateUserInfo(
   data: Partial<User>
 ): Promise<ResponseResult<User>> {
-  return http.post("/auth/update-info", data);
+  return http.post("/auth/update-info", {data: data});
 }
 
 // 更新用户个人资料
 export const updateUserProfile = (
   profile: Partial<UserProfile>
 ): Promise<ResponseResult<UserProfile>> => {
-  return http.put("/users/profile", profile);
+  return http.put("/users/profile", {data: profile});
 };
 
 // 更新用户密码
@@ -60,7 +60,7 @@ export const updateUserPassword = (params: {
   currentPassword: string;
   newPassword: string;
 }): Promise<ResponseResult<boolean>> => {
-  return http.put("/users/password", params);
+  return http.put("/users/password", {data: params});
 };
 
 // 上传用户头像
@@ -70,7 +70,7 @@ export const uploadUserAvatar = (
   const formData = new FormData();
   formData.append("file", file);
 
-  return http.post("/users/avatar", formData, {
+  return http.post("/users/avatar", {data: formData}, {
     headers: {
       "Content-Type": "multipart/form-data"
     }
@@ -86,7 +86,7 @@ export const deleteUserAvatar = (): Promise<ResponseResult<boolean>> => {
 export const updateUserNotifications = (
   data: UserNotificationSettings
 ): Promise<ResponseResult<UserNotificationSettings>> => {
-  return http.put("/user/notifications", data);
+  return http.put("/user/notifications",  {data: data});
 };
 
 // 获取用户设置
@@ -99,5 +99,5 @@ export const updateUserSetting = (
   key: string,
   value: string
 ): Promise<ResponseResult<UserSettings>> => {
-  return http.put(`/settings/user/${key}`, { value });
+  return http.put(`/settings/user/${key}`, { data:value });
 };

@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 import type { RegisterRequest } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
 
@@ -19,56 +19,56 @@ export interface RefreshTokenResponse {
 }
 
 // 登录
-export function login(
+export const login = (
   username: string,
   password: string,
   rememberMe: boolean = false
-): Promise<ResponseResult<LoginResponse>> {
-  return http.post("/auth/login", {
+): Promise<ResponseResult<LoginResponse>> => {
+  return http.post("/auth/login", { data : {
     username,
     password,
     rememberMe
-  });
+  }});
 }
 
 // 注册
-export function register(data: {
+export const register=(data: {
   username: string;
   email: string;
   password: string;
   confirmPassword?: string;
-}): Promise<ResponseResult<boolean>> {
-  return http.post("/auth/register", data);
+}): Promise<ResponseResult<boolean>> =>{
+  return http.post("/auth/register", {data});
 }
 
 // 退出登录
-export function logout(): Promise<ResponseResult<null>> {
+export const logout=(): Promise<ResponseResult<null>> =>{
   return http.post("/auth/logout");
 }
 
 // 发送忘记密码邮件
-export function forgotPassword(
+export const forgotPassword=(
   email: string
-): Promise<ResponseResult<boolean>> {
-  return http.post("/auth/forgot-password", { email });
+): Promise<ResponseResult<boolean>> =>{
+  return http.post("/auth/forgot-password", { data : { email } });
 }
 
 // 重置密码
-export function resetPassword(
+export const resetPassword=(
   token: string,
   newPassword: string
-): Promise<ResponseResult<boolean>> {
-  return http.post("/auth/reset-password", {
+): Promise<ResponseResult<boolean>>=> {
+  return http.post("/auth/reset-password", { data : {
     token,
     newPassword
-  });
+  }});
 }
 
 // 刷新Token
-export function refreshToken(
+export const refreshToken=(
   refreshTokenValue: string
-): Promise<ResponseResult<RefreshTokenResponse>> {
-  return http.post("/auth/refresh-token", {
+): Promise<ResponseResult<RefreshTokenResponse>> => {
+  return http.post("/auth/refresh-token", { data : {
     refreshToken: refreshTokenValue
-  });
+  }});
 }

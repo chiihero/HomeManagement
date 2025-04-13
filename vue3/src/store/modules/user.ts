@@ -18,9 +18,9 @@ import type { ResponseResult } from "@/types/http";
 // 扩展userType类型
 interface UserState extends userType {
   userId: number | null;
-  token: string | null;
-  refreshTokenValue: string | null;
-  tokenExpiry: number | null;
+  // token: string | null;
+  // refreshTokenValue: string | null;
+  // tokenExpiry: number | null;
   user: User | null;
   loading: boolean;
   lastActivity: number;
@@ -53,11 +53,11 @@ export const useUserStore = defineStore("pure-user", {
     // 登录页的免登录存储几天，默认7天
     loginDay: 7,
     // 认证相关状态
-    token: localStorage.getItem("token") || null,
-    refreshTokenValue: localStorage.getItem("refresh_token") || null,
-    tokenExpiry: localStorage.getItem("token_expiry")
-      ? parseInt(localStorage.getItem("token_expiry") || "0")
-      : null,
+    // token: localStorage.getItem("token") || null,
+    // refreshTokenValue: localStorage.getItem("refresh_token") || null,
+    // tokenExpiry: localStorage.getItem("token_expiry")
+    //   ? parseInt(localStorage.getItem("token_expiry") || "0")
+    //   : null,
     user: null,
     loading: false,
     lastActivity: Date.now()
@@ -127,9 +127,9 @@ export const useUserStore = defineStore("pure-user", {
       this.tokenExpiry = Date.now() + expiresIn * 1000;
 
       // 保存到本地存储
-      localStorage.setItem("token", token);
-      localStorage.setItem("refresh_token", refreshTokenValue);
-      localStorage.setItem("token_expiry", this.tokenExpiry.toString());
+      // localStorage.setItem("token", token);
+      // localStorage.setItem("refresh_token", refreshTokenValue);
+      // localStorage.setItem("token_expiry", this.tokenExpiry.toString());
 
       // 同时设置PureAdmin的token
       setToken({
@@ -150,9 +150,9 @@ export const useUserStore = defineStore("pure-user", {
       this.user = null;
 
       // 清除本地存储
-      localStorage.removeItem("token");
-      localStorage.removeItem("refresh_token");
-      localStorage.removeItem("token_expiry");
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("refresh_token");
+      // localStorage.removeItem("token_expiry");
 
       // 清除PureAdmin token
       removeToken();

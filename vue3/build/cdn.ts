@@ -25,17 +25,17 @@ export const cdn = importToCDN({
       var: "VueDemi",
       path: "index.iife.min.js"
     },
-    {
-      name: "pinia",
-      var: "Pinia",
-      path: "pinia.iife.min.js"
-    },
-    {
-      name: "element-plus",
-      var: "ElementPlus",
-      path: "index.full.min.js",
-      css: "index.min.css"
-    },
+    // {
+    //   name: "pinia",
+    //   var: "Pinia",
+    //   path: "pinia.iife.min.js"
+    // },
+    // {
+    //   name: "element-plus",
+    //   var: "ElementPlus",
+    //   path: "index.full.min.js",
+    //   css: "index.min.css"
+    // },
     {
       name: "axios",
       var: "axios",

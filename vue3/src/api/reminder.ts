@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 import type {
   Reminder,
   ReminderQueryParams
@@ -22,7 +22,7 @@ export const fetchReminders = (params: ReminderQueryParams) => {
   
   // 处理日期范围参数，如果需要使用日期范围，应该调用getRemindersByDateRange方法
   
-  return http.get<ResponseResult<Reminder[]>>("/reminders", { params: queryParams });
+  return http.get<ResponseResult<Reminder[]>,ReminderQueryParams>("/reminders", { params: queryParams });
 };
 
 /**
@@ -30,7 +30,7 @@ export const fetchReminders = (params: ReminderQueryParams) => {
  * @param id 提醒ID
  */
 export const fetchReminderDetail = (id: number) => {
-  return http.get<ResponseResult<Reminder>>(`/reminders/${id}`);
+  return http.get<ResponseResult<Reminder>,number>(`/reminders/${id}`);
 };
 
 /**
@@ -38,7 +38,7 @@ export const fetchReminderDetail = (id: number) => {
  * @param data 提醒信息
  */
 export const createReminder = (data: Reminder) => {
-  return http.post<ResponseResult<Reminder>>("/reminders", data);
+  return http.post<ResponseResult<Reminder>,Reminder>("/reminders", {data:data});
 };
 
 /**
@@ -47,7 +47,7 @@ export const createReminder = (data: Reminder) => {
  * @param data 提醒信息
  */
 export const updateReminder = (id: number, data: Reminder) => {
-  return http.put<ResponseResult<Reminder>>(`/reminders/${id}`, data);
+  return http.put<ResponseResult<Reminder>,object>(`/reminders/${id}`, {data:data});
 };
 
 /**
@@ -55,7 +55,7 @@ export const updateReminder = (id: number, data: Reminder) => {
  * @param id 提醒ID
  */
 export const deleteReminder = (id: number) => {
-  return http.delete<ResponseResult<Boolean>>(`/reminders/${id}`);
+  return http.delete<ResponseResult<Boolean>,number>(`/reminders/${id}`);
 };
 
 /**
@@ -63,7 +63,7 @@ export const deleteReminder = (id: number) => {
  * @param id 提醒ID
  */
 export const processReminder = (id: number) => {
-  return http.put<ResponseResult<Reminder>>(`/reminders/${id}/process`);
+  return http.put<ResponseResult<Reminder>,number>(`/reminders/${id}/process`);
 };
 
 /**
@@ -71,7 +71,7 @@ export const processReminder = (id: number) => {
  * @param keyword 关键词
  */
 export const searchReminders = (keyword: string) => {
-  return http.get<ResponseResult<Reminder[]>>("/reminders/search", {
+  return http.get<ResponseResult<Reminder[]>,string>("/reminders/search", {
     params: { keyword }
   });
 };
@@ -81,7 +81,7 @@ export const searchReminders = (keyword: string) => {
  * @param days 天数
  */
 export const fetchUpcomingReminders = (days: number = 7) => {
-  return http.get<ResponseResult<Reminder[]>>("/reminders/upcoming", {
+  return http.get<ResponseResult<Reminder[]>,number>("/reminders/upcoming", {
     params: { days }
   });
 };
@@ -90,27 +90,17 @@ export const fetchUpcomingReminders = (days: number = 7) => {
  * 获取过期的提醒
  */
 export const fetchExpiredReminders = () => {
-  return http.get<ResponseResult<Reminder[]>>("/reminders/expired");
+  return http.get<ResponseResult<Reminder[]>,void>("/reminders/expired");
 };
 
-/**
- * 批量更新提醒状态
- * @param ids 提醒ID数组
- * @param status 状态
- */
-export const updateBatchReminderStatus = (ids: number[], status: string) => {
-  return http.patch<ResponseResult<Boolean>>("/reminders/batch/status", {
-    ids,
-    status
-  });
-};
+
 
 /**
  * 批量删除提醒
  * @param ids 提醒ID数组
  */
 export const deleteBatchReminders = (ids: number[]) => {
-  return http.delete<ResponseResult<Boolean>>("/reminders/batch", {
+  return http.delete<ResponseResult<Boolean>, number[]>("/reminders/batch", {
     data: { ids }
   });
 };
@@ -120,7 +110,7 @@ export const deleteBatchReminders = (ids: number[]) => {
  * @param userId 用户ID
  */
 export const getTodayReminders = (userId: number) => {
-  return http.get<ResponseResult<Reminder[]>>("/reminders/today", {
+  return http.get<ResponseResult<Reminder[]>,number>("/reminders/today", {
     params: { userId }
   });
 };
@@ -136,7 +126,7 @@ export const getRemindersByDateRange = (
   startDate: string,
   endDate: string
 ) => {
-  return http.get<ResponseResult<Reminder[]>>("/reminders/date-range", {
+  return http.get<ResponseResult<Reminder[]>,object>("/reminders/date-range", {
     params: { userId, startDate, endDate }
   });
 };
@@ -146,7 +136,7 @@ export const getRemindersByDateRange = (
  * @param entityId 物品ID
  */
 export const getRemindersByEntityId = (entityId: number) => {
-  return http.get<ResponseResult<Reminder[]>>(`/reminders/entity/${entityId}`);
+  return http.get<ResponseResult<Reminder[]>,number>(`/reminders/entity/${entityId}`);
 };
 
 /**
@@ -155,7 +145,7 @@ export const getRemindersByEntityId = (entityId: number) => {
  * @param status 状态
  */
 export const getRemindersByStatus = (userId: number, status: string) => {
-  return http.get<ResponseResult<Reminder[]>>("/reminders/status", {
+  return http.get<ResponseResult<Reminder[]>,object>("/reminders/status", {
     params: { userId, status }
   });
 };
@@ -165,5 +155,5 @@ export const getRemindersByStatus = (userId: number, status: string) => {
  * @param itemId 物品ID
  */
 export const generateRemindersForItem = (itemId: number) => {
-  return http.post<ResponseResult<void>>(`/reminders/generate/${itemId}`, {});
+  return http.post<ResponseResult<void>,number>(`/reminders/generate/${itemId}`, {});
 };

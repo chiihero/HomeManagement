@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 
 /**
  * 获取实体的图片列表
@@ -37,7 +37,7 @@ export function uploadEntityImage(
   formData.append("image", file);
   formData.append("imageType", imageType);
 
-  return http.post(`/entity-images/entity/${entityId}`, formData, {
+  return http.post(`/entity-images/entity/${entityId}`, {data: formData}, {
     headers: {
       "Content-Type": "multipart/form-data"
     }

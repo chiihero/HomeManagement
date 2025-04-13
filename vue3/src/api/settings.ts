@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 import type { ResponseResult } from "@/types/http";
 
 /**
@@ -62,7 +62,7 @@ export function getSystemSettings(): Promise<ResponseResult<SystemSettings[]>> {
 export function updateSystemSettings(
   data: Partial<SystemSettings>
 ): Promise<ResponseResult<SystemSettings>> {
-  return http.put("/settings/system", data);
+  return http.put("/settings/system", {data:data});
 }
 
 /**
@@ -81,7 +81,7 @@ export function updateUserSetting(
   key: string,
   value: string
 ): Promise<ResponseResult<UserSettings>> {
-  return http.put(`/settings/user/${key}`, { value });
+  return http.put(`/settings/user/${key}`, {data: value}  );
 }
 
 /**
@@ -91,7 +91,7 @@ export function updateUserSetting(
 export function createBackup(
   notes?: string
 ): Promise<ResponseResult<BackupInfo>> {
-  return http.post("/settings/backup", { notes });
+  return http.post("/settings/backup", { data:notes });
 }
 
 /**
@@ -133,7 +133,7 @@ export function importData(file: File): Promise<ResponseResult<boolean>> {
   const formData = new FormData();
   formData.append("file", file);
 
-  return http.post("/settings/import", formData, {
+  return http.post("/settings/import",{data: formData}, {
     headers: {
       "Content-Type": "multipart/form-data"
     }
@@ -157,7 +157,7 @@ export function exportData(
 export function updateUserNotifications(
   data: UserNotificationSettings
 ): Promise<ResponseResult<UserNotificationSettings>> {
-  return http.put("/user/notifications", data);
+  return http.put("/user/notifications", {data: data});
 }
 
 /**
@@ -168,7 +168,7 @@ export function uploadSystemLogo(file: File): Promise<ResponseResult<string>> {
   const formData = new FormData();
   formData.append("file", file);
 
-  return http.post("/settings/logo", formData, {
+  return http.post("/settings/logo", {data: formData}, {
     headers: {
       "Content-Type": "multipart/form-data"
     }

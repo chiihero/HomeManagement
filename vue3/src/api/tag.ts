@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 import type { Tag } from "@/types/entity";
 import type { PageResult, ResponseResult } from "@/types/http";
 
@@ -40,7 +40,7 @@ export const createTag = (
   tagData: Omit<Tag, "id">
 ): Promise<ResponseResult<Tag>> => {
   console.log('调用createTag API，参数:', tagData);
-  return http.post("/tags", tagData) as Promise<ResponseResult<Tag>>;
+  return http.post("/tags", {data: tagData}) as Promise<ResponseResult<Tag>>;
 };
 
 /**
@@ -54,7 +54,7 @@ export const updateTag = (
   tagData: Partial<Tag>
 ): Promise<ResponseResult<Tag>> => {
   console.log('调用updateTag API，参数:', { id, tagData });
-  return http.put(`/tags/${id}`, tagData) as Promise<ResponseResult<Tag>>;
+  return http.put(`/tags/${id}`,  {data: tagData}) as Promise<ResponseResult<Tag>>;
 };
 
 /**
@@ -75,7 +75,7 @@ export const deleteTag = (id: string): Promise<ResponseResult<null>> => {
 export const batchDeleteTags = (
   ids: string[]
 ): Promise<ResponseResult<null>> => {
-  return http.post("/tags/batch-delete", { ids });
+  return http.post("/tags/batch-delete", { data: ids });
 };
 
 /**
@@ -107,5 +107,5 @@ export const setItemTags = (
   itemId: string,
   tagIds: string[]
 ): Promise<ResponseResult<boolean>> => {
-  return http.post(`/tags/item/${itemId}`, tagIds);
+  return http.post(`/tags/item/${itemId}`, { data:tagIds });
 };

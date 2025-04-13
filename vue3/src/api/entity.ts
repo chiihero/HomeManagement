@@ -1,4 +1,4 @@
-import http from "@/utils/http";
+import { http } from "@/utils/http";
 import type {
   Entity,
   EntityQueryParams,
@@ -11,7 +11,7 @@ export const getEntities = (params: EntityQueryParams) => {
     ResponseResult<{
       total: number;
       list: Entity[];
-    }>
+    }>,EntityQueryParams
   >("/entities", { params });
 };
 /**
@@ -24,13 +24,13 @@ export function pageEntities(params: any) {
 
 // 获取物品树
 export const getRecentEntities = (days: number ,userId: number) => {
-  return http.get<ResponseResult<Entity[]>>("/entities/recent", {
+  return http.get<ResponseResult<Entity[]>,object>("/entities/recent", {
     params: { days,userId }
   });
 };
 // 获取物品树
 export const getEntityTree = (userId: number) => {
-  return http.get<ResponseResult<Entity[]>>("/entities/tree", {
+  return http.get<ResponseResult<Entity[]>, number>("/entities/tree", {
     params: { userId }
   });
 };
@@ -43,79 +43,53 @@ export const getEntitiesByUser = (userId: number) => {
 };
 // 获取物品详情
 export const getEntity = (id: string) => {
-  return http.get<ResponseResult<Entity>>(`/entities/${id}`);
+  return http.get<ResponseResult<Entity>,string>(`/entities/${id}`);
 };
 
 // 创建物品
 export const createEntity = (data: Entity) => {
-  return http.post<ResponseResult<Entity>>("/entities", data);
+  return http.post<ResponseResult<Entity>, Entity>("/entities", {data:data});
 };
 
 // 更新物品
 export const updateEntity = (id: string, data: Entity) => {
-  return http.put<ResponseResult<Entity>>(`/entities/${id}`, data);
+  return http.put<ResponseResult<Entity>,Entity >(`/entities/${id}`,{data: data});
 };
 
 // 删除物品
 export const deleteEntity = (id: string) => {
-  return http.delete<ResponseResult<void>>(`/entities/${id}`);
-};
-
-
-// 导入物品
-export const importEntities = (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  return http.post<
-    ResponseResult<{
-      success: number;
-      failed: number;
-      errors: string[];
-    }>
-  >("/entities/import", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
-  });
-};
-
-// 导出物品
-export const exportEntities = (params: EntityQueryParams) => {
-  return http.get<Blob>("/entities/export", {
-    params,
-    responseType: "blob"
-  });
+  return http.delete<ResponseResult<void>,string>(`/entities/${id}`);
 };
 
 
 // 获取所有类型
 export const getAllTypes = () => {
-  return http.get<ResponseResult<string[]>>("/entities/types");
+  return http.get<ResponseResult<string[]>,void>("/entities/types");
 };
 
 // 获取所有位置
 export const getAllLocations = () => {
-  return http.get<ResponseResult<string[]>>("/entities/locations");
+  return http.get<ResponseResult<string[]>,void>("/entities/locations");
 };
 
 // 批量更新物品状态
 export const batchUpdateStatus = (ids: string[], status: string) => {
-  return http.put<ResponseResult<void>>("/entities/batch/status", {
+  return http.put<ResponseResult<void>,object>("/entities/batch/status", {data: {
     ids,
     status
-  });
+  }});
 };
 
 // 批量删除物品
 export const batchDeleteEntities = (ids: string[]) => {
-  return http.delete<ResponseResult<void>>("/entities/batch", {
+  return http.delete<ResponseResult<void>,string[]>("/entities/batch", {
     data: { ids }
   });
 };
 
 // 搜索物品
 export const searchEntities = (userId: number, keyword: string) => {
-  return http.get<ResponseResult<Entity[]>>("/entities/search", {
+  return http.get<ResponseResult<Entity[]>,object>("/entities/search", {
     params: { userId, keyword }
   });
 };
@@ -132,13 +106,13 @@ export const getEntityHistory = (id: string) => {
         operator: string;
         createdAt: string;
       }[]
-    >
+    >,void
   >(`/entities/${id}/history`);
 };
 
 // 恢复物品历史版本
 export const restoreEntityVersion = (id: string, historyId: string) => {
-  return http.post<ResponseResult<Entity>>(
+  return http.post<ResponseResult<Entity>,void>(
     `/entities/${id}/restore/${historyId}`
   );
 };
