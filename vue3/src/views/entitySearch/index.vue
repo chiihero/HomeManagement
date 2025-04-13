@@ -216,16 +216,17 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="{ row }">
-            <el-button type="primary" link size="small" @click.stop="router.push(`/entitySearch/view/${row.id}`)">
+            <el-button type="primary" link size="small" @click.stop="handleViewDetail(row)">
               <el-icon class="mr-1"><View /></el-icon>查看
             </el-button>
-            <el-button type="primary" link size="small" @click.stop="router.push(`/entitySearch/edit/${row.id}`)">
+            <el-button type="primary" link size="small" @click.stop="handleEdit(row)">
               <el-icon class="mr-1"><Edit /></el-icon>编辑
             </el-button>
             <el-popconfirm
               title="确定删除此实体吗？"
               confirm-button-text="确定"
               cancel-button-text="取消"
+              @confirm="handleDelete(row)"
             >
               <template #reference>
                 <el-button type="danger" link size="small" @click.stop>
@@ -251,18 +252,61 @@
         />
       </div>
     </el-card>
+
+    <!-- 详情弹窗 -->
+    <el-dialog
+      v-model="detailDialogVisible"
+      title="物品详情"
+      width="650px"
+      :destroy-on-close="true"
+      :close-on-click-modal="false"
+    >
+      <entity-detail
+        :loading="detailLoading"
+        :entity="currentEntity"
+        :tree-data="treeData"
+      />
+      <template #footer>
+        <div class="flex justify-end">
+          <el-button @click="detailDialogVisible = false">关闭</el-button>
+          <el-button type="primary" @click="handleEdit(currentEntity)">编辑</el-button>
+        </div>
+      </template>
+    </el-dialog>
+    
+    <!-- 编辑弹窗 -->
+    <el-dialog
+      v-model="formDialogVisible"
+      :title="编辑物品"
+      width="750px"
+      :destroy-on-close="true"
+      :close-on-click-modal="false"
+      :before-close="handleFormDialogClose"
+    >
+      <entity-form
+        v-if="formDialogVisible"
+        :entity="currentEntity"
+        :tree-data="treeData"
+        :existing-tags="tagList"
+        :is-editing="true"
+        :saving="formSaving"
+        @submit="handleFormSubmit"
+        @cancel="formDialogVisible = false"
+      />
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
-import { pageEntities, getEntitiesByUser } from "@/api/entity";
+import { pageEntities, getEntitiesByUser, getEntity, deleteEntity, updateEntity, createEntity } from "@/api/entity";
 import { getImageData } from "@/api/image";
+import { getAllTags } from "@/api/tag";
 
-import type { Entity } from "@/types/entity";
+import type { Entity, Tag } from "@/types/entity";
 import {
   Search,
   Refresh,
@@ -270,9 +314,14 @@ import {
   Delete,
   View,
   Picture,
-  Document
+  Document,
+  Plus
 } from "@element-plus/icons-vue";
 import moment from "moment";
+
+// 导入组件
+import EntityDetail from "@/views/entity/components/EntityDetail.vue";
+import EntityForm from "@/views/entity/components/EntityForm.vue";
 
 const router = useRouter();
 const userStore = useUserStoreHook();
@@ -327,6 +376,15 @@ const usageFrequencyMap = {
   frequently: "经常",
   daily: "每天"
 };
+
+// 弹窗相关状态
+const detailDialogVisible = ref(false);
+const formDialogVisible = ref(false);
+const detailLoading = ref(false);
+const formSaving = ref(false);
+const currentEntity = ref<Entity | null>(null);
+const treeData = ref<Entity[]>([]);
+const tagList = ref<Tag[]>([]);
 
 // 获取图片URL
 const getImageUrl = async (imageId: number) => {
@@ -418,9 +476,138 @@ const resetSearch = () => {
   loadEntityList();
 };
 
+// 查看详情
+const handleViewDetail = async (row: Entity) => {
+  detailLoading.value = true;
+  currentEntity.value = null;
+  detailDialogVisible.value = true;
+  
+  try {
+    const response = await getEntity(row.id);
+    if (response.data) {
+      // 确保类型正确
+      currentEntity.value = response.data as unknown as Entity;
+    }
+  } catch (error) {
+    console.error("获取实体详情失败:", error);
+    ElMessage.error("获取实体详情失败");
+  } finally {
+    detailLoading.value = false;
+  }
+};
+
+// 编辑实体
+const handleEdit = async (row: Entity) => {
+  if (detailDialogVisible.value) {
+    detailDialogVisible.value = false;
+    await nextTick();
+  }
+  
+  formSaving.value = false;
+  currentEntity.value = null;
+  
+  try {
+    // 获取最新实体数据
+    const entityResponse = await getEntity(row.id);
+    if (entityResponse.data) {
+      // 确保类型正确
+      currentEntity.value = entityResponse.data as unknown as Entity;
+    }
+    
+    // 获取树形数据和标签列表
+    await Promise.all([loadTreeData(), loadTagList()]);
+    
+    formDialogVisible.value = true;
+  } catch (error) {
+    console.error("获取编辑数据失败:", error);
+    ElMessage.error("获取编辑数据失败");
+  }
+};
+
+// 加载树形数据
+const loadTreeData = async () => {
+  if (!userStore.currentUser?.id) return;
+  
+  try {
+    const response = await getEntitiesByUser(userStore.currentUser.id);
+    if (response.data) {
+      treeData.value = response.data;
+    }
+  } catch (error) {
+    console.error("加载树形数据失败:", error);
+  }
+};
+
+// 加载标签列表
+const loadTagList = async () => {
+  if (!userStore.currentUser?.id) return;
+  
+  try {
+    // 使用getAllTags获取标签列表
+    const response = await getAllTags(userStore.currentUser.id);
+    if (response.data) {
+      tagList.value = response.data;
+    }
+  } catch (error) {
+    console.error("加载标签列表失败:", error);
+  }
+};
+
+// 处理表单提交
+const handleFormSubmit = async (form: Entity) => {
+  formSaving.value = true;
+  
+  try {
+    let response;
+    if (currentEntity.value?.id) {
+      response = await updateEntity(currentEntity.value?.id, form);
+    }
+    
+    if (response && response.data) {
+      ElMessage.success( "更新成功" );
+      formDialogVisible.value = false;
+      loadEntityList(); // 刷新列表
+    }
+  } catch (error) {
+    console.error("更新失败:", error);
+    ElMessage.error("更新失败");
+  } finally {
+    formSaving.value = false;
+  }
+};
+
+// 处理删除
+const handleDelete = async (row: Entity) => {
+  try {
+    await deleteEntity(row.id);
+    ElMessage.success("删除成功");
+    loadEntityList(); // 刷新列表
+  } catch (error) {
+    console.error("删除失败:", error);
+    ElMessage.error("删除失败");
+  }
+};
+
+// 关闭编辑弹窗前确认
+const handleFormDialogClose = (done: () => void) => {
+  if (formSaving.value) {
+    return;
+  }
+  
+  ElMessageBox.confirm("确定要关闭吗？未保存的数据将会丢失", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  })
+    .then(() => {
+      done();
+    })
+    .catch(() => {});
+};
+
 // 处理表格行点击
 const handleRowClick = (row: Entity) => {
-  router.push(`/entity/${row.id}`);
+  handleViewDetail(row);
 };
 
 // 处理分页大小改变
@@ -456,6 +643,23 @@ const getContrastColor = (bgColor: string) => {
 
   // 如果亮度高于128，返回黑色，否则返回白色
   return yiq >= 128 ? "#000000" : "#ffffff";
+};
+
+// 新增物品
+const handleAddEntity = async () => {
+  isEditing.value = false;
+  formSaving.value = false;
+  currentEntity.value = null;
+  
+  try {
+    // 获取树形数据和标签列表
+    await Promise.all([loadTreeData(), loadTagList()]);
+    
+    formDialogVisible.value = true;
+  } catch (error) {
+    console.error("获取新增数据失败:", error);
+    ElMessage.error("获取新增数据失败");
+  }
 };
 
 // 在组件挂载时加载数据

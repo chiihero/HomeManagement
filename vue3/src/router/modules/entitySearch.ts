@@ -13,24 +13,6 @@ export default {
       meta: {
         title: "物品搜索"
       }
-    },
-    {
-      path: "/entitySearch/view/:id",
-      name: "EntitySearchView",
-      component: () => import("@/views/entitySearch/EntityView.vue"),
-      meta: {
-        title: "物品详情",
-        hideInMenu: true
-      }
-    },
-    {
-      path: "/entitySearch/edit/:id",
-      name: "EntitySearchEdit",
-      component: () => import("@/views/entitySearch/EntityEdit.vue"),
-      meta: {
-        title: "编辑物品",
-        hideInMenu: true
-      }
     }
   ]
 };

@@ -38,12 +38,12 @@ export function getPluginsList(
      */
     removeNoMatch(),
     // mock支持
-    vitePluginFakeServer({
-      logger: false,
-      include: "mock",
-      infixName: false,
-      enableProd: true
-    }),
+    // vitePluginFakeServer({
+    //   logger: false,
+    //   include: "mock",
+    //   infixName: false,
+    //   enableProd: true
+    // }),
     // svg组件化支持
     svgLoader(),
     VITE_CDN ? cdn : null,

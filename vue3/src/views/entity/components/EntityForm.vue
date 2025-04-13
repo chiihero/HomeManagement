@@ -189,7 +189,7 @@
 import { ref, reactive, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
-import { Folder, Goods, Plus } from "@element-plus/icons-vue";
+import { Folder, Goods, Plus, Close, Check } from "@element-plus/icons-vue";
 import { useEntityForm } from "../composables/useEntityForm";
 
 // 添加此注释，需要在项目中创建相应的类型定义
