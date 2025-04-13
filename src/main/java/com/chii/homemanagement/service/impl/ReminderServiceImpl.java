@@ -61,41 +61,24 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
     }
 
     @Override
-    public List<Object> getRecentReminders(Long userId, Integer limit) {
+    public List<Reminder> getRecentReminders(Long userId, Integer limit) {
         LambdaQueryWrapper<Reminder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Reminder::getUserId, userId)
                 .orderByDesc(Reminder::getCreateTime)
                 .last("LIMIT " + limit);
         
         List<Reminder> reminders = list(queryWrapper);
-        
-        // 转换为前端需要的对象格式
-        return reminders.stream().map(reminder -> {
-            // 获取关联的物品名称
-            String itemName = "";
+
+        // 为每个提醒设置物品名称
+        for (Reminder reminder : reminders) {
             if (reminder.getEntityId() != null) {
                 Entity entity = entityMapper.selectById(reminder.getEntityId());
                 if (entity != null) {
-                    itemName = entity.getName();
+                    reminder.setEntityName(entity.getName());
                 }
             }
-            
-            // 构建返回对象
-            java.util.Map<String, Object> result = new java.util.HashMap<>();
-            result.put("id", reminder.getId());
-            result.put("type", reminder.getType());
-            result.put("content", reminder.getContent());
-            result.put("reminderDate", reminder.getRemindDate());
-            result.put("status", reminder.getStatus());
-            result.put("itemId", reminder.getEntityId());
-            result.put("itemName", itemName);
-            result.put("notificationMethods", reminder.getNotificationMethods());
-            result.put("daysInAdvance", reminder.getDaysInAdvance());
-            result.put("isRecurring", reminder.getIsRecurring());
-            result.put("recurringCycle", reminder.getRecurringCycle());
-            
-            return result;
-        }).collect(Collectors.toList());
+        }
+        return reminders;
     }
 
     @Override

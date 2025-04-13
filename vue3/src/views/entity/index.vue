@@ -15,11 +15,9 @@
           >
             <el-icon><Plus /></el-icon>添加物品
           </el-button>
-          <el-button
-            type="primary"
-            :loading="loading"
-            @click="loadTreeData"
-            ><el-icon><Refresh /></el-icon>刷新</el-button>
+          <el-button type="primary" :loading="treeLoading" @click="loadTreeData"
+            ><el-icon><Refresh /></el-icon>刷新树结构</el-button
+          >
         </div>
       </div>
     </el-card>
@@ -42,7 +40,7 @@
           </div>
         </template>
         <EntityTree
-          :loading="loading"
+          :loading="treeLoading"
           :tree-data="filteredTreeData"
           class="entity-tree"
           @node-click="handleNodeClick"
@@ -56,7 +54,7 @@
             <span class="text-gray-700 font-medium">
               {{ getDetailTitle }}
             </span>
-            <div v-if="currentEntity" class="flex gap-2 mt-1">
+            <div v-if="!isEditing && currentEntity" class="flex gap-2 mt-1">
               <el-button type="primary" @click="openEditEntityForm">
                 <el-icon class="mr-1"><Edit /></el-icon>编辑
               </el-button>
@@ -64,12 +62,12 @@
                 <el-icon class="mr-1"><Delete /></el-icon>删除
               </el-button>
               <el-tooltip effect="dark" content="刷新" placement="top">
-
                 <el-button
-            type="primary"
-            :loading="loading"
-            @click="refreshCurrentEntity"
-            ><el-icon><Refresh /></el-icon>刷新</el-button>
+                  type="primary"
+                  :loading="loading"
+                  @click="refreshCurrentEntity"
+                  ><el-icon><Refresh /></el-icon>刷新</el-button
+                >
               </el-tooltip>
             </div>
           </div>
@@ -90,7 +88,7 @@
         <!-- 物品详情显示 -->
         <EntityDetail
           v-else-if="currentEntity"
-          :loading="false"
+          :loading="detailLoading"
           :entity="currentEntity"
           :tree-data="treeData"
           @edit="openEditEntityForm"
@@ -130,6 +128,7 @@ defineOptions({
 
 // 使用实体CRUD相关逻辑
 const {
+  treeLoading,
   loading,
   saving,
   treeData,
@@ -151,6 +150,9 @@ const {
 // 搜索关键词
 const searchKeyword = ref("");
 
+// 单独的详情页加载状态
+const detailLoading = ref(false);
+
 // 过滤后的树形数据
 const filteredTreeData = computed(() => {
   if (!searchKeyword.value.trim()) return treeData.value;
@@ -165,16 +167,21 @@ const filteredTreeData = computed(() => {
 
       // 如果有子节点，递归过滤
       if (node.children && node.children.length > 0) {
-        const filteredChildren = filterTree(node.children);
-        node.children = filteredChildren;
+        // 创建子节点的副本并进行过滤
+        const filteredChildren = filterTree([...node.children]);
+        // 创建节点的副本，避免修改原始节点
+        const nodeCopy = { ...node };
+        nodeCopy.children = filteredChildren;
         // 如果子节点匹配，父节点也要显示
-        return isMatch || filteredChildren.length > 0;
+        const shouldKeep = isMatch || filteredChildren.length > 0;
+        return shouldKeep ? nodeCopy : shouldKeep;
       }
 
       return isMatch;
     });
   };
 
+  // 使用扩展运算符创建浅拷贝
   return filterTree([...treeData.value]);
 });
 
@@ -190,7 +197,10 @@ const getDetailTitle = computed(() => {
 // 刷新当前实体
 const refreshCurrentEntity = () => {
   if (currentEntity.value && currentEntity.value.id) {
-    loadEntityDetail(currentEntity.value.id);
+    detailLoading.value = true; // 仅设置详情加载状态
+    loadEntityDetail(currentEntity.value.id).finally(() => {
+      detailLoading.value = false;
+    });
   }
 };
 
@@ -202,8 +212,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-
 .header-card {
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(5px);

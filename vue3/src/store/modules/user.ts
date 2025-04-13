@@ -9,7 +9,7 @@ import {
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
-import { login, logout, refreshToken } from "@/api/auth";
+import { login, logout, refreshToken, register } from "@/api/auth";
 import { getUserInfo, updateUserInfo } from "@/api/user";
 import { ElMessage } from "element-plus";
 import type { User } from "@/types/user";
@@ -231,8 +231,8 @@ export const useUserStore = defineStore("pure-user", {
 
         // 如果刷新失败，清除认证信息并重定向到登录页
         this.clearAuth();
-        if (router.currentRoute.value.path !== "/login") {
-          router.push("/login");
+        if (router.currentRoute.value.path !== "/auth/login") {
+          router.push("/auth/login");
           ElMessage.error("会话已过期，请重新登录");
         }
         return false;
@@ -366,7 +366,7 @@ export const useUserStore = defineStore("pure-user", {
         resetRouter();
 
         // 跳转到登录页
-        router.push("/login");
+        router.push("/auth/login");
       }
     },
 
@@ -400,6 +400,28 @@ export const useUserStore = defineStore("pure-user", {
         return await this.refreshUserToken();
       }
       return true;
+    },
+
+    // 注册新用户
+    async register(data: {
+      username: string;
+      email: string;
+      password: string;
+    }): Promise<{ success: boolean; message?: string }> {
+      this.loading = true;
+      try {
+        const res = await register(data);
+        if (res.code === 200) {
+          return { success: true };
+        } else {
+          return { success: false, message: res.message || "注册失败" };
+        }
+      } catch (error) {
+        console.error("Register error:", error);
+        return { success: false, message: "注册过程发生错误" };
+      } finally {
+        this.loading = false;
+      }
     }
   }
 });

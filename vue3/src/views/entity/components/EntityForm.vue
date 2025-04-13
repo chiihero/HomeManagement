@@ -19,6 +19,24 @@
         </div>
       </el-form-item>
       <el-row :gutter="20">
+<<<<<<< Updated upstream
+=======
+        <el-col :offset="14">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="large"
+              :loading="saving"
+              :icon="Check"
+              @click="handleSubmit"
+              >保存</el-button
+            >
+            <el-button size="large" :icon="Close" @click="handleCancel">取消</el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+>>>>>>> Stashed changes
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="名称" prop="name">
             <el-input v-model="form.name" placeholder="请输入物品名称" />
@@ -180,10 +198,21 @@
 </template>
 
 <script setup lang="ts">
+import {
+  Plus,
+  Folder,
+  Goods,
+  Check,
+  Search,
+  Close
+} from "@element-plus/icons-vue";
 import { ref, reactive, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
+<<<<<<< Updated upstream
 import { Folder, Goods, Plus } from "@element-plus/icons-vue";
+=======
+>>>>>>> Stashed changes
 import { useEntityForm } from "../composables/useEntityForm";
 
 // 添加此注释，需要在项目中创建相应的类型定义

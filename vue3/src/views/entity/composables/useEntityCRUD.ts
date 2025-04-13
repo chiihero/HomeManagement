@@ -17,30 +17,42 @@ export function useEntityCRUD() {
   // 状态
   const authStore = useUserStoreHook();
   const loading = ref(false);
+  const treeLoading = ref(false);
   const saving = ref(false);
   const treeData = ref<Entity[]>([]);
   const currentEntity = ref<Entity | null>(null);
   const isEditing = ref(false);
   const isAdding = ref(false);
   const entityTags = ref<Tag[]>([]);
+  // 添加详情加载状态
+  const detailLoading = ref(false);
 
   // 使用图片上传composable
   const { uploadImages } = useEntityImageUpload();
 
   // 加载树形数据
   const loadTreeData = async () => {
-    loading.value = true;
+    treeLoading.value = true;
     try {
+      // 获取当前展开的节点ID，如果访问树组件ref的话
+      // 保存当前选中的物品
+      const currentId = currentEntity.value?.id;
+      
       const response = await getEntityTree(authStore.currentUser.id);
       if (response.data) {
         // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         treeData.value = response.data;
+        
+        // 如果当前有选中的物品，重新加载详情以保持选中状态
+        if (currentId) {
+          await loadEntityDetail(currentId);
+        }
       }
     } catch (error) {
       console.error("Failed to load entity tree:", error);
       ElMessage.error("加载物品结构失败");
     } finally {
-      loading.value = false;
+      treeLoading.value = false;
     }
   };
 
@@ -74,6 +86,11 @@ export function useEntityCRUD() {
 
   // 处理节点点击
   const handleNodeClick = async (node: Entity) => {
+    // 如果点击的节点与当前选中的节点相同，则不执行任何操作
+    if (currentEntity.value && currentEntity.value.id === node.id) {
+      return;
+    }
+
     if (isEditing.value || isAdding.value) {
       const confirmed = await ElMessageBox.confirm(
         "当前有未保存的更改，是否继续？",
@@ -125,6 +142,8 @@ export function useEntityCRUD() {
 
   // 加载实体详情
   const loadEntityDetail = async (id: string) => {
+    // 设置详情页加载状态
+    detailLoading.value = true;
     try {
       const response = await getEntity(id);
       if (response.data) {
@@ -135,36 +154,34 @@ export function useEntityCRUD() {
           !currentEntity.value.images ||
           currentEntity.value.images.length === 0
         ) {
-          await loadEntityImages(id);
+          // 直接调用loadEntityImages而不设置全局loading状态
+          await loadEntityImagesQuiet(id);
         }
       }
     } catch (error) {
       console.error("Failed to load entity detail:", error);
       ElMessage.error("加载物品详情失败");
+    } finally {
+      detailLoading.value = false;
     }
   };
 
   /**
-   * 单独加载实体的图片列表
+   * 安静地加载实体的图片列表，不设置全局loading状态
    * @param entityId 实体ID
    */
-  const loadEntityImages = async (entityId: string) => {
+  const loadEntityImagesQuiet = async (entityId: string) => {
     if (!entityId) return;
 
-    loading.value = true;
     try {
       const response = await getEntityImages(entityId);
 
-      if (response.data) {
+      if (response.data && currentEntity.value) {
         // 更新实体的图片列表
-        if (currentEntity.value) {
-          currentEntity.value.images = response.data;
-        }
+        currentEntity.value.images = response.data;
       }
     } catch (error) {
       console.error("加载实体图片错误:", error);
-    } finally {
-      loading.value = false;
     }
   };
 
@@ -232,12 +249,17 @@ export function useEntityCRUD() {
           ElMessage.success(isAdding.value ? "添加成功" : "更新成功");
         }
 
+        // 保存操作类型
+        const wasAdding = isAdding.value;
+        
         // 操作完成后重置状态
         isEditing.value = false;
         isAdding.value = false;
 
-        // 重新加载树形数据
-        loadTreeData();
+        // 只有在添加新物品时才重新加载树形数据
+        if (wasAdding) {
+          loadTreeData();
+        }
 
         // 如果是添加操作，重新加载实体详情
         if (entityId) {
@@ -281,12 +303,14 @@ export function useEntityCRUD() {
 
   return {
     loading,
+    treeLoading,
     saving,
     treeData,
     currentEntity,
     isEditing,
     isAdding,
     entityTags,
+    detailLoading, // 导出详情加载状态
     loadTreeData,
     handleNodeClick,
     handleDelete,

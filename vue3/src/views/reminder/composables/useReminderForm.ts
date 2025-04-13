@@ -1,11 +1,11 @@
 import { ref, reactive } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import type { Reminder, ReminderFormData } from "@/types/reminder";
+import type { Reminder } from "@/types/reminder";
 
 export function useReminderForm() {
   const reminderFormRef = ref<FormInstance>();
 
-  const reminderForm = reactive<ReminderFormData>({
+  const reminderForm = reactive<Reminder>({
     entityId: "",
     userId: 0,
     type: "warranty",
@@ -68,7 +68,9 @@ export function useReminderForm() {
       remindDate: reminder.remindDate,
       status: reminder.status,
       content: reminder.content,
-      notificationMethods: reminder.notificationMethods ? reminder.notificationMethods.split(',') : ['system'],
+      notificationMethods: reminder.notificationMethods
+        ? reminder.notificationMethods.split(",")
+        : ["system"],
       daysInAdvance: reminder.daysInAdvance,
       isRecurring: reminder.isRecurring,
       recurringCycle: reminder.recurringCycle

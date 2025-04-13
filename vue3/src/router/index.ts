@@ -102,7 +102,7 @@ export function resetRouter() {
 }
 
 /** 路由白名单 */
-const whiteList = ["/login"];
+const whiteList = ["/auth/login", "/auth/register"];
 
 const { VITE_HIDE_HOME } = import.meta.env;
 
@@ -166,7 +166,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
         // 刷新
         if (
           usePermissionStoreHook().wholeMenus.length === 0 &&
-          to.path !== "/login"
+          to.path !== "/auth/login"
         ) {
           // 使用下面方法替换initRouter
           usePermissionStoreHook().handleWholeMenus([]);
@@ -205,12 +205,12 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       }
     });
   } else {
-    if (to.path !== "/login") {
+    if (to.path !== "/auth/login") {
       if (whiteList.indexOf(to.path) !== -1) {
         next();
       } else {
         removeToken();
-        next({ path: "/login" });
+        next({ path: "/auth/login" });
       }
     } else {
       next();

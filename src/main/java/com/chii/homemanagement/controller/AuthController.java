@@ -212,7 +212,7 @@ public class AuthController {
             user.setPassword(password); // Service层会处理密码加密
             user.setEmail(email);
             user.setRole("USER"); // 默认角色
-            user.setStatus("ACTIVE"); // 默认状态
+            user.setStatus("active"); // 默认状态
             user.setCreateTime(LocalDateTime.now());
             
             userService.createUser(user);

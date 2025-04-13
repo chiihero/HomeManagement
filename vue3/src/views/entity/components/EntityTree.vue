@@ -1,6 +1,7 @@
 <template>
   <div class="w-full h-full">
-    <el-skeleton v-if="loading" :rows="5" animated />
+    <el-skeleton v-if="loading"
+    :throttle="{ leading: 500, trailing: 500 }" :rows="1" animated />
     <el-empty v-else-if="!treeData.length" description="暂无物品数据" />
     <el-tree
       v-else
@@ -11,6 +12,10 @@
       node-key="id"
       highlight-current
       :expand-on-click-node="false"
+      :key="'entity-tree'"
+      :default-expanded-keys="expandedKeys"
+      @node-expand="handleNodeExpand"
+      @node-collapse="handleNodeCollapse"
       class="h-full overflow-auto"
       @node-click="handleNodeClick"
     >
@@ -38,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { Search, Folder, Document } from "@element-plus/icons-vue";
 import type { Entity } from "@/types/entity";
 
@@ -54,11 +59,30 @@ const emit = defineEmits<{
 
 const treeRef = ref();
 const filterText = ref("");
+// 存储展开的节点ID
+const expandedKeys = ref<string[]>([]);
 
 // 树形配置
 const defaultProps = {
   children: "children",
   label: "name"
+};
+
+// 处理节点展开
+const handleNodeExpand = (data: Entity) => {
+  if (data.id && !expandedKeys.value.includes(data.id)) {
+    expandedKeys.value.push(data.id);
+  }
+};
+
+// 处理节点折叠
+const handleNodeCollapse = (data: Entity) => {
+  if (data.id) {
+    const index = expandedKeys.value.indexOf(data.id);
+    if (index !== -1) {
+      expandedKeys.value.splice(index, 1);
+    }
+  }
 };
 
 // 过滤节点
@@ -70,6 +94,21 @@ const filterNode = (value: string, data: Entity) => {
 // 监听过滤文本
 watch(filterText, val => {
   treeRef.value?.filter(val);
+});
+
+// 在组件挂载后自动展开根节点
+onMounted(() => {
+  // 延迟执行，确保树已经渲染完成
+  setTimeout(() => {
+    // 默认展开第一级节点
+    if (props.treeData && props.treeData.length > 0) {
+      props.treeData.forEach(node => {
+        if (node.id) {
+          expandedKeys.value.push(node.id);
+        }
+      });
+    }
+  }, 100);
 });
 
 // 处理节点点击

@@ -2,6 +2,10 @@ export default {
   path: "/test",
   redirect: "/test/index",
   meta: {
+<<<<<<< Updated upstream
+=======
+    showLink: false,
+>>>>>>> Stashed changes
     title: "测试"
   },
   children: [

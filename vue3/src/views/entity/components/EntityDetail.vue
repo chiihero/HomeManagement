@@ -1,6 +1,8 @@
 <template>
   <div class="w-full">
-    <el-skeleton v-if="loading" :rows="10" animated />
+    <el-skeleton v-if="loading" :rows="1" 
+    :throttle="{ leading: 500, trailing: 500 }"
+    animated />
     <el-empty v-else-if="!entity" description="请选择物品" />
     <div v-else class="space-y-6">
       <div class="mb-6">

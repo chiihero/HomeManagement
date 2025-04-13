@@ -114,3 +114,4 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+log/~syncthing~info.log.tmp

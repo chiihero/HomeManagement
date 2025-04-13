@@ -315,7 +315,7 @@ import {
   ReminderStatus,
   NotificationMethod,
   RecurringCycle,
-  ReminderDisplay
+  Reminder
 } from "@/types/reminder";
 import { searchEntities } from "@/api/entity";
 import { Entity } from "@/types/entity";
@@ -479,6 +479,7 @@ const getNotificationMethodLabel = (method: NotificationMethod) => {
 // 保存提醒
 const handleSave = async () => {
   if (await validateForm()) {
+    reminderForm.userId = authStore.userId;
     await saveReminder(reminderForm);
   }
 };

@@ -1,7 +1,6 @@
 import http from "@/utils/http";
 import type {
   Reminder,
-  ReminderFormData,
   ReminderQueryParams
 } from "@/types/reminder";
 import type { ResponseResult } from "@/types/http";

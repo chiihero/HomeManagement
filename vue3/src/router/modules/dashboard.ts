@@ -3,6 +3,7 @@ export default {
   redirect: "/dashboard/index",
   meta: {
     title: "仪表盘",
+    // showLink: false,
     icon: "ep:odometer"
 
   },
