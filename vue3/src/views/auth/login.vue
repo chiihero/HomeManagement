@@ -104,9 +104,6 @@ onBeforeUnmount(() => {
       />
     </div>
     <div class="login-container">
-      <div class="img">
-        <component :is="toRaw(illustration)" />
-      </div>
       <div class="login-box">
         <div class="login-form">
           <avatar class="avatar" />
@@ -159,6 +156,15 @@ onBeforeUnmount(() => {
               >
                 登录
               </el-button>
+            </Motion>
+
+            <Motion :delay="300">
+              <div class="text-center mt-4">
+                <span class="text-gray-500">还没有账号？</span>
+                <router-link to="/auth/register">
+                  <el-button type="primary" link>立即注册</el-button>
+                </router-link>
+              </div>
             </Motion>
           </el-form>
         </div>

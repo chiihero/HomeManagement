@@ -15,7 +15,7 @@
           >
             <el-icon><Plus /></el-icon>添加物品
           </el-button>
-          <el-button type="primary" :loading="loading" @click="loadTreeData"
+          <el-button type="primary" :loading="treeLoading" @click="loadTreeData"
             ><el-icon><Refresh /></el-icon>刷新树结构</el-button
           >
         </div>
@@ -40,7 +40,7 @@
           </div>
         </template>
         <EntityTree
-          :loading="loading"
+          :loading="treeLoading"
           :tree-data="filteredTreeData"
           class="entity-tree"
           @node-click="handleNodeClick"
@@ -88,7 +88,7 @@
         <!-- 物品详情显示 -->
         <EntityDetail
           v-else-if="currentEntity"
-          :loading="false"
+          :loading="detailLoading"
           :entity="currentEntity"
           :tree-data="treeData"
           @edit="openEditEntityForm"
@@ -128,6 +128,7 @@ defineOptions({
 
 // 使用实体CRUD相关逻辑
 const {
+  treeLoading,
   loading,
   saving,
   treeData,
@@ -148,6 +149,9 @@ const {
 
 // 搜索关键词
 const searchKeyword = ref("");
+
+// 单独的详情页加载状态
+const detailLoading = ref(false);
 
 // 过滤后的树形数据
 const filteredTreeData = computed(() => {
@@ -193,7 +197,10 @@ const getDetailTitle = computed(() => {
 // 刷新当前实体
 const refreshCurrentEntity = () => {
   if (currentEntity.value && currentEntity.value.id) {
-    loadEntityDetail(currentEntity.value.id);
+    detailLoading.value = true; // 仅设置详情加载状态
+    loadEntityDetail(currentEntity.value.id).finally(() => {
+      detailLoading.value = false;
+    });
   }
 };
 

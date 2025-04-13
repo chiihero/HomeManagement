@@ -2,13 +2,23 @@ const Layout = () => import("@/layout/index.vue");
 
 export default [
   {
-    path: "/login",
+    path: "/auth/login",
     name: "Login",
-    component: () => import("@/views/login/index.vue"),
+    component: () => import("@/views/auth/login.vue"),
     meta: {
       title: "登录",
       showLink: false,
       rank: 101
+    }
+  },
+  {
+    path: "/auth/register",
+    name: "Register",
+    component: () => import("@/views/auth/Register.vue"),
+    meta: {
+      title: "注册",
+      showLink: false,
+      rank: 102
     }
   },
   {
@@ -17,7 +27,7 @@ export default [
     meta: {
       title: "加载中...",
       showLink: false,
-      rank: 102
+      rank: 103
     },
     children: [
       {

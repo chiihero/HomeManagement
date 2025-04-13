@@ -8,10 +8,12 @@
 }
 
 .login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100vw;
   height: 100vh;
   max-width: 100%;
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 18rem;
   padding: 0 2rem;

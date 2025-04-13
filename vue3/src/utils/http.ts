@@ -133,7 +133,7 @@ http.interceptors.response.use(
               } else {
                 // 跳转登录页
                 router.replace(
-                  "/login?redirect=" +
+                  "/auth/login?redirect=" +
                     encodeURIComponent(router.currentRoute.value.fullPath)
                 );
                 return Promise.reject(errMsg);
@@ -142,7 +142,7 @@ http.interceptors.response.use(
           } else {
             // 跳转登录页
             router.replace(
-              "/login?redirect=" +
+              "/auth/login?redirect=" +
                 encodeURIComponent(router.currentRoute.value.fullPath)
             );
           }

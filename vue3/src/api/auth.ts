@@ -32,9 +32,12 @@ export function login(
 }
 
 // 注册
-export function register(
-  data: RegisterRequest
-): Promise<ResponseResult<boolean>> {
+export function register(data: {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+}): Promise<ResponseResult<boolean>> {
   return http.post("/auth/register", data);
 }
 

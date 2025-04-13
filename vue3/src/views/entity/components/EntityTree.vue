@@ -1,6 +1,7 @@
 <template>
   <div class="w-full h-full">
-    <el-skeleton v-if="loading" :rows="5" animated />
+    <el-skeleton v-if="loading"
+    :throttle="{ leading: 500, trailing: 500 }" :rows="1" animated />
     <el-empty v-else-if="!treeData.length" description="暂无物品数据" />
     <el-tree
       v-else
