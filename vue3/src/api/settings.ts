@@ -22,7 +22,7 @@ export interface SystemSettings {
  */
 export interface UserSettings {
   id?: number;
-  userId: number;
+  userId: string;
   key: string;
   value: string;
   updatedAt?: string;

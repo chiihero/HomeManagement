@@ -109,7 +109,7 @@ export const deleteBatchReminders = (ids: number[]) => {
  * 获取今日提醒
  * @param userId 用户ID
  */
-export const getTodayReminders = (userId: number) => {
+export const getTodayReminders = (userId: string) => {
   return http.get<ResponseResult<Reminder[]>,number>("/reminders/today", {
     params: { userId }
   });
@@ -122,7 +122,7 @@ export const getTodayReminders = (userId: number) => {
  * @param endDate 结束日期
  */
 export const getRemindersByDateRange = (
-  userId: number,
+  userId: string,
   startDate: string,
   endDate: string
 ) => {
@@ -144,7 +144,7 @@ export const getRemindersByEntityId = (entityId: number) => {
  * @param userId 用户ID
  * @param status 状态
  */
-export const getRemindersByStatus = (userId: number, status: string) => {
+export const getRemindersByStatus = (userId: string, status: string) => {
   return http.get<ResponseResult<Reminder[]>,object>("/reminders/status", {
     params: { userId, status }
   });

@@ -31,8 +31,8 @@ export function useEntityForm() {
   // 加载位置选项
   const loadLocationOptions = async () => {
     try {
-      if (!authStore.currentUser?.id) return;
-      const userId = authStore.currentUser.id;
+      if (!authStore.userId) return;
+      const userId = authStore.userId;
       const response = await getEntitiesByUser(userId);
       if (response.data) {
         // 构建级联选择器需要的树形结构

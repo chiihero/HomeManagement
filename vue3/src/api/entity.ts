@@ -23,13 +23,13 @@ export function pageEntities(params: any) {
 }
 
 // 获取物品树
-export const getRecentEntities = (days: number ,userId: number) => {
+export const getRecentEntities = (days: number ,userId: string) => {
   return http.get<ResponseResult<Entity[]>,object>("/entities/recent", {
     params: { days,userId }
   });
 };
 // 获取物品树
-export const getEntityTree = (userId: number) => {
+export const getEntityTree = (userId: string) => {
   return http.get<ResponseResult<Entity[]>, number>("/entities/tree", {
     params: { userId }
   });
@@ -38,7 +38,7 @@ export const getEntityTree = (userId: number) => {
  * 获取用户使用的物品列表
  * @returns 实体列表
  */
-export const getEntitiesByUser = (userId: number) => {
+export const getEntitiesByUser = (userId: string) => {
   return http.get(`/entities/list/by-user`, { params: { userId } });
 };
 // 获取物品详情
@@ -88,7 +88,7 @@ export const batchDeleteEntities = (ids: string[]) => {
 };
 
 // 搜索物品
-export const searchEntities = (userId: number, keyword: string) => {
+export const searchEntities = (userId: string, keyword: string) => {
   return http.get<ResponseResult<Entity[]>,object>("/entities/search", {
     params: { userId, keyword }
   });

@@ -39,7 +39,7 @@ export interface Reminder {
   /**
    * 用户ID
    */
-  userId: number;
+  userId: string;
   /**
    * 提醒类型
    */

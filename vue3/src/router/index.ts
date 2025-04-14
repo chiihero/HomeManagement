@@ -28,7 +28,8 @@ import {
   type DataInfo,
   userKey,
   removeToken,
-  multipleTabsKey
+  multipleTabsKey,
+  getToken
 } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 
@@ -134,7 +135,9 @@ router.beforeEach((to: ToRouteType, _from, next) => {
 
   // 如果已登录但没有用户信息，尝试获取用户信息
   async function ensureUserInfo() {
-    if (userStore.token && !userStore.user) {
+    const token = getToken();
+
+    if (token && !userStore.userId) {
       try {
         await userStore.fetchUserInfo();
       } catch (error) {

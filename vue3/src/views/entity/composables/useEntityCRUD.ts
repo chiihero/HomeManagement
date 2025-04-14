@@ -28,7 +28,7 @@ export function useEntityCRUD() {
   const detailLoading = ref(false);
 
   // 使用图片上传composable
-  const { uploadImages } = useEntityImageUpload();
+  const { uploadImages, deleteImages } = useEntityImageUpload();
 
   // 加载树形数据
   const loadTreeData = async () => {
@@ -38,7 +38,7 @@ export function useEntityCRUD() {
       // 保存当前选中的物品
       const currentId = currentEntity.value?.id;
       
-      const response = await getEntityTree(authStore.currentUser.id);
+      const response = await getEntityTree(authStore.userId);
       if (response.data) {
         // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         treeData.value = response.data;
@@ -60,7 +60,7 @@ export function useEntityCRUD() {
   const loadAllTags = async () => {
     try {
       // 从用户store获取userId
-      const userId = authStore.currentUser?.id;
+      const userId = authStore.userId;
       console.log("当前用户ID:", userId);
       
       if (!userId) {
@@ -221,16 +221,29 @@ export function useEntityCRUD() {
         const entityId = savedEntity.id;
         console.log("实体保存成功，ID:", entityId);
 
-        // 上传图片（如果有）
+        // 首先处理删除的图片
+        let deleteSuccess = true;
+        try {
+          console.log("开始处理已删除的图片");
+          const deleteResult = await deleteImages();
+          deleteSuccess = deleteResult.success;
+          if (!deleteSuccess) {
+            console.warn("部分图片删除失败:", deleteResult.message);
+            ElMessage.warning(deleteResult.message || "部分图片删除失败");
+          }
+        } catch (deleteError) {
+          console.error("删除图片出错:", deleteError);
+          deleteSuccess = false;
+        }
+
+        // 然后上传新图片（如果有）
+        let uploadSuccess = true;
         if (entityId && images && images.length > 0) {
           try {
             console.log("开始上传图片，数量:", images.length);
-            const uploadSuccess = await uploadImages(entityId, images);
-            if (uploadSuccess) {
-              ElMessage.success(
-                isAdding.value ? "添加物品及图片成功" : "更新物品及图片成功"
-              );
-            } else {
+            uploadSuccess = await uploadImages(entityId, images) as boolean;
+            
+            if (!uploadSuccess) {
               ElMessage.warning(
                 isAdding.value
                   ? "物品已添加，但部分图片上传失败"
@@ -239,13 +252,17 @@ export function useEntityCRUD() {
             }
           } catch (uploadError) {
             console.error("上传图片失败:", uploadError);
+            uploadSuccess = false;
             ElMessage.warning(
               isAdding.value
                 ? "物品已添加，但图片上传失败"
                 : "物品已更新，但图片上传失败"
             );
           }
-        } else {
+        }
+        
+        // 根据图片处理结果显示相应消息
+        if (deleteSuccess && uploadSuccess) {
           ElMessage.success(isAdding.value ? "添加成功" : "更新成功");
         }
 

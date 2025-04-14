@@ -18,7 +18,7 @@ export const getTags = (
  * 获取所有标签
  * @returns 标签列表
  */
-export const getAllTags = (userId: number): Promise<ResponseResult<Tag[]>> => {
+export const getAllTags = (userId: string): Promise<ResponseResult<Tag[]>> => {
   return http.get("/tags", { params: { userId } });
 };
 
@@ -83,7 +83,7 @@ export const batchDeleteTags = (
  * @returns 标签使用统计
  */
 export const getTagUsageStats = (
-  userId: number
+  userId: string
 ): Promise<ResponseResult<any[]>> => {
   return http.get("/tags/usage-stats", { params: { userId } });
 };

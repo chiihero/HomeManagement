@@ -1,3 +1,7 @@
+/**
+ * 应用程序主入口文件
+ * 负责初始化Vue应用、注册全局组件、指令和插件
+ */
 import App from "./App.vue";
 import router from "./router";
 import { setupStore } from "@/store";
@@ -23,15 +27,18 @@ import "element-plus/dist/index.css";
 import "./assets/iconfont/iconfont.js";
 import "./assets/iconfont/iconfont.css";
 
+/**
+ * 创建Vue应用实例
+ */
 const app = createApp(App);
 
-// 自定义指令
+// 自定义指令注册
 import * as directives from "@/directives";
 Object.keys(directives).forEach(key => {
   app.directive(key, (directives as { [key: string]: Directive })[key]);
 });
 
-// 全局注册@iconify/vue图标库
+// 全局注册@iconify/vue图标库组件
 import {
   IconifyIconOffline,
   IconifyIconOnline,
@@ -47,23 +54,37 @@ import { Perms } from "@/components/RePerms";
 app.component("Auth", Auth);
 app.component("Perms", Perms);
 
-// 全局注册vue-tippy
+// 全局注册vue-tippy提示组件
 import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
 import VueTippy from "vue-tippy";
 app.use(VueTippy);
 
+/**
+ * 应用初始化流程
+ * 1. 获取平台配置
+ * 2. 设置状态管理
+ * 3. 挂载路由和插件
+ * 4. 注入响应式存储
+ * 5. 挂载应用到DOM
+ */
 getPlatformConfig(app).then(async config => {
+  // 初始化Pinia存储
   setupStore(app);
 
-  // 尝试恢复用户会话
-  await useUserStoreHook().restoreSession();
-
+  // 挂载路由
   app.use(router);
+  // 等待路由准备就绪
   await router.isReady();
+  
+  // 注入响应式存储
   injectResponsiveStorage(app, config);
+  
+  // 挂载插件
   app.use(MotionPlugin).use(useElementPlus).use(Table);
   // .use(PureDescriptions)
   // .use(useEcharts);
+  
+  // 挂载应用到DOM
   app.mount("#app");
 });

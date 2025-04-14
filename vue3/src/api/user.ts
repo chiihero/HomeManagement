@@ -22,7 +22,7 @@ export interface UserNotificationSettings {
 // 用户设置接口
 export interface UserSettings {
   id?: number;
-  userId: number;
+  userId: string;
   key: string;
   value: string;
   updatedAt?: string;

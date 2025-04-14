@@ -37,7 +37,7 @@ export interface Tag {
   id: number;
   name: string;
   color: string;
-  userId: number;
+  userId: string;
 }
 
 // 定义实体图片类型

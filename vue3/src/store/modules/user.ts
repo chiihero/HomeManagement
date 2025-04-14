@@ -7,7 +7,7 @@ import {
   routerArrays
 } from "../utils";
 import { useMultiTagsStoreHook } from "./multiTags";
-import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
+import { type DataInfo, getToken, setToken, removeToken, userKey } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import { login, logout, refreshToken, register } from "@/api/auth";
 import { getUserInfo, updateUserInfo } from "@/api/user";
@@ -15,18 +15,21 @@ import { ElMessage } from "element-plus";
 import type { User } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
 
-// 扩展userType类型
+/**
+ * 用户状态接口，继承自基础userType并添加额外的属性
+ */
 interface UserState extends userType {
-  userId: number | null;
-  // token: string | null;
-  // refreshTokenValue: string | null;
-  // tokenExpiry: number | null;
-  user: User | null;
+  /** 加载状态标识 */
   loading: boolean;
+  /** 用户最后活动时间戳 */
   lastActivity: number;
 }
 
-// 检查Token是否过期
+/**
+ * 检查Token是否过期
+ * @param expiry - Token过期时间戳
+ * @returns 如果Token已过期或即将过期返回true，否则返回false
+ */
 function isTokenExpired(expiry: number | null): boolean {
   if (!expiry) return true;
   // 提前5分钟视为过期，以便有时间刷新
@@ -35,103 +38,136 @@ function isTokenExpired(expiry: number | null): boolean {
 
 export const useUserStore = defineStore("pure-user", {
   state: (): UserState => ({
-    // 头像
+    // 用户头像
     avatar: storageLocal().getItem<DataInfo<number>>(userKey)?.avatar ?? "",
     // 用户名
     username: storageLocal().getItem<DataInfo<number>>(userKey)?.username ?? "",
     // 用户ID
-    userId: null,
-    // 昵称
+    userId: storageLocal().getItem<DataInfo<number>>(userKey)?.userId ?? "",
+    // 用户昵称
     nickname: storageLocal().getItem<DataInfo<number>>(userKey)?.nickname ?? "",
-    // 页面级别权限
+    // 用户角色列表，用于页面级权限控制
     roles: storageLocal().getItem<DataInfo<number>>(userKey)?.roles ?? [],
-    // 按钮级别权限
+    // 用户权限列表，用于按钮级权限控制
     permissions:
       storageLocal().getItem<DataInfo<number>>(userKey)?.permissions ?? [],
-    // 是否勾选了登录页的免登录
+    // 是否勾选了登录页的免登录选项
     isRemembered: false,
-    // 登录页的免登录存储几天，默认7天
+    // 免登录状态保存天数，默认7天
     loginDay: 7,
-    // 认证相关状态
-    // token: localStorage.getItem("token") || null,
-    // refreshTokenValue: localStorage.getItem("refresh_token") || null,
-    // tokenExpiry: localStorage.getItem("token_expiry")
-    //   ? parseInt(localStorage.getItem("token_expiry") || "0")
-    //   : null,
-    user: null,
+
+    // 加载状态标识
     loading: false,
+    // 用户最后活动时间戳
     lastActivity: Date.now()
   }),
   getters: {
+    /**
+     * 判断用户是否已认证
+     * @returns 用户是否已认证且Token未过期
+     */
     isAuthenticated(): boolean {
       return !!this.token && !isTokenExpired(this.tokenExpiry);
     },
+    /**
+     * 获取当前用户信息
+     * @returns 当前用户对象或null
+     */
     currentUser(): User | null {
-      return this.user;
+      return this.userId;
     },
     /**
      * 检查用户是否有指定权限
+     * @returns 用于检查特定权限的函数
      */
     hasPermission(): (permission: string) => boolean {
       return (permission: string) => {
         // 如果无用户信息，无权限
-        if (!this.user) return false;
+        if (!this.userId) return false;
 
         // 管理员拥有所有权限
         if (this.roles.includes("ADMIN")) return true;
 
-        // 基于角色和权限字符串匹配
+        // 基于权限字符串匹配
         return this.permissions.includes(permission);
       };
     }
   },
   actions: {
-    /** 存储头像 */
+    /** 
+     * 设置用户头像
+     * @param avatar - 头像URL
+     */
     SET_AVATAR(avatar: string) {
       this.avatar = avatar;
     },
-    /** 存储用户名 */
+    /** 
+     * 设置用户ID
+     * @param userId - 用户ID
+     */
+    SET_USERID(userId: string) {
+      this.userId = userId;
+    },
+    /** 
+     * 设置用户名
+     * @param username - 用户名
+     */
     SET_USERNAME(username: string) {
       this.username = username;
     },
-    /** 存储昵称 */
+    /** 
+     * 设置用户昵称
+     * @param nickname - 用户昵称
+     */
     SET_NICKNAME(nickname: string) {
       this.nickname = nickname;
     },
-    /** 存储角色 */
+    /** 
+     * 设置用户角色
+     * @param roles - 角色数组
+     */
     SET_ROLES(roles: Array<string>) {
       this.roles = roles;
     },
-    /** 存储按钮级别权限 */
+    /** 
+     * 设置用户权限
+     * @param permissions - 权限数组
+     */
     SET_PERMS(permissions: Array<string>) {
       this.permissions = permissions;
     },
-    /** 存储是否勾选了登录页的免登录 */
+    /** 
+     * 设置记住登录状态
+     * @param bool - 是否记住登录
+     */
     SET_ISREMEMBERED(bool: boolean) {
       this.isRemembered = bool;
     },
-    /** 设置登录页的免登录存储几天 */
+    /** 
+     * 设置免登录天数
+     * @param value - 天数
+     */
     SET_LOGINDAY(value: number) {
       this.loginDay = Number(value);
     },
-    // 更新最后活动时间
+    /**
+     * 更新用户最后活动时间
+     */
     updateLastActivity() {
       this.lastActivity = Date.now();
     },
 
-    // 设置认证信息
+    /**
+     * 设置认证信息
+     * @param token - 访问令牌
+     * @param refreshTokenValue - 刷新令牌
+     * @param expiresIn - 过期时间（秒）
+     */
     setAuth(token: string, refreshTokenValue: string, expiresIn: number) {
-      this.token = token;
-      this.refreshTokenValue = refreshTokenValue;
       // 转换过期时间为时间戳
       this.tokenExpiry = Date.now() + expiresIn * 1000;
 
-      // 保存到本地存储
-      // localStorage.setItem("token", token);
-      // localStorage.setItem("refresh_token", refreshTokenValue);
-      // localStorage.setItem("token_expiry", this.tokenExpiry.toString());
-
-      // 同时设置PureAdmin的token
+      // 同时设置token到本地存储
       setToken({
         accessToken: token,
         refreshToken: refreshTokenValue,
@@ -142,79 +178,53 @@ export const useUserStore = defineStore("pure-user", {
       this.updateLastActivity();
     },
 
-    // 清除认证信息
+    /**
+     * 清除认证信息
+     */
     clearAuth() {
-      this.token = null;
-      this.refreshTokenValue = null;
-      this.tokenExpiry = null;
-      this.user = null;
-
-      // 清除本地存储
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("refresh_token");
-      // localStorage.removeItem("token_expiry");
-
-      // 清除PureAdmin token
+      // 清除本地存储的token信息
       removeToken();
     },
 
-    // 设置用户信息
-    setUser(user: User | null) {
-      this.user = user;
-      if (user) {
-        // 设置用户基本信息
-        this.userId = user.id;
-        this.username = user.username;
-        this.nickname = user.nickname || user.username;
-        this.avatar = user.avatar || "";
+    /** 
+     * 设置用户信息并保存到本地存储
+     * @param data - 用户信息对象
+     */
+    setUserInfo(data: {
+      avatar?: string;
+      userId?: string;
+      username?: string;
+      nickname?: string;
+      roles?: Array<string>;
+      permissions?: Array<string>;
+      refreshToken?: string;
+      expires?: number;
+    }) {
+      // 更新store中的状态
+      if (data.avatar !== undefined) this.SET_AVATAR(data.avatar);
+      if (data.userId !== undefined) this.SET_USERID(data.userId);
+      if (data.username !== undefined) this.SET_USERNAME(data.username);
+      if (data.nickname !== undefined) this.SET_NICKNAME(data.nickname);
+      if (data.roles !== undefined) this.SET_ROLES(data.roles);
+      if (data.permissions !== undefined) this.SET_PERMS(data.permissions);
 
-        // 设置角色和权限信息
-        const roleArray = [user.role.toLowerCase()];
-        this.SET_ROLES(roleArray);
-
-        // 缓存用户信息
-        sessionStorage.setItem("user_info", JSON.stringify(user));
-      } else {
-        this.userId = null;
-        this.username = "";
-        this.nickname = "";
-        this.avatar = "";
-        this.roles = [];
-        this.permissions = [];
-        sessionStorage.removeItem("user_info");
-      }
+      // 保存到本地存储
+      storageLocal().setItem(userKey, {
+        refreshToken: data.refreshToken || "",
+        expires: data.expires || 0,
+        avatar: data.avatar || "",
+        userId: data.userId || "",
+        username: data.username || "",
+        nickname: data.nickname || "",
+        roles: data.roles || [],
+        permissions: data.permissions || []
+      });
     },
 
-    // 尝试恢复用户会话
-    async restoreSession() {
-      // 从缓存恢复用户信息
-      const cachedUserInfo = sessionStorage.getItem("user_info");
-      if (cachedUserInfo) {
-        try {
-          const user = JSON.parse(cachedUserInfo);
-          this.setUser(user);
-        } catch (e) {
-          console.error("Failed to parse cached user info:", e);
-          sessionStorage.removeItem("user_info");
-        }
-      }
-
-      // 如果有token但已过期，尝试刷新
-      if (
-        this.token &&
-        isTokenExpired(this.tokenExpiry) &&
-        this.refreshTokenValue
-      ) {
-        await this.refreshUserToken();
-      }
-
-      // 如果有token但没有用户信息，获取用户信息
-      if (this.token && !this.user) {
-        await this.fetchUserInfo();
-      }
-    },
-
-    // 刷新用户Token
+    /**
+     * 刷新用户Token
+     * @returns 刷新是否成功
+     */
     async refreshUserToken() {
       if (!this.refreshTokenValue) return false;
 
@@ -237,7 +247,7 @@ export const useUserStore = defineStore("pure-user", {
         }
         return false;
       } catch (error) {
-        console.error("Token refresh error:", error);
+        console.error("Token刷新错误:", error);
         this.clearAuth();
         return false;
       } finally {
@@ -245,7 +255,11 @@ export const useUserStore = defineStore("pure-user", {
       }
     },
 
-    /** 登录 */
+    /** 
+     * 使用用户名密码登录
+     * @param data - 登录信息对象
+     * @returns 登录结果
+     */
     async loginByUsername(data: {
       username: string;
       password: string;
@@ -265,20 +279,17 @@ export const useUserStore = defineStore("pure-user", {
           // 设置认证信息
           this.setAuth(token, refreshToken, expiresIn);
 
-          // 设置用户信息
-          const userInfo: User = {
-            id: user.id,
+          // 保存用户信息到本地存储
+          this.setUserInfo({
+            avatar: user.avatar || "",
+            userId: user.id,
             username: user.username,
-            email: user.email,
-            phone: user.phone,
-            avatar: user.avatar,
-            role: user.role,
-            status: user.status,
-            enabled: user.enabled,
-            createdTime: user.createdTime
-          };
-
-          this.setUser(userInfo);
+            nickname: user.username, // 如果后端没有提供nickname，使用username代替
+            roles: [user.role],      // 将用户角色转为数组格式
+            permissions: [],         // 根据实际情况填充权限列表
+            refreshToken,
+            expires: Date.now() + expiresIn * 1000
+          });
 
           // 记住登录状态
           this.SET_ISREMEMBERED(!!data.remember);
@@ -290,7 +301,7 @@ export const useUserStore = defineStore("pure-user", {
         ElMessage.error(response.message || "登录失败，请检查用户名和密码");
         return { success: false, data: null };
       } catch (error) {
-        console.error("Login error:", error);
+        console.error("登录错误:", error);
         ElMessage.error("登录过程中发生错误，请稍后重试");
         return { success: false, data: null };
       } finally {
@@ -298,31 +309,32 @@ export const useUserStore = defineStore("pure-user", {
       }
     },
 
-    /** 获取用户信息 */
+    /** 
+     * 获取用户信息
+     * @returns 获取结果，成功返回true，失败返回false
+     */
     async fetchUserInfo(): Promise<boolean> {
-      if (!this.token) return false;
+      const token = getToken();
+      if (!token) return false;
 
       this.loading = true;
       try {
         const response = await getUserInfo();
 
         if (response.code === 200 && response.data) {
-          // 将后端返回的用户信息转换为前端User类型
+          // 将后端返回的用户信息转换为前端用户模型
           const userInfo = response.data;
 
-          const userData: User = {
-            id: userInfo.id,
+          // 保存用户信息到本地存储
+          this.setUserInfo({
+            avatar: userInfo.avatar || "",
+            userId: userInfo.id,
             username: userInfo.username,
-            email: userInfo.email,
-            phone: userInfo.phone,
-            avatar: userInfo.avatar,
-            role: userInfo.role,
-            status: userInfo.status,
-            enabled: userInfo.enabled,
-            createdTime: userInfo.createdTime
-          };
-
-          this.setUser(userData);
+            nickname: userInfo.username, // 如果后端没有提供nickname，使用username代替
+            roles: [userInfo.role],      // 将用户角色转为数组格式
+            permissions: []              // 根据实际情况填充权限列表
+          });
+          
           return true;
         } else {
           // 如果获取用户信息失败，尝试刷新Token
@@ -335,19 +347,22 @@ export const useUserStore = defineStore("pure-user", {
           }
 
           // 如果刷新Token失败或没有刷新Token，则登出
-          this.logout();
+          this.logOut();
           return false;
         }
       } catch (error) {
-        console.error("Fetch user info error:", error);
-        this.logout();
+        console.error("获取用户信息错误:", error);
+        this.logOut();
         return false;
       } finally {
         this.loading = false;
       }
     },
 
-    /** 前端登出（不调用接口） */
+    /** 
+     * 用户登出
+     * @param silent - 是否静默登出，默认为false
+     */
     async logOut(silent: boolean = false) {
       try {
         // 如果不是静默登出，则调用登出接口
@@ -355,11 +370,19 @@ export const useUserStore = defineStore("pure-user", {
           await logout();
         }
       } catch (error) {
-        console.error("Logout error:", error);
+        console.error("登出错误:", error);
       } finally {
         // 清除用户信息和认证信息
         this.clearAuth();
-        this.setUser(null);
+        // 清空用户信息
+        this.setUserInfo({
+          avatar: "",
+          userId: "",
+          username: "",
+          nickname: "",
+          roles: [],
+          permissions: []
+        });
 
         // 重置路由和标签
         useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
@@ -370,9 +393,13 @@ export const useUserStore = defineStore("pure-user", {
       }
     },
 
-    /** 刷新token（实现与原PureAdmin兼容） */
+    /** 
+     * 刷新token（兼容PureAdmin的接口实现）
+     * @param data - 传入的参数
+     * @returns 刷新结果
+     */
     async handRefreshToken(data: any) {
-      // 直接调用前面实现的刷新token方法
+      // 调用内部刷新token方法
       const success = await this.refreshUserToken();
       return {
         success,
@@ -386,7 +413,11 @@ export const useUserStore = defineStore("pure-user", {
       };
     },
 
-    /** 检查并自动刷新token */
+    /** 
+     * 检查并自动刷新token
+     * @param silent - 是否静默刷新，默认为false
+     * @returns 检查结果
+     */
     async checkTokenExpiration(silent: boolean = false) {
       // 如果token已过期或即将过期，且有refreshToken，尝试刷新
       if (
@@ -402,7 +433,11 @@ export const useUserStore = defineStore("pure-user", {
       return true;
     },
 
-    // 注册新用户
+    /**
+     * 注册新用户
+     * @param data - 注册信息
+     * @returns 注册结果
+     */
     async register(data: {
       username: string;
       email: string;
@@ -417,7 +452,7 @@ export const useUserStore = defineStore("pure-user", {
           return { success: false, message: res.message || "注册失败" };
         }
       } catch (error) {
-        console.error("Register error:", error);
+        console.error("注册错误:", error);
         return { success: false, message: "注册过程发生错误" };
       } finally {
         this.loading = false;
@@ -426,6 +461,10 @@ export const useUserStore = defineStore("pure-user", {
   }
 });
 
+/**
+ * 用户Store钩子函数，用于在组件外部访问用户Store
+ * @returns 用户Store实例
+ */
 export function useUserStoreHook() {
   return useUserStore(store);
 }
