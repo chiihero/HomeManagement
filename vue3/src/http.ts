@@ -1,3 +1,7 @@
+/**
+ * HTTP请求处理模块
+ * 基于axios封装的HTTP请求客户端，提供请求拦截、响应拦截、错误处理等功能
+ */
 import axios, {
   type InternalAxiosRequestConfig,
   type AxiosResponse,
@@ -8,23 +12,36 @@ import { ElMessage } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
 import { router } from "@/router";
 
-// 定义错误响应类型
+/**
+ * 错误响应接口
+ * 定义服务器返回的错误响应格式
+ */
 interface ErrorResponse {
+  /** 错误信息 */
   msg?: string;
+  /** 错误信息(备用字段) */
   message?: string;
+  /** 其他可能的字段 */
   [key: string]: any;
 }
 
-// 请求去重实现
+/** 请求去重管理Map */
 const pendingRequests = new Map<string, AbortController>();
 
-// 创建请求Key
+/**
+ * 创建请求唯一标识
+ * @param config - 请求配置
+ * @returns 请求的唯一标识字符串
+ */
 const createRequestKey = (config: AxiosRequestConfig): string => {
   const { method, url, params, data } = config;
   return `${method}_${url}_${JSON.stringify(params)}_${JSON.stringify(data)}`;
 };
 
-// 添加到等待队列
+/**
+ * 添加请求到等待队列
+ * @param config - 请求配置
+ */
 const addPendingRequest = (config: AxiosRequestConfig): void => {
   const requestKey = createRequestKey(config);
   if (pendingRequests.has(requestKey)) {
@@ -35,7 +52,10 @@ const addPendingRequest = (config: AxiosRequestConfig): void => {
   pendingRequests.set(requestKey, controller);
 };
 
-// 移除等待队列请求
+/**
+ * 从等待队列中移除请求
+ * @param config - 请求配置
+ */
 const removePendingRequest = (config: AxiosRequestConfig): void => {
   const requestKey = createRequestKey(config);
   if (pendingRequests.has(requestKey)) {
@@ -45,7 +65,10 @@ const removePendingRequest = (config: AxiosRequestConfig): void => {
   }
 };
 
-// 创建axios实例
+/**
+ * 创建axios请求实例
+ * 配置了基础URL, 超时时间, 请求头等
+ */
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
   timeout: 10000,
@@ -58,7 +81,10 @@ const http = axios.create({
   xsrfHeaderName: "X-XSRF-TOKEN"
 });
 
-// 请求拦截器
+/**
+ * 请求拦截器
+ * 处理请求前的配置，如添加token、处理请求体格式等
+ */
 http.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // 添加请求到等待队列（实现请求去重）
@@ -90,7 +116,10 @@ http.interceptors.request.use(
   }
 );
 
-// 响应拦截器
+/**
+ * 响应拦截器
+ * 处理服务器响应，包括统一的成功提示、错误处理等
+ */
 http.interceptors.response.use(
   (response: AxiosResponse) => {
     // 从等待队列中移除请求
