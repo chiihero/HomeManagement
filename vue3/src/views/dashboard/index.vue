@@ -179,16 +179,7 @@
                     </el-tag>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="120" fixed="right">
-                  <template #default="scope">
-                    <el-button
-                      type="primary"
-                      link
-                      @click="viewEntityDetail(scope.row)"
-                      >查看</el-button
-                    >
-                  </template>
-                </el-table-column>
+                
               </el-table>
             </div>
           </div>
@@ -321,12 +312,13 @@ const fetchStatistics = async () => {
     const response = await getDashboardStatistics();
     if (response.code === 200 && response.data) {
       const data = response.data;
-      statistics.totalItems = data.totalItems;
-      statistics.availableItems = data.availableItems;
-      statistics.expiringItems = data.expiringItems;
-      statistics.expiredItems = data.expiredItems;
-      statistics.totalValue = data.totalValue;
-      statistics.categoriesCount = data.categoriesCount;
+      statistics.totalItems = data.statistics.totalItems;
+      statistics.availableItems = data.statistics.availableItems;
+      statistics.expiringItems = data.statistics.expiringItems;
+      statistics.expiredItems = data.statistics.expiredItems;
+      statistics.totalValue = data.statistics.totalValue;
+      statistics.categoriesCount = data.statistics.categoriesCount;
+
 
       // 更新分类图表数据
       if (
@@ -380,9 +372,7 @@ const fetchStatistics = async () => {
 const fetchRecentReminders = async () => {
   try {
     const response = await getRecentReminders(
-      5,
-      userStore.currentUser?.id || 0
-    );
+      5);
     if (response.code === 200 && response.data.length > 0) {
       recentReminders.value = response.data;
     }
@@ -396,7 +386,7 @@ const fetchRecentReminders = async () => {
 // 获取最近物品
 const fetchRecentItems = async () => {
   try {
-    const response = await getRecentEntities(5, userStore.currentUser?.id || 0);
+    const response = await getRecentEntities(5);
     if (response?.code === 200 && response?.data) {
       recentItems.value = response.data;
     }

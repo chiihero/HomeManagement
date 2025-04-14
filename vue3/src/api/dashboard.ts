@@ -3,13 +3,13 @@ import type { ResponseResult } from "@/types/http";
 import type { Entity } from "@/types/entity";
 import type { Reminder } from "@/types/reminder";
 import { useUserStoreHook } from "@/store/modules/user";
+const userId = useUserStoreHook().userId;
 
 /**
  * 获取仪表盘统计数据
  * @returns 统计数据
  */
 export const getDashboardStatistics = (): Promise<ResponseResult<any>> => {
-  const userId = useUserStoreHook().userId;
   return http.get("/dashboard/statistics", { params: { userId } });
 };
 
@@ -34,7 +34,6 @@ export interface DashboardStats {
 export const getDashboardStats = (): Promise<
   ResponseResult<DashboardStats>
 > => {
-  const userId = useUserStoreHook().userId;
   return http.get("/dashboard/stats", { params: { userId } });
 };
 
@@ -71,7 +70,6 @@ export interface DashboardChartData {
 export const getDashboardChartData = (): Promise<
   ResponseResult<DashboardChartData>
 > => {
-  const userId = useUserStoreHook().userId;
   return http.get("/dashboard/chart-data", { params: { userId } });
 };
 
@@ -82,7 +80,6 @@ export const getDashboardChartData = (): Promise<
 export const getRecentEntities = (
   limit: number = 5
 ): Promise<ResponseResult<Entity[]>> => {
-  const userId = useUserStoreHook().userId;
   return http.get(`/dashboard/recent-entities`, { params: { limit, userId } });
 };
 
@@ -93,7 +90,6 @@ export const getRecentEntities = (
 export const getRecentReminders = (
   limit: number = 5
 ): Promise<ResponseResult<Reminder[]>> => {
-  const userId = useUserStoreHook().userId;
   return http.get(`/dashboard/recent-reminders`, { params: { limit, userId } });
 };
 
@@ -104,6 +100,5 @@ export const getRecentReminders = (
 export const getTimeTrendData = (
   period: "week" | "month" | "quarter" | "year"
 ): Promise<ResponseResult<any>> => {
-  const userId = useUserStoreHook().userId;
   return http.get(`/dashboard/trends`, { params: { period, userId } });
 };
