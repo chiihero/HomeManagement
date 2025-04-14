@@ -31,7 +31,10 @@ export function useEntityImageUpload() {
     if (index !== -1) {
       // 如果图片有ID（已保存到后端的图片），将其添加到待删除列表
       const extendedFile = file as ExtendedUploadFile;
-      if (extendedFile.id || (extendedFile.response && extendedFile.response.id)) {
+      if (
+        extendedFile.id ||
+        (extendedFile.response && extendedFile.response.id)
+      ) {
         const imageId = extendedFile.id || extendedFile.response?.id;
         if (imageId) {
           console.log("添加图片ID到待删除列表:", imageId);
@@ -72,7 +75,10 @@ export function useEntityImageUpload() {
    * @param images 图片列表，含有file属性的对象数组
    * @returns 是否全部上传成功
    */
-  const uploadImages = async (entityId: string, images: ExtendedUploadFile[]) => {
+  const uploadImages = async (
+    entityId: string,
+    images: ExtendedUploadFile[]
+  ) => {
     if (!entityId || !images || images.length === 0) {
       console.log("没有图片需要上传");
       return { success: true };
@@ -109,16 +115,20 @@ export function useEntityImageUpload() {
         console.log("没有新图片需要上传");
         return { success: true };
       }
-      
+
       // 创建上传任务
       const uploadTasks = imagesToUpload.map(async (image, index) => {
         try {
-          const imageType = image.imageType || 'normal'; // 默认为普通图片
-          const response = await uploadEntityImage(entityId, image.raw, imageType);
-          
+          const imageType = image.imageType || "normal"; // 默认为普通图片
+          const response = await uploadEntityImage(
+            entityId,
+            image.raw,
+            imageType
+          );
+
           // 使用类型断言处理response.data
           const responseData = response as any;
-          
+
           if (responseData && responseData.data) {
             console.log(`图片 ${index + 1} 上传成功:`, responseData.data);
             return true;
@@ -131,19 +141,21 @@ export function useEntityImageUpload() {
           return false;
         }
       });
-      
+
       // 等待所有上传任务完成
       const results = await Promise.all(uploadTasks);
-      
+
       // 判断是否所有图片都上传成功
       const allSuccess = results.every(result => result === true);
-      
+
       if (allSuccess) {
-        ElMessage.success('所有图片上传成功');
+        ElMessage.success("所有图片上传成功");
         return true;
       } else {
         const successCount = results.filter(r => r === true).length;
-        ElMessage.warning(`部分图片上传失败，成功 ${successCount}/${imagesToUpload.length}`);
+        ElMessage.warning(
+          `部分图片上传失败，成功 ${successCount}/${imagesToUpload.length}`
+        );
         return false;
       }
     } catch (error: any) {
@@ -157,24 +169,24 @@ export function useEntityImageUpload() {
    * 删除实体的图片
    * @returns 是否全部删除成功
    */
-  const deleteImages = async () => {
-    if (deletedImageIds.value.length === 0) {
+  const deleteImages = async (deletedImageId: string[]) => {
+    if (deletedImageId.value.length === 0) {
       console.log("没有图片需要删除");
       return { success: true };
     }
 
     try {
       console.log("开始删除图片，数量:", deletedImageIds.value.length);
-      
+
       // 创建删除任务
       const deleteTasks = deletedImageIds.value.map(async (imageId, index) => {
         try {
           console.log(`删除图片 ${index + 1}, ID:`, imageId);
           const response = await deleteEntityImage(imageId);
-          
+
           // 使用类型断言处理response
           const responseData = response as any;
-          
+
           if (responseData && responseData.status === 200) {
             console.log(`图片 ${index + 1} 删除成功`);
             return true;
@@ -187,23 +199,28 @@ export function useEntityImageUpload() {
           return false;
         }
       });
-      
+
       // 等待所有删除任务完成
       const results = await Promise.all(deleteTasks);
-      
+
       // 判断是否所有图片都删除成功
       const allSuccess = results.every(result => result === true);
-      
+
       // 清空已删除图片ID列表
       deletedImageIds.value = [];
-      
+
       if (allSuccess) {
-        console.log('所有图片删除成功');
+        console.log("所有图片删除成功");
         return { success: true };
       } else {
         const successCount = results.filter(r => r === true).length;
-        console.warn(`部分图片删除失败，成功 ${successCount}/${deleteTasks.length}`);
-        return { success: false, message: `部分图片删除失败，成功 ${successCount}/${deleteTasks.length}` };
+        console.warn(
+          `部分图片删除失败，成功 ${successCount}/${deleteTasks.length}`
+        );
+        return {
+          success: false,
+          message: `部分图片删除失败，成功 ${successCount}/${deleteTasks.length}`
+        };
       }
     } catch (error: any) {
       console.error("删除图片失败:", error);
@@ -223,18 +240,18 @@ export function useEntityImageUpload() {
       imageList.value = [];
       return;
     }
-    
+
     console.log("设置图片列表:", images);
-    
+
     // 处理不同类型的图片数据
     imageList.value = images.map((image: any) => {
       // 如果已经是UploadFile类型，直接返回
       if (image.uid && image.url) {
         return image;
       }
-      
+
       // 如果是字符串URL
-      if (typeof image === 'string') {
+      if (typeof image === "string") {
         return {
           name: image.split("/").pop() || "",
           url: image,
@@ -242,22 +259,22 @@ export function useEntityImageUpload() {
           status: "success"
         };
       }
-      
+
       // 如果是EntityImage对象 - 使用后端直接引用图片
       if (image.id) {
         // 构建API URL
         console.log("添加图片，ID:", image.id, "URL:", image.imageUrl);
-        
+
         return {
           name: image.fileName || `图片${image.id}`,
           url: image.imageUrl,
-          uid: `${image.id}-${Date.now()}`,  // 确保UID唯一
+          uid: `${image.id}-${Date.now()}`, // 确保UID唯一
           status: "success",
           id: image.id,
           response: { id: image.id }
         };
       }
-      
+
       // 默认情况
       return {
         name: "未知图片",
@@ -266,7 +283,7 @@ export function useEntityImageUpload() {
         status: "error"
       };
     });
-    
+
     console.log("处理后的图片列表:", imageList.value);
   };
 

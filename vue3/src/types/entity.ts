@@ -26,6 +26,7 @@ export interface Entity {
   tags?: Tag[];
   tagIds?: string[];
   images?: EntityImage[] | { file: File; url: string }[] | any[];
+  deletedImageIds?: string[];
   children?: Entity[];
   createTime?: string;
   updateTime?: string;

@@ -5,18 +5,24 @@ defineOptions({
 
 const updateNotes = [
   {
-    version: "v0.1.2",
+    version: "v0.1.3",
     date: "2025年4月14日",
     notes: [
-      "优化物品管理的表单选项样式"
+      "优化token管理",
+      "优化用户信息管理",
+      "完善物品编辑删除图片功能",
+      "完善代码注释"
     ]
+  },
+  {
+    version: "v0.1.2",
+    date: "2025年4月14日",
+    notes: ["优化物品管理的表单选项样式"]
   },
   {
     version: "v0.1.1",
     date: "2025年4月14日",
-    notes: [
-      "优化axios请求"
-    ]
+    notes: ["优化axios请求"]
   },
   {
     version: "v0.1.0",
@@ -34,16 +40,22 @@ const updateNotes = [
 <template>
   <div class="welcome-container">
     <h1 style="text-align: center">家庭物品管理系统</h1>
-    
+
     <div class="update-notes">
       <h2>更新说明</h2>
-      <div v-for="(update, index) in updateNotes" :key="index" class="update-item">
+      <div
+        v-for="(update, index) in updateNotes"
+        :key="index"
+        class="update-item"
+      >
         <div class="update-header">
           <span class="version">{{ update.version }}</span>
           <span class="date">{{ update.date }}</span>
         </div>
         <ul class="notes-list">
-          <li v-for="(note, noteIndex) in update.notes" :key="noteIndex">{{ note }}</li>
+          <li v-for="(note, noteIndex) in update.notes" :key="noteIndex">
+            {{ note }}
+          </li>
         </ul>
       </div>
     </div>

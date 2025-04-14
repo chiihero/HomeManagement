@@ -221,7 +221,6 @@ interface Props {
   isEditing: boolean;
   saving: boolean;
 }
-const { getContrastColor } = useEntityForm();
 
 // 获取用户store
 const userStore = useUserStoreHook();
@@ -240,6 +239,7 @@ const form = reactive<Omit<Entity, "tags"> & { tags: any[] }>({
   description: "",
   tags: [], // 这里存储标签ID数组
   images: [],
+  deletedImageIds: [],
   userId: "" // 添加userId字段
 });
 
@@ -256,6 +256,7 @@ const {
   dialogVisible,
   dialogImageUrl,
   imageList,
+  deletedImageIds,
   handlePictureCardPreview,
   handleRemove,
   beforeImageUpload,
@@ -496,6 +497,7 @@ const handleSubmit = async () => {
           description: form.description,
           tags: formatTagsForSubmit(form.tags), // 格式化标签数据
           images: [...imageList.value], // 使用展开运算符创建新数组
+          deletedImageIds: deletedImageIds,
           userId: form.userId
         };
 

@@ -37,12 +37,12 @@ export function useEntityCRUD() {
       // 获取当前展开的节点ID，如果访问树组件ref的话
       // 保存当前选中的物品
       const currentId = currentEntity.value?.id;
-      
+
       const response = await getEntityTree(authStore.userId);
       if (response.data) {
         // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         treeData.value = response.data;
-        
+
         // 如果当前有选中的物品，重新加载详情以保持选中状态
         if (currentId) {
           await loadEntityDetail(currentId);
@@ -62,19 +62,19 @@ export function useEntityCRUD() {
       // 从用户store获取userId
       const userId = authStore.userId;
       console.log("当前用户ID:", userId);
-      
+
       if (!userId) {
         console.error("无法获取用户ID");
         return;
       }
-      
+
       console.log("开始获取标签数据，userId:", userId);
       const response = await getAllTags(userId);
       console.log("标签API返回原始数据:", response);
-      
+
       if (response && response.data && response.data.length > 0) {
         console.log("标签API返回数据:", response.data);
-        entityTags.value = response.data|| []
+        entityTags.value = response.data || [];
         console.log("处理后的标签列表:", entityTags.value);
       }
     } catch (error) {
@@ -82,7 +82,6 @@ export function useEntityCRUD() {
       ElMessage.error("加载标签数据失败");
     }
   };
-
 
   // 处理节点点击
   const handleNodeClick = async (node: Entity) => {
@@ -190,17 +189,17 @@ export function useEntityCRUD() {
     saving.value = true;
     try {
       console.log("保存实体，表单数据:", formData);
-      
+
       // 特殊处理根空间的情况
       if (formData.parentId === "0") {
         // @ts-ignore - 忽略类型检查，因为服务端需要接收null值
         formData.parentId = null; // 发送null表示没有父节点
       }
-      
+
       // 临时保存图片数据，因为提交给后端时不需要这些数据
       const images = formData.images ? [...formData.images] : [];
       console.log("准备上传的图片:", images);
-      
+
       // 从提交数据中移除images字段，避免发送大量无用数据到后端
       const entityData = { ...formData };
       delete entityData.images;
@@ -223,17 +222,19 @@ export function useEntityCRUD() {
 
         // 首先处理删除的图片
         let deleteSuccess = true;
-        try {
-          console.log("开始处理已删除的图片");
-          const deleteResult = await deleteImages();
-          deleteSuccess = deleteResult.success;
-          if (!deleteSuccess) {
-            console.warn("部分图片删除失败:", deleteResult.message);
-            ElMessage.warning(deleteResult.message || "部分图片删除失败");
+        if (formData.deletedImageIds.length > 0) {
+          try {
+            console.log("开始处理已删除的图片");
+            const deleteResult = await deleteImages(formData.deletedImageIds);
+            deleteSuccess = deleteResult.success;
+            if (!deleteSuccess) {
+              console.warn("部分图片删除失败:", deleteResult.message);
+              ElMessage.warning(deleteResult.message || "部分图片删除失败");
+            }
+          } catch (deleteError) {
+            console.error("删除图片出错:", deleteError);
+            deleteSuccess = false;
           }
-        } catch (deleteError) {
-          console.error("删除图片出错:", deleteError);
-          deleteSuccess = false;
         }
 
         // 然后上传新图片（如果有）
@@ -241,8 +242,8 @@ export function useEntityCRUD() {
         if (entityId && images && images.length > 0) {
           try {
             console.log("开始上传图片，数量:", images.length);
-            uploadSuccess = await uploadImages(entityId, images) as boolean;
-            
+            uploadSuccess = (await uploadImages(entityId, images)) as boolean;
+
             if (!uploadSuccess) {
               ElMessage.warning(
                 isAdding.value
@@ -260,7 +261,7 @@ export function useEntityCRUD() {
             );
           }
         }
-        
+
         // 根据图片处理结果显示相应消息
         if (deleteSuccess && uploadSuccess) {
           ElMessage.success(isAdding.value ? "添加成功" : "更新成功");
@@ -268,7 +269,7 @@ export function useEntityCRUD() {
 
         // 保存操作类型
         const wasAdding = isAdding.value;
-        
+
         // 操作完成后重置状态
         isEditing.value = false;
         isAdding.value = false;
@@ -336,6 +337,6 @@ export function useEntityCRUD() {
     cancelEditOrAdd,
     saveEntity,
     loadEntityDetail,
-    loadAllTags,
+    loadAllTags
   };
 }
