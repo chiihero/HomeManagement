@@ -154,7 +154,7 @@ export function useEntityCRUD() {
           currentEntity.value.images.length === 0
         ) {
           // 直接调用loadEntityImages而不设置全局loading状态
-          await loadEntityImagesQuiet(id);
+          // await loadEntityImagesQuiet(id);
         }
       }
     } catch (error) {
@@ -169,20 +169,20 @@ export function useEntityCRUD() {
    * 安静地加载实体的图片列表，不设置全局loading状态
    * @param entityId 实体ID
    */
-  const loadEntityImagesQuiet = async (entityId: string) => {
-    if (!entityId) return;
+  // const loadEntityImagesQuiet = async (entityId: string) => {
+  //   if (!entityId) return;
 
-    try {
-      const response = await getEntityImages(entityId);
+  //   try {
+  //     const response = await getEntityImages(entityId);
 
-      if (response.data && currentEntity.value) {
-        // 更新实体的图片列表
-        currentEntity.value.images = response.data;
-      }
-    } catch (error) {
-      console.error("加载实体图片错误:", error);
-    }
-  };
+  //     if (response.data && currentEntity.value) {
+  //       // 更新实体的图片列表
+  //       currentEntity.value.images = response.data;
+  //     }
+  //   } catch (error) {
+  //     console.error("加载实体图片错误:", error);
+  //   }
+  // };
 
   // 保存实体
   const saveEntity = async (formData: Entity) => {
@@ -201,28 +201,25 @@ export function useEntityCRUD() {
       console.log("准备上传的图片:", images);
 
       // 从提交数据中移除images字段，避免发送大量无用数据到后端
-      const entityData = { ...formData };
+      const entityData = { 
+        id:currentEntity.value?.id,
+        ...formData };
       delete entityData.images;
 
       const response = isAdding.value
         ? await createEntity(entityData)
-        : await updateEntity(currentEntity.value?.id || "", entityData);
+        : await updateEntity(entityData.id || "", entityData);
 
       if (response.data) {
-        // 将返回的数据转换为Entity类型
-        // @ts-ignore - 忽略类型检查，应为响应类型定义问题
-        const savedEntity = response.data as Entity;
-
         // 更新当前实体
-        currentEntity.value = savedEntity;
+        currentEntity.value = entityData;
 
         // 获取实体ID用于图片上传
-        const entityId = savedEntity.id;
-        console.log("实体保存成功，ID:", entityId);
+        console.log("实体保存成功，ID:", entityData.id);
 
         // 首先处理删除的图片
         let deleteSuccess = true;
-        if (formData.deletedImageIds.length > 0) {
+        if (entityData.id && formData.deletedImageIds.length > 0) {
           try {
             console.log("开始处理已删除的图片");
             const deleteResult = await deleteImages(formData.deletedImageIds);
@@ -239,10 +236,10 @@ export function useEntityCRUD() {
 
         // 然后上传新图片（如果有）
         let uploadSuccess = true;
-        if (entityId && images && images.length > 0) {
+        if (entityData.id && images && images.length > 0) {
           try {
             console.log("开始上传图片，数量:", images.length);
-            uploadSuccess = (await uploadImages(entityId, images)) as boolean;
+            uploadSuccess = (await uploadImages(entityData.id, images)) as boolean;
 
             if (!uploadSuccess) {
               ElMessage.warning(
@@ -280,8 +277,8 @@ export function useEntityCRUD() {
         }
 
         // 如果是添加操作，重新加载实体详情
-        if (entityId) {
-          await loadEntityDetail(entityId);
+        if (entityData.id) {
+          await loadEntityDetail(entityData.id);
         }
       }
     } catch (error) {

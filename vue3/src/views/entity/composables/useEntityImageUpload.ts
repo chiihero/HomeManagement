@@ -64,8 +64,6 @@ export function useEntityImageUpload() {
   // 处理图片上传成功
   const handleImageChange = (response: any, file: any) => {
     console.log("图片变更:", file);
-    // 将文件对象保存到imageList中，等待表单提交时上传
-    imageList.value.push(file);
     return file;
   };
 
@@ -88,22 +86,8 @@ export function useEntityImageUpload() {
       console.log("开始上传图片，实体ID:", entityId);
       console.log("原始图片数据:", images);
 
-      // 递归处理嵌套的数组
-      const flattenImages = (arr: any[]): any[] => {
-        return arr.reduce((flat: any[], item: any) => {
-          if (Array.isArray(item)) {
-            return flat.concat(flattenImages(item));
-          }
-          return flat.concat(item);
-        }, []);
-      };
-
-      // 展平图片数组
-      const flattenedImages = flattenImages(images);
-      console.log("展平后的图片数组:", flattenedImages);
-
       // 过滤出需要上传的图片（只包含raw属性的图片）
-      const imagesToUpload = flattenedImages.filter((image: any) => {
+      const imagesToUpload = images.filter((image: any) => {
         const hasRaw = image && image.raw instanceof File;
         console.log("检查图片:", image, "是否有raw属性:", hasRaw);
         return hasRaw;
@@ -169,17 +153,17 @@ export function useEntityImageUpload() {
    * 删除实体的图片
    * @returns 是否全部删除成功
    */
-  const deleteImages = async (deletedImageId: string[]) => {
-    if (deletedImageId.value.length === 0) {
+  const deleteImages = async (deletedIds: string[]) => {
+    if (deletedIds.length === 0) {
       console.log("没有图片需要删除");
       return { success: true };
     }
 
     try {
-      console.log("开始删除图片，数量:", deletedImageIds.value.length);
+      console.log("开始删除图片，数量:", deletedIds.length);
 
       // 创建删除任务
-      const deleteTasks = deletedImageIds.value.map(async (imageId, index) => {
+      const deleteTasks = deletedIds.map(async (imageId, index) => {
         try {
           console.log(`删除图片 ${index + 1}, ID:`, imageId);
           const response = await deleteEntityImage(imageId);
@@ -187,7 +171,7 @@ export function useEntityImageUpload() {
           // 使用类型断言处理response
           const responseData = response as any;
 
-          if (responseData && responseData.status === 200) {
+          if (responseData && responseData.code === 200) {
             console.log(`图片 ${index + 1} 删除成功`);
             return true;
           } else {
@@ -208,6 +192,7 @@ export function useEntityImageUpload() {
 
       // 清空已删除图片ID列表
       deletedImageIds.value = [];
+      deletedIds = [];
 
       if (allSuccess) {
         console.log("所有图片删除成功");

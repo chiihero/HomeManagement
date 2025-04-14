@@ -181,7 +181,7 @@
       <el-form-item label="图片" prop="images">
         <el-upload
           ref="uploadRef"
-          :file-list="imageList"
+          v-model:file-list="imageList"
           action="#"
           list-type="picture-card"
           multiple
@@ -497,7 +497,7 @@ const handleSubmit = async () => {
           description: form.description,
           tags: formatTagsForSubmit(form.tags), // 格式化标签数据
           images: [...imageList.value], // 使用展开运算符创建新数组
-          deletedImageIds: deletedImageIds,
+          deletedImageIds: [...deletedImageIds.value],// 使用展开运算符创建新数组
           userId: form.userId
         };
 

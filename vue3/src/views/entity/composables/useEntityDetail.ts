@@ -6,24 +6,6 @@ import { getImageData } from "@/api/image";
 export function useEntityDetail() {
   // 图片URL缓存
   const imageUrlCache = ref<Record<string, string>>({});
-  const currentEntity = ref<Entity>(null);
-
-  // 获取图片URL
-  // const getImageUrl = async (imageId: string) => {
-  //   if (imageUrlCache.value[imageId]) {
-  //     return imageUrlCache.value[imageId];
-  //   }
-
-  //   try {
-  //     const blob = await getImageData(imageId);
-  //     const url = URL.createObjectURL(blob);
-  //     imageUrlCache.value[imageId] = url;
-  //     return url;
-  //   } catch (error) {
-  //     console.error("获取图片数据失败:", error);
-  //     return "";
-  //   }
-  // };
 
   // 加载所有图片
   const loadAllImages = async (entity: Entity | null) => {
@@ -36,7 +18,6 @@ export function useEntityDetail() {
           const url = URL.createObjectURL(blob);
           imageUrlCache.value[image.id] = url;
           image.imageUrl = url;
-          return url;
         } catch (error) {
           console.error("获取图片数据失败:", error);
           return "";
