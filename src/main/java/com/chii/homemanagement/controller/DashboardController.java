@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,8 +63,25 @@ public class DashboardController {
             statistics.put("availableItems", allItems.stream()
                     .filter(e -> "normal".equals(e.getStatus()))
                     .count());
-            statistics.put("expiringItems", 0); // 需要实现即将过期的逻辑
-            statistics.put("expiredItems", 0); // 需要实现已过期的逻辑
+            OffsetDateTime now = OffsetDateTime.now();
+            long expiring = 0;
+            long expired = 0;
+
+            for (Entity item : allItems) {
+                LocalDate warrantyEnd = item.getWarrantyEndDate(); // 使用 warrantyEndDate
+                if (warrantyEnd != null) {
+                    // 将 LocalDate 转换为 OffsetDateTime (假设在当天开始时过期，使用当前偏移量)
+                    OffsetDateTime expirationDateTime = warrantyEnd.atStartOfDay(now.getOffset()).toOffsetDateTime();
+                    if (expirationDateTime.isAfter(now) && expirationDateTime.isBefore(now.plusDays(30))) {
+                        expiring++; // 30天内到期
+                    } else if (expirationDateTime.isBefore(now)) {
+                        expired++; // 已过期
+                    }
+                }
+            }
+
+            statistics.put("expiringItems", expiring);
+            statistics.put("expiredItems", expired);
             
             // 计算总价值
             BigDecimal totalValue = allItems.stream()
@@ -76,39 +96,53 @@ public class DashboardController {
                     .distinct()
                     .count());
             
-            // 分类数据
-            List<Map<String, Object>> categoryData = new ArrayList<>();
+            // 分类数据 (重命名为 categoryDistribution 并添加颜色)
+            List<Map<String, Object>> categoryDistribution = new ArrayList<>();
             Map<String, Long> typeCount = allItems.stream()
                     .collect(Collectors.groupingBy(
-                            e -> e.getType() != null ? e.getType() : "其他",
+                            e -> e.getType() != null ? e.getType() : "其他", // 假设 Type 是分类
                             Collectors.counting()
                     ));
-            
+
+            // 预定义一些颜色或使用颜色生成逻辑
+            String[] categoryColors = {"#409EFF", "#67C23A", "#E6A23C", "#F56C6C", "#909399", "#FFD700", "#8A2BE2"};
+            int categoryColorIndex = 0;
             for (Map.Entry<String, Long> entry : typeCount.entrySet()) {
                 Map<String, Object> category = new HashMap<>();
                 category.put("name", entry.getKey());
                 category.put("count", entry.getValue());
-                categoryData.add(category);
+                category.put("color", categoryColors[categoryColorIndex % categoryColors.length]);
+                categoryDistribution.add(category);
+                categoryColorIndex++;
             }
-            
-            // 状态数据
-            List<Map<String, Object>> statusData = new ArrayList<>();
+            // 状态数据 (重命名为 statusDistribution 并添加颜色)
+            List<Map<String, Object>> statusDistribution = new ArrayList<>();
             Map<String, Long> statusCount = allItems.stream()
                     .collect(Collectors.groupingBy(
                             e -> e.getStatus() != null ? e.getStatus() : "未知",
                             Collectors.counting()
                     ));
-            
+
+            // 预定义状态颜色
+            Map<String, String> statusColors = new HashMap<>();
+            statusColors.put("normal", "#67C23A"); // 正常 - 绿色
+            statusColors.put("damaged", "#E6A23C"); // 损坏 - 橙色
+            statusColors.put("discarded", "#909399"); // 丢弃 - 灰色
+            statusColors.put("expired", "#F56C6C"); // 过期 - 红色
+            statusColors.put("lent", "#409EFF"); // 借出 - 蓝色
+            statusColors.put("未知", "#C0C4CC"); // 未知 - 浅灰色
+
             for (Map.Entry<String, Long> entry : statusCount.entrySet()) {
                 Map<String, Object> status = new HashMap<>();
-                status.put("status", entry.getKey());
+                status.put("name", entry.getKey()); // 前端期望的是 name
                 status.put("count", entry.getValue());
-                statusData.add(status);
+                status.put("color", statusColors.getOrDefault(entry.getKey(), "#C0C4CC")); // 获取颜色，默认为浅灰色
+                statusDistribution.add(status);
             }
-            
             result.put("statistics", statistics);
-            result.put("categoryData", categoryData);
-            result.put("statusData", statusData);
+            // 使用新的键名
+            result.put("categoryDistribution", categoryDistribution);
+            result.put("statusDistribution", statusDistribution);
             
             return ApiResponse.success(result);
         } catch (Exception e) {

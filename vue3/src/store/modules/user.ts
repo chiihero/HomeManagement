@@ -399,6 +399,7 @@ export const useUserStore = defineStore("pure-user", {
      * @returns 刷新结果
      */
     async handRefreshToken(data: any) {
+      this.refreshTokenValue = data.refreshToken
       // 调用内部刷新token方法
       const success = await this.refreshUserToken();
       return {
