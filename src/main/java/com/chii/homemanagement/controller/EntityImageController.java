@@ -50,17 +50,17 @@ public class EntityImageController {
 
     
     @PostMapping("/entity/{entityId}")
-    @Operation(summary = "上传图片", description = "上传图片到数据库")
+    @Operation(summary = "上传图片", description = "上传图片到数据库或文件系统")
     public ApiResponse<EntityImage> uploadEntityImage(
             @Parameter(description = "实体ID") @PathVariable(value = "entityId") Long entityId,
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
             @Parameter(description = "图片") @RequestParam(value = "image") MultipartFile image,
             @Parameter(description = "图片类型") @RequestParam(value = "imageType", required = false, defaultValue = "normal") String imageType) {
         
         try {
             log.info("上传实体图片: entityId={}, imageType={}", entityId, imageType);
-            
-            EntityImage entityImage = entityImageService.saveEntityImageWithData(entityId, image, imageType);
-            
+            EntityImage entityImage = entityImageService.saveEntityImage(userId ,entityId, image, imageType);
+
             return ApiResponse.success(entityImage);
         } catch (Exception e) {
             log.error("上传实体图片异常: entityId={}", entityId, e);
@@ -70,7 +70,7 @@ public class EntityImageController {
 
     @GetMapping("/{imageId}")
     @Operation(summary = "获取图片", description = "根据图片ID获取图片数据")
-    public ResponseEntity<?> getImage(
+    public ResponseEntity<?> getImageByData(
             @Parameter(description = "图片ID") @PathVariable(value = "imageId") Long imageId) {
         
         try {
@@ -138,7 +138,7 @@ public class EntityImageController {
             log.info("删除图片: imageId={}", imageId);
             
             // 删除数据库记录
-            boolean result = entityImageService.removeById(imageId);
+            boolean result = entityImageService.deleteById(imageId);
             
             if (result) {
                 return ApiResponse.success(true);

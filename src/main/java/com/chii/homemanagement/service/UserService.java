@@ -2,6 +2,7 @@ package com.chii.homemanagement.service;
 
 import com.chii.homemanagement.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -103,4 +104,21 @@ public interface UserService extends UserDetailsService {
      * @param newPassword 新密码
      */
     void resetPassword(User user, String newPassword);
+
+    /**
+     * 上传当前登录用户的头像
+     *
+     * @param id 用户id
+     * @param file 头像
+     * @return 用户头像url
+     */
+    User uploadAvatar(Long id, MultipartFile file);
+
+    /**
+     * 删除当前登录用户的头像
+     *
+     * @param id 用户id
+     */
+    User deeleteAvatar(Long id);
+
 } 

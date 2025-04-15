@@ -6,6 +6,7 @@ import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.User;
 import com.chii.homemanagement.exception.BusinessException;
 import com.chii.homemanagement.mapper.UserMapper;
+import com.chii.homemanagement.service.FileStorageService;
 import com.chii.homemanagement.service.UserService;
 import com.chii.homemanagement.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +38,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
-    
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
     @Autowired
     private JwtUtil jwtUtil;
     
@@ -172,5 +178,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(passwordEncoder.encode(newPassword));
         // 更新用户信息
         updateById(user);
+    }
+
+    @Override
+    public User uploadAvatar(Long id, MultipartFile file) {
+        try {
+            // 更新用户头像URL
+            User user = new User();
+            user.setId(id);
+            String avatarUrl = fileStorageService.storeFile(file, id.toString(),"avatar.jpg");;
+            user.setAvatar(avatarUrl);
+            user.setUpdateTime(LocalDateTime.now());
+            updateUser(user);
+            return user;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public User deeleteAvatar(Long id) {
+        // 更新用户信息，清空头像URL
+        User user = new User();
+        user.setId(id);
+        user.setAvatar(null);
+        user.setUpdateTime(LocalDateTime.now());
+        updateUser(user);
+        return user;
     }
 } 

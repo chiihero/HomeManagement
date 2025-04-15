@@ -281,7 +281,7 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
 
       if (response.data) {
         // 更新当前实体
-        currentEntity.value = entityData;
+        currentEntity.value = response.data;
 
         // 获取实体ID用于图片上传
         console.log("实体保存成功，ID:", entityData.id);

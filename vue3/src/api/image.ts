@@ -1,4 +1,6 @@
 import { http } from "@/utils/http";
+import { useUserStoreHook } from "@/store/modules/user";
+const userId = useUserStoreHook().userId;
 
 /**
  * 获取实体的图片列表
@@ -34,6 +36,7 @@ export function uploadEntityImage(
   imageType: string = "normal"
 ) {
   const formData = new FormData();
+  formData.append("userId", userId);
   formData.append("image", file);
   formData.append("imageType", imageType);
 

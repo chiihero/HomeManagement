@@ -8,6 +8,7 @@ import com.chii.homemanagement.entity.User;
 import com.chii.homemanagement.service.SystemSettingService;
 import com.chii.homemanagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,9 +162,9 @@ public class UserController {
      */
     @PostMapping("/avatar")
     @Operation(summary = "上传头像", description = "上传当前登录用户的头像")
-    public ApiResponse<Map<String, String>> uploadAvatar(@RequestParam("file") MultipartFile file, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
+    public ApiResponse<User> uploadAvatar(@Parameter(description = "实体ID") @PathVariable(value = "id") Long id,
+                                          @RequestParam("file") MultipartFile file) {
+        if (id == null) {
             return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
 
@@ -171,44 +172,10 @@ public class UserController {
         if (file.isEmpty()) {
             return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "请选择要上传的文件");
         }
+        User user = userService.uploadAvatar(id, file);
 
-        try {
-            // 确保上传目录存在
-            File uploadDirFile = new File(uploadDir + "/avatars");
-            if (!uploadDirFile.exists()) {
-                uploadDirFile.mkdirs();
-            }
-
-            // 生成唯一文件名
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String filename = UUID.randomUUID().toString() + extension;
             
-            // 保存文件
-            Path filePath = Paths.get(uploadDir + "/avatars/" + filename);
-            Files.write(filePath, file.getBytes());
-            
-            // 更新用户头像URL
-            User user = new User();
-            user.setId(currentUser.getId());
-            String avatarUrl = "/uploads/avatars/" + filename;
-            user.setAvatar(avatarUrl);
-            user.setUpdateTime(LocalDateTime.now());
-            
-            userService.updateUser(user);
-            
-            // 更新session中的用户信息
-            User updatedUser = userService.getUserById(currentUser.getId());
-            session.setAttribute("user", updatedUser);
-            
-            // 返回头像URL
-            Map<String, String> result = new HashMap<>();
-            result.put("url", avatarUrl);
-            
-            return ApiResponse.success(result);
-        } catch (IOException e) {
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "头像上传失败: " + e.getMessage());
-        }
+        return ApiResponse.success(user);
     }
 
     /**
@@ -216,27 +183,12 @@ public class UserController {
      */
     @DeleteMapping("/avatar")
     @Operation(summary = "删除头像", description = "删除当前登录用户的头像")
-    public ApiResponse<Boolean> deleteAvatar(HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
+    public ApiResponse<User> deleteAvatar(@Parameter(description = "实体ID") @PathVariable(value = "id") Long id) {
+        if (id == null) {
             return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
         }
-
-        // 更新用户信息，清空头像URL
-        User user = new User();
-        user.setId(currentUser.getId());
-        user.setAvatar(null);
-        user.setUpdateTime(LocalDateTime.now());
-
-        try {
-            userService.updateUser(user);
-            // 更新session中的用户信息
-            User updatedUser = userService.getUserById(currentUser.getId());
-            session.setAttribute("user", updatedUser);
-            return ApiResponse.success(true);
-        } catch (Exception e) {
-            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除头像失败: " + e.getMessage());
-        }
+        User user = userService.deeleteAvatar(id);
+        return ApiResponse.success(user);
     }
 
     /**

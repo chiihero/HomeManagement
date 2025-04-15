@@ -51,30 +51,39 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public String storeFile(MultipartFile file) throws IOException {
-        return storeFile(file, "");
+        return storeFile(file, "","");
+
     }
 
     @Override
     public String storeFile(MultipartFile file, String directory) throws IOException {
+        return storeFile(file, directory,"");
+    }
+
+    @Override
+    public String storeFile(MultipartFile file, String directory, String fileName ) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("文件不能为空");
         }
-        
         // 获取文件名
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
-        
-        // 检查文件名是否包含非法字符
-        if (originalFilename.contains("..")) {
-            throw new IOException("文件名包含非法路径字符: " + originalFilename);
+        String uniqueFilename = fileName;
+        //不存在文件名时候创建文件名
+        if (fileName == null || fileName.isEmpty()){
+            // 检查文件名是否包含非法字符
+            if (originalFilename.contains("..")) {
+                throw new IOException("文件名包含非法路径字符: " + originalFilename);
+            }
+
+            // 生成唯一文件名
+            String fileExtension = getFileExtension(originalFilename);
+            uniqueFilename = generateUniqueFilename(fileExtension);
         }
-        
-        // 生成唯一文件名
-        String fileExtension = getFileExtension(originalFilename);
-        String uniqueFilename = generateUniqueFilename(fileExtension);
-        
+
+
         // 按日期创建子目录
         String dateDir = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        
+
         // 构建存储路径
         Path targetDirectory;
         if (StringUtils.hasText(directory)) {
@@ -82,14 +91,14 @@ public class FileStorageServiceImpl implements FileStorageService {
         } else {
             targetDirectory = this.fileStorageLocation.resolve(dateDir);
         }
-        
+
         // 确保目标目录存在
         Files.createDirectories(targetDirectory);
-        
+
         // 存储文件
         Path targetPath = targetDirectory.resolve(uniqueFilename);
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        
+
         // 构建文件访问URL
         String filePath;
         if (StringUtils.hasText(directory)) {
@@ -97,10 +106,13 @@ public class FileStorageServiceImpl implements FileStorageService {
         } else {
             filePath = baseUrl + "/" + dateDir + "/" + uniqueFilename;
         }
-        
+
         logger.info("文件存储成功: {} -> {}", originalFilename, filePath);
         return filePath;
+
+
     }
+
 
     @Override
     public boolean deleteFile(String fileUrl) {
