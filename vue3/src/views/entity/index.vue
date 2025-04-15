@@ -126,7 +126,7 @@ defineOptions({
   name: "Entity"
 });
 
-// 使用实体CRUD相关逻辑
+// 使用实体CRUD相关逻辑，指定为非搜索模式
 const {
   treeLoading,
   loading,
@@ -136,6 +136,7 @@ const {
   isEditing,
   isAdding,
   entityTags,
+  detailLoading,
   loadTreeData,
   handleNodeClick,
   handleDelete,
@@ -145,13 +146,12 @@ const {
   saveEntity,
   loadEntityDetail,
   loadAllTags
-} = useEntityCRUD();
+} = useEntityCRUD({
+  isSearchMode: false
+});
 
 // 搜索关键词
 const searchKeyword = ref("");
-
-// 单独的详情页加载状态
-const detailLoading = ref(false);
 
 // 过滤后的树形数据
 const filteredTreeData = computed(() => {
@@ -197,7 +197,7 @@ const getDetailTitle = computed(() => {
 // 刷新当前实体
 const refreshCurrentEntity = () => {
   if (currentEntity.value && currentEntity.value.id) {
-    detailLoading.value = true; // 仅设置详情加载状态
+    detailLoading.value = true;
     loadEntityDetail(currentEntity.value.id).finally(() => {
       detailLoading.value = false;
     });
@@ -249,11 +249,6 @@ onMounted(() => {
 
 :deep(.el-card__header) {
   padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.detail-container :deep(.el-card__body) {
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
+  border-bottom: 1px solid #f1f5f9;
 }
 </style>

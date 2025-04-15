@@ -104,7 +104,7 @@
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-gray-700 font-medium">物品列表</span>
-          <div class="text-sm text-gray-500">共 {{ pagination.total }} 项</div>
+          <div class="text-sm text-gray-500">共 {{ paginationConfig.total }} 项</div>
         </div>
       </template>
 
@@ -241,12 +241,12 @@
       <!-- 分页 -->
       <div class="flex justify-end mt-4">
         <el-pagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
+          :current-page="paginationConfig.current"
+          :page-size="paginationConfig.size"
           :page-sizes="[10, 20, 50, 100]"
           background
           layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
+          :total="paginationConfig.total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -277,7 +277,7 @@
     <!-- 编辑弹窗 -->
     <el-dialog
       v-model="formDialogVisible"
-      :title="编辑物品"
+      :title="currentEntity ? '编辑物品' : '添加物品'"
       width="750px"
       :destroy-on-close="true"
       :close-on-click-modal="false"
@@ -285,28 +285,25 @@
     >
       <entity-form
         v-if="formDialogVisible"
-        :entity="currentEntity"
+        :entity="currentEntity || null"
         :tree-data="treeData"
-        :existing-tags="tagList"
-        :is-editing="true"
-        :saving="formSaving"
-        @submit="handleFormSubmit"
-        @cancel="formDialogVisible = false"
+        :existing-tags="entityTags"
+        :is-editing="isEditing"
+        :saving="saving"
+        @submit="saveEntity"
+        @cancel="cancelEditOrAdd"
       />
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, nextTick } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ref, reactive, onMounted, computed } from "vue";
+import { ElMessage } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
-import { pageEntities, getEntitiesByUser, getEntity, deleteEntity, updateEntity, createEntity } from "@/api/entity";
+import { getEntitiesByUser } from "@/api/entity";
 import { getImageData } from "@/api/image";
-import { getAllTags } from "@/api/tag";
-
-import type { Entity, Tag } from "@/types/entity";
+import type { Entity } from "@/types/entity";
 import {
   Search,
   Refresh,
@@ -319,27 +316,17 @@ import {
 } from "@element-plus/icons-vue";
 import moment from "moment";
 
-// 导入组件
+// 导入组件和组合函数
 import EntityDetail from "@/views/entity/components/EntityDetail.vue";
 import EntityForm from "@/views/entity/components/EntityForm.vue";
+import { useEntityCRUD } from "@/views/entity/composables/useEntityCRUD";
 
-const router = useRouter();
 const userStore = useUserStoreHook();
-
-const loading = ref(false);
-const entityList = ref<Entity[]>([]);
-const spaceList = ref<Entity[]>([]);
 const imageUrlCache = ref<Record<number, string>>({});
+const spaceList = ref<Entity[]>([]);
 
-// 分页参数
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0
-});
-
-// 搜索表单
-const searchForm = reactive({
+// 初始化搜索参数
+const initialSearchForm = {
   name: "",
   type: "",
   specification: "",
@@ -347,6 +334,47 @@ const searchForm = reactive({
   usageFrequency: "",
   userId: userStore.currentUser.id || "",
   parentId: "" as string | undefined
+};
+
+// 分页初始配置
+const initialPagination = {
+  current: 1,
+  size: 10,
+  total: 0
+};
+
+// 使用通用的实体CRUD逻辑
+const {
+  loading,
+  treeData,
+  currentEntity,
+  isEditing,
+  saving,
+  detailLoading,
+  entityList,
+  searchForm,
+  paginationConfig,
+  formDialogVisible,
+  detailDialogVisible,
+  entityTags,
+  loadTreeData,
+  loadAllTags,
+  loadEntityList,
+  handleViewDetail,
+  handleEdit,
+  handleDelete,
+  saveEntity,
+  handleSearch,
+  resetSearch,
+  handleSizeChange,
+  handleCurrentChange,
+  handleFormDialogClose,
+  cancelEditOrAdd,
+  openAddEntityForm
+} = useEntityCRUD({
+  isSearchMode: true,
+  pagination: initialPagination,
+  initialSearchForm
 });
 
 // 状态映射
@@ -377,15 +405,6 @@ const usageFrequencyMap = {
   daily: "每天"
 };
 
-// 弹窗相关状态
-const detailDialogVisible = ref(false);
-const formDialogVisible = ref(false);
-const detailLoading = ref(false);
-const formSaving = ref(false);
-const currentEntity = ref<Entity | null>(null);
-const treeData = ref<Entity[]>([]);
-const tagList = ref<Tag[]>([]);
-
 // 获取图片URL
 const getImageUrl = async (imageId: number) => {
   if (imageUrlCache.value[imageId]) {
@@ -411,33 +430,12 @@ const loadEntityImage = async (entity: Entity) => {
   }
 };
 
-// 加载实体列表
-const loadEntityList = async () => {
-  if (!userStore.currentUser?.id) return;
-
-  loading.value = true;
-  try {
-    const response = await pageEntities({
-      current: pagination.current,
-      size: pagination.size,
-      ...searchForm
-    });
-
-    if (response.data) {
-      // 适配不同的API返回结构
-      entityList.value = response.data.records || response.data.list || [];
-      pagination.total = response.data.total || 0;
-
-      // 加载每个实体的第一张图片
-      for (const entity of entityList.value) {
-        await loadEntityImage(entity);
-      }
-    }
-  } catch (error) {
-    console.error("加载实体列表失败:", error);
-    ElMessage.error("加载实体列表失败，请检查网络连接");
-  } finally {
-    loading.value = false;
+// 加载实体列表后处理图片
+const loadEntityListWithImages = async () => {
+  await loadEntityList();
+  // 加载每个实体的第一张图片
+  for (const entity of entityList.value) {
+    await loadEntityImage(entity);
   }
 };
 
@@ -456,170 +454,9 @@ const loadSpaceList = async () => {
   }
 };
 
-// 处理搜索
-const handleSearch = () => {
-  pagination.current = 1;
-  loadEntityList();
-};
-
-// 重置搜索
-const resetSearch = () => {
-  Object.assign(searchForm, {
-    name: "",
-    type: "",
-    specification: "",
-    status: "",
-    usageFrequency: "",
-    parentId: ""
-  });
-  pagination.current = 1;
-  loadEntityList();
-};
-
-// 查看详情
-const handleViewDetail = async (row: Entity) => {
-  detailLoading.value = true;
-  currentEntity.value = null;
-  detailDialogVisible.value = true;
-  
-  try {
-    const response = await getEntity(row.id);
-    if (response.data) {
-      // 确保类型正确
-      currentEntity.value = response.data as unknown as Entity;
-    }
-  } catch (error) {
-    console.error("获取实体详情失败:", error);
-    ElMessage.error("获取实体详情失败");
-  } finally {
-    detailLoading.value = false;
-  }
-};
-
-// 编辑实体
-const handleEdit = async (row: Entity) => {
-  if (detailDialogVisible.value) {
-    detailDialogVisible.value = false;
-    await nextTick();
-  }
-  
-  formSaving.value = false;
-  currentEntity.value = null;
-  
-  try {
-    // 获取最新实体数据
-    const entityResponse = await getEntity(row.id);
-    if (entityResponse.data) {
-      // 确保类型正确
-      currentEntity.value = entityResponse.data as unknown as Entity;
-    }
-    
-    // 获取树形数据和标签列表
-    await Promise.all([loadTreeData(), loadTagList()]);
-    
-    formDialogVisible.value = true;
-  } catch (error) {
-    console.error("获取编辑数据失败:", error);
-    ElMessage.error("获取编辑数据失败");
-  }
-};
-
-// 加载树形数据
-const loadTreeData = async () => {
-  if (!userStore.currentUser?.id) return;
-  
-  try {
-    const response = await getEntitiesByUser(userStore.currentUser.id);
-    if (response.data) {
-      treeData.value = response.data;
-    }
-  } catch (error) {
-    console.error("加载树形数据失败:", error);
-  }
-};
-
-// 加载标签列表
-const loadTagList = async () => {
-  if (!userStore.currentUser?.id) return;
-  
-  try {
-    // 使用getAllTags获取标签列表
-    const response = await getAllTags(userStore.currentUser.id);
-    if (response.data) {
-      tagList.value = response.data;
-    }
-  } catch (error) {
-    console.error("加载标签列表失败:", error);
-  }
-};
-
-// 处理表单提交
-const handleFormSubmit = async (form: Entity) => {
-  formSaving.value = true;
-  
-  try {
-    let response;
-    if (currentEntity.value?.id) {
-      response = await updateEntity(currentEntity.value?.id, form);
-    }
-    
-    if (response && response.data) {
-      ElMessage.success( "更新成功" );
-      formDialogVisible.value = false;
-      loadEntityList(); // 刷新列表
-    }
-  } catch (error) {
-    console.error("更新失败:", error);
-    ElMessage.error("更新失败");
-  } finally {
-    formSaving.value = false;
-  }
-};
-
-// 处理删除
-const handleDelete = async (row: Entity) => {
-  try {
-    await deleteEntity(row.id);
-    ElMessage.success("删除成功");
-    loadEntityList(); // 刷新列表
-  } catch (error) {
-    console.error("删除失败:", error);
-    ElMessage.error("删除失败");
-  }
-};
-
-// 关闭编辑弹窗前确认
-const handleFormDialogClose = (done: () => void) => {
-  if (formSaving.value) {
-    return;
-  }
-  
-  ElMessageBox.confirm("确定要关闭吗？未保存的数据将会丢失", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning"
-  })
-    .then(() => {
-      done();
-    })
-    .catch(() => {});
-};
-
 // 处理表格行点击
 const handleRowClick = (row: Entity) => {
   handleViewDetail(row);
-};
-
-// 处理分页大小改变
-const handleSizeChange = (size: number) => {
-  pagination.size = size;
-  loadEntityList();
-};
-
-// 处理当前页改变
-const handleCurrentChange = (current: number) => {
-  pagination.current = current;
-  loadEntityList();
 };
 
 // 格式化日期
@@ -645,26 +482,14 @@ const getContrastColor = (bgColor: string) => {
   return yiq >= 128 ? "#000000" : "#ffffff";
 };
 
-// 新增物品
-const handleAddEntity = async () => {
-  isEditing.value = false;
-  formSaving.value = false;
-  currentEntity.value = null;
-  
-  try {
-    // 获取树形数据和标签列表
-    await Promise.all([loadTreeData(), loadTagList()]);
-    
-    formDialogVisible.value = true;
-  } catch (error) {
-    console.error("获取新增数据失败:", error);
-    ElMessage.error("获取新增数据失败");
-  }
-};
-
 // 在组件挂载时加载数据
 onMounted(() => {
-  loadEntityList();
+  // 加载实体列表和图片
+  loadEntityListWithImages();
+  // 加载标签数据
+  loadAllTags();
+  // 加载树形结构数据
+  loadTreeData();
   // 加载空间列表用于筛选
   loadSpaceList();
 });

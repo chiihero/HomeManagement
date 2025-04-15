@@ -143,33 +143,8 @@ const {
 
 // 计算对比色，确保文字在背景色上可见
 const getContrastColor = (hexColor: string) => {
-  // 如果没有颜色或颜色格式不正确，默认返回黑色
-  if (!hexColor || !hexColor.startsWith("#")) {
-    return "#000000";
-  }
-
-  // 移除#前缀并处理不同格式的颜色（#RGB和#RRGGBB）
-  let hex = hexColor.slice(1);
-  if (hex.length === 3) {
-    hex = hex
-      .split("")
-      .map(x => x + x)
-      .join("");
-  }
-
-  // 转换为RGB
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  // 计算亮度 (YIQ方程式)
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-
-  // 根据亮度返回黑色或白色
-  return yiq >= 150 ? "#000000" : "#ffffff";
+  return useEntityDetail().getContrastColor(hexColor);
 };
-
-
 
 // 预览图片URL列表
 const previewImageUrls = computed(() => {

@@ -11,6 +11,10 @@ interface ExtendedUploadFile extends UploadFile {
     id?: string;
     [key: string]: any;
   };
+  // 添加自定义图片类型字段
+  imageType?: string;
+  // 添加原始数据属性
+  raw?: File;
 }
 
 export function useEntityImageUpload() {
@@ -87,7 +91,7 @@ export function useEntityImageUpload() {
       console.log("原始图片数据:", images);
 
       // 过滤出需要上传的图片（只包含raw属性的图片）
-      const imagesToUpload = images.filter((image: any) => {
+      const imagesToUpload = images.filter((image: ExtendedUploadFile) => {
         const hasRaw = image && image.raw instanceof File;
         console.log("检查图片:", image, "是否有raw属性:", hasRaw);
         return hasRaw;
@@ -106,7 +110,7 @@ export function useEntityImageUpload() {
           const imageType = image.imageType || "normal"; // 默认为普通图片
           const response = await uploadEntityImage(
             entityId,
-            image.raw,
+            image.raw as File,
             imageType
           );
 

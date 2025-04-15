@@ -181,7 +181,8 @@
       <el-form-item label="图片" prop="images">
         <el-upload
           ref="uploadRef"
-          v-model:file-list="imageList"
+          :file-list="imageList"
+          @update:file-list="imageList = $event"
           action="#"
           list-type="picture-card"
           multiple
@@ -452,22 +453,7 @@ const handleCancel = () => {
 
 // 格式化标签数据为后端需要的格式
 const formatTagsForSubmit = (tagIds: any[]) => {
-  if (!Array.isArray(tagIds) || tagIds.length === 0) return [];
-
-  // 将标签ID数组转换为完整的Tag对象数组
-  return tagIds.map(tagId => {
-    const foundTag = props.existingTags.find(tag => tag.id === tagId);
-    if (foundTag) {
-      return foundTag; // 返回完整的Tag对象
-    }
-    // 如果是新创建的标签，提供一个默认值
-    return {
-      id: tagId,
-      name: String(tagId), // 使用ID作为名称
-      color: "#909399", // 默认颜色
-      userId: Number(userStore.userId) || 1 // 当前用户ID
-    };
-  });
+  return useEntityForm().formatTagsForSubmit(tagIds, props.existingTags);
 };
 
 // 处理提交

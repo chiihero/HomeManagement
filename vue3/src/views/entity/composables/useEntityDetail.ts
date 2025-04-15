@@ -1,6 +1,5 @@
 import { ref } from "vue";
 import type { Entity } from "@/types/entity";
-import { EntityStatus } from "@/types/entity";
 import { getImageData } from "@/api/image";
 
 export function useEntityDetail() {
@@ -43,18 +42,19 @@ export function useEntityDetail() {
 
   // 获取状态类型
   const getStatusType = (status: string) => {
-    const types = {
+    const types: Record<string, string> = {
       normal: "success",
       damaged: "primary",
       discarded: "warning",
-      expired: "info"
+      expired: "info",
+      lent: "info"
     };
     return types[status] || "info";
   };
 
   // 获取状态文本
   const getStatusText = (status: string) => {
-    const texts = {
+    const texts: Record<string, string> = {
       normal: "正常",
       damaged: "损坏",
       discarded: "丢弃",
@@ -66,7 +66,8 @@ export function useEntityDetail() {
 
   // 格式化价格
   const formatPrice = (price: number) => {
-    return `¥${price}`;
+    if (!price && price !== 0) return "¥0.00";
+    return `¥${price.toFixed(2)}`;
   };
 
   // 格式化日期
@@ -90,15 +91,43 @@ export function useEntityDetail() {
       .filter(url => url !== "");
   };
 
+  // 计算对比色，确保文字在背景色上可见
+  const getContrastColor = (hexColor: string) => {
+    // 如果没有颜色或颜色格式不正确，默认返回黑色
+    if (!hexColor || !hexColor.startsWith("#")) {
+      return "#000000";
+    }
+
+    // 移除#前缀并处理不同格式的颜色（#RGB和#RRGGBB）
+    let hex = hexColor.slice(1);
+    if (hex.length === 3) {
+      hex = hex
+        .split("")
+        .map(x => x + x)
+        .join("");
+    }
+
+    // 转换为RGB
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // 计算亮度 (YIQ方程式)
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+    // 根据亮度返回黑色或白色
+    return yiq >= 150 ? "#000000" : "#ffffff";
+  };
+
   return {
     imageUrlCache,
-    // getImageUrl,
     loadAllImages,
     getParentName,
     getStatusType,
     getStatusText,
     formatPrice,
     formatDate,
-    getPreviewImageUrls
+    getPreviewImageUrls,
+    getContrastColor
   };
 }

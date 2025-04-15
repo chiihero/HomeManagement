@@ -10,7 +10,6 @@ export function useEntityForm() {
 
   const authStore = useUserStoreHook();
 
-
   // 表单验证规则
   const rules = reactive<FormRules>({
     name: [
@@ -34,8 +33,10 @@ export function useEntityForm() {
       if (!authStore.userId) return;
       const userId = authStore.userId;
       const response = await getEntitiesByUser(userId);
+      // @ts-ignore - 类型断言，忽略data属性不存在的错误
       if (response.data) {
         // 构建级联选择器需要的树形结构
+        // @ts-ignore - 类型断言，忽略data属性不存在的错误
         locationOptions.value = buildLocationTree(response.data || []);
       }
     } catch (error) {
@@ -91,12 +92,12 @@ export function useEntityForm() {
     return result;
   };
 
-  // 获取标签文字颜色
+  // 计算对比色，确保文字在背景色上可见
   const getContrastColor = (bgColor: string) => {
-    if (!bgColor) return '#ffffff';
+    if (!bgColor) return "#ffffff";
     
     // 将十六进制颜色转换为RGB
-    let color = bgColor.charAt(0) === '#' ? bgColor.substring(1) : bgColor;
+    let color = bgColor.charAt(0) === "#" ? bgColor.substring(1) : bgColor;
     let r = parseInt(color.substr(0, 2), 16);
     let g = parseInt(color.substr(2, 2), 16);
     let b = parseInt(color.substr(4, 2), 16);
@@ -105,13 +106,35 @@ export function useEntityForm() {
     let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
     
     // 如果亮度高于128，返回黑色，否则返回白色
-    return (yiq >= 128) ? '#000000' : '#ffffff';
+    return (yiq >= 128) ? "#000000" : "#ffffff";
   };
+
+  // 格式化标签数据为后端需要的格式
+  const formatTagsForSubmit = (tagIds: any[], existingTags: any[] = []) => {
+    if (!Array.isArray(tagIds) || tagIds.length === 0) return [];
+
+    // 将标签ID数组转换为完整的Tag对象数组
+    return tagIds.map(tagId => {
+      const foundTag = existingTags.find(tag => tag.id === tagId);
+      if (foundTag) {
+        return foundTag; // 返回完整的Tag对象
+      }
+      // 如果是新创建的标签，提供一个默认值
+      return {
+        id: tagId,
+        name: String(tagId), // 使用ID作为名称
+        color: "#909399", // 默认颜色
+        userId: authStore.userId?.toString() || "" // 当前用户ID，确保是字符串类型
+      };
+    });
+  };
+
   return {
     rules,
     locationOptions,
     loadLocationOptions,
     getContrastColor,
-    buildLocationTree
+    buildLocationTree,
+    formatTagsForSubmit
   };
 }
