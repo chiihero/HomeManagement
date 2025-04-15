@@ -4,7 +4,6 @@ import com.chii.homemanagement.common.ApiResponse;
 import com.chii.homemanagement.common.ErrorCode;
 import com.chii.homemanagement.entity.Entity;
 import com.chii.homemanagement.entity.Reminder;
-import com.chii.homemanagement.entity.Tag;
 import com.chii.homemanagement.service.EntityService;
 import com.chii.homemanagement.service.ReminderService;
 import com.chii.homemanagement.service.TagService;
@@ -19,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.time.OffsetDateTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * 仪表盘API控制器
@@ -55,27 +54,37 @@ public class DashboardController {
             Map<String, Object> result = new HashMap<>();
             Map<String, Object> statistics = new HashMap<>();
             
-            // 获取所有类型为item的实体
-            List<Entity> allItems = entityService.getEntitiesByType(userId, "item");
+            // 获取所有物品实体
+            List<Entity> allEntities = entityService.getEntitiesByUserId(userId);
+            // 过滤出物品类型的实体，考虑到默认值可能是"物品"
+            List<Entity> allItems = allEntities.stream()
+                    .filter(e -> !"空间".equals(e.getType()))
+                    .collect(Collectors.toList());
+            
+            if (allItems.isEmpty()) {
+                log.warn("用户 {} 没有物品实体数据", userId);
+            }
             
             // 计算基本统计数据
             statistics.put("totalItems", allItems.size());
             statistics.put("availableItems", allItems.stream()
                     .filter(e -> "normal".equals(e.getStatus()))
                     .count());
+            
+            // 日期计算逻辑优化
             OffsetDateTime now = OffsetDateTime.now();
             long expiring = 0;
             long expired = 0;
 
             for (Entity item : allItems) {
-                LocalDate warrantyEnd = item.getWarrantyEndDate(); // 使用 warrantyEndDate
+                LocalDate warrantyEnd = item.getWarrantyEndDate();
                 if (warrantyEnd != null) {
-                    // 将 LocalDate 转换为 OffsetDateTime (假设在当天开始时过期，使用当前偏移量)
+                    // 将 LocalDate 转换为 OffsetDateTime 进行比较
                     OffsetDateTime expirationDateTime = warrantyEnd.atStartOfDay(now.getOffset()).toOffsetDateTime();
                     if (expirationDateTime.isAfter(now) && expirationDateTime.isBefore(now.plusDays(30))) {
                         expiring++; // 30天内到期
-                    } else if (expirationDateTime.isBefore(now)) {
-                        expired++; // 已过期
+                    } else if (expirationDateTime.isBefore(now) || expirationDateTime.isEqual(now)) {
+                        expired++; // 已过期或今天过期
                     }
                 }
             }
@@ -83,30 +92,41 @@ public class DashboardController {
             statistics.put("expiringItems", expiring);
             statistics.put("expiredItems", expired);
             
-            // 计算总价值
-            BigDecimal totalValue = allItems.stream()
-                    .filter(e -> e.getPrice() != null && e.getQuantity() != null)
-                    .map(e -> e.getPrice().multiply(new BigDecimal(e.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            // 计算总价值，确保数据完整性
+            BigDecimal totalValue = BigDecimal.ZERO;
+            for (Entity item : allItems) {
+                if (item.getPrice() != null && item.getQuantity() != null) {
+                    BigDecimal itemValue = item.getPrice().multiply(new BigDecimal(item.getQuantity()));
+                    totalValue = totalValue.add(itemValue);
+                }
+            }
             statistics.put("totalValue", totalValue);
             
-            // 分类数量
-            statistics.put("categoriesCount", allItems.stream()
+            // 计算分类数量
+            long categoriesCount = allItems.stream()
                     .map(Entity::getType)
+                    .filter(Objects::nonNull)
                     .distinct()
-                    .count());
+                    .count();
+            statistics.put("categoriesCount", categoriesCount > 0 ? categoriesCount : 1); // 至少有一个分类
             
             // 分类数据 (重命名为 categoryDistribution 并添加颜色)
             List<Map<String, Object>> categoryDistribution = new ArrayList<>();
             Map<String, Long> typeCount = allItems.stream()
                     .collect(Collectors.groupingBy(
-                            e -> e.getType() != null ? e.getType() : "其他", // 假设 Type 是分类
+                            e -> e.getType() != null ? e.getType() : "其他",
                             Collectors.counting()
                     ));
 
-            // 预定义一些颜色或使用颜色生成逻辑
+            // 预定义一些颜色
             String[] categoryColors = {"#409EFF", "#67C23A", "#E6A23C", "#F56C6C", "#909399", "#FFD700", "#8A2BE2"};
             int categoryColorIndex = 0;
+            
+            // 如果没有分类数据，添加一个默认分类
+            if (typeCount.isEmpty() && !allItems.isEmpty()) {
+                typeCount.put("物品", (long) allItems.size());
+            }
+            
             for (Map.Entry<String, Long> entry : typeCount.entrySet()) {
                 Map<String, Object> category = new HashMap<>();
                 category.put("name", entry.getKey());
@@ -115,6 +135,7 @@ public class DashboardController {
                 categoryDistribution.add(category);
                 categoryColorIndex++;
             }
+            
             // 状态数据 (重命名为 statusDistribution 并添加颜色)
             List<Map<String, Object>> statusDistribution = new ArrayList<>();
             Map<String, Long> statusCount = allItems.stream()
@@ -132,15 +153,20 @@ public class DashboardController {
             statusColors.put("lent", "#409EFF"); // 借出 - 蓝色
             statusColors.put("未知", "#C0C4CC"); // 未知 - 浅灰色
 
+            // 如果没有状态数据，添加一个默认状态
+            if (statusCount.isEmpty() && !allItems.isEmpty()) {
+                statusCount.put("normal", (long) allItems.size());
+            }
+            
             for (Map.Entry<String, Long> entry : statusCount.entrySet()) {
                 Map<String, Object> status = new HashMap<>();
-                status.put("name", entry.getKey()); // 前端期望的是 name
+                status.put("name", entry.getKey());
                 status.put("count", entry.getValue());
-                status.put("color", statusColors.getOrDefault(entry.getKey(), "#C0C4CC")); // 获取颜色，默认为浅灰色
+                status.put("color", statusColors.getOrDefault(entry.getKey(), "#C0C4CC"));
                 statusDistribution.add(status);
             }
+            
             result.put("statistics", statistics);
-            // 使用新的键名
             result.put("categoryDistribution", categoryDistribution);
             result.put("statusDistribution", statusDistribution);
             

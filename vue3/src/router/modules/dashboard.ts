@@ -5,7 +5,6 @@ export default {
     title: "仪表盘",
     // showLink: false,
     icon: "ep:odometer"
-
   },
   children: [
     {

@@ -4,6 +4,11 @@ defineOptions({
 });
 
 const updateNotes = [
+{
+    version: "v0.1.4",
+    date: "2025年4月15日",
+    notes: ["完善仪表盘功能和数据显示"]
+  },
   {
     version: "v0.1.3",
     date: "2025年4月14日",

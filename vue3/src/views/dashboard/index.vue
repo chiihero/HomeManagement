@@ -43,7 +43,7 @@
       <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
         <el-card shadow="hover">
           <div class="card-content">
-            <div class="card-icon bg-danger">
+            <div class="card-icon bg-primary">
               <el-icon><CircleClose /></el-icon>
             </div>
             <div class="card-data">
@@ -59,7 +59,7 @@
       <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
         <el-card shadow="hover">
           <div class="card-content">
-            <div class="card-icon bg-success">
+            <div class="card-icon bg-primary">
               <el-icon><Wallet /></el-icon>
             </div>
             <div class="card-data">
