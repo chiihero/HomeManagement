@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox, ElSelect } from "element-plus";
 import {
   getEntityTree,
   getEntity,
@@ -281,14 +281,19 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
 
       if (response.data) {
         // 更新当前实体
-        currentEntity.value = response.data;
+        if(isAdding.value){
+          currentEntity.value =  response.data
+        }else{
+          currentEntity.value =  formData
+          currentEntity.value.id = entityData.id
+        }
 
         // 获取实体ID用于图片上传
-        console.log("实体保存成功，ID:", entityData.id);
+        console.log("实体保存成功，ID:", currentEntity.value.id);
 
         // 首先处理删除的图片
         let deleteSuccess = true;
-        if (entityData.id && formData.deletedImageIds && formData.deletedImageIds.length > 0) {
+        if (currentEntity.value.id && formData.deletedImageIds && formData.deletedImageIds.length > 0) {
           try {
             console.log("开始处理已删除的图片");
             const deleteResult = await deleteImages(formData.deletedImageIds);
@@ -305,11 +310,11 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
 
         // 然后上传新图片（如果有）
         let uploadSuccess = true;
-        if (entityData.id && images && images.length > 0) {
+        if (currentEntity.value.id && images && images.length > 0) {
           try {
             console.log("开始上传图片，数量:", images.length);
             uploadSuccess = (await uploadImages(
-              entityData.id,
+              currentEntity.value.id,
               images
             )) as boolean;
 
