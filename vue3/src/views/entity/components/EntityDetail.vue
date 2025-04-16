@@ -25,6 +25,9 @@
               {{ getStatusText(entity.status) }}
             </el-tag>
           </el-descriptions-item>
+          <el-descriptions-item label="数量">{{
+            entity.quantity
+          }}</el-descriptions-item>
           <el-descriptions-item label="价格">{{
             formatPrice(entity.price)
           }}</el-descriptions-item>

@@ -40,6 +40,12 @@
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
+          <el-form-item label="数量" prop="quantity">
+            <el-input-number v-model="form.quantity" :min="0" placeholder="请输入数量"
+              class="w-full" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="价格" prop="price">
             <el-input-number v-model="form.price" :precision="2" :step="0.1" :min="0" placeholder="请输入价格"
               class="w-full" />
@@ -151,6 +157,7 @@ const form = reactive<Omit<Entity, "tags"> & { tags: any[] }>({
   parentId: "",
   status: "normal" as EntityStatus,
   location: "",
+  quantity: 0,
   price: 0,
   purchaseDate: "",
   productionDate: "",
@@ -394,10 +401,12 @@ const handleSubmit = async () => {
           parentId: form.parentId,
           status: form.status,
           location: form.location,
+          quantity: form.quantity,
           price: form.price,
           purchaseDate: form.purchaseDate,
           productionDate: form.productionDate,
           warrantyPeriod: form.warrantyPeriod,
+          warrantyEndDate: form.warrantyEndDate,
           description: form.description,
           tags: formatTagsForSubmit(form.tags), // 格式化标签数据
           images: [...imageList.value], // 使用展开运算符创建新数组
@@ -430,6 +439,7 @@ watch(
       form.status =
         (newEntity.status as EntityStatus) || ("normal" as EntityStatus);
       form.location = (newEntity as any).location || "";
+      form.quantity = newEntity.quantity || 0;
       form.price = newEntity.price || 0;
       form.purchaseDate = newEntity.purchaseDate || "";
       form.productionDate = newEntity.productionDate || "";
@@ -478,6 +488,7 @@ watch(
       // @ts-ignore
       form.status = "normal" as EntityStatus;
       form.location = "";
+      form.quantity = 0;
       form.price = 0;
       form.purchaseDate = "";
       form.warrantyPeriod = 0;

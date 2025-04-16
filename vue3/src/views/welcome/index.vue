@@ -4,6 +4,12 @@ defineOptions({
 });
 
 const updateNotes = [
+{
+    version: "v0.2.1",
+    date: "2025年4月16日",
+    notes: ["添加物品数量属性",
+    ]
+  },
   {
     version: "v0.2.0",
     date: "2025年4月16日",

@@ -49,8 +49,8 @@
       <!-- 右侧详细信息 -->
       <el-card class="detail-container grow border-0 shadow-sm">
         <template #header>
-          <div class="flex items-center justify-between">
-            <span class="text-gray-700 font-bold">
+          <div class="flex flex-col items-center justify-between">
+            <span class="text-gray-700 font-bold ">
               {{ getDetailTitle }}
             </span>
             <div v-if="!isEditing && currentEntity" class="flex gap-2 mt-1">
