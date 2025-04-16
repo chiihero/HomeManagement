@@ -107,6 +107,12 @@ class PureHttp {
                   resolve(config);
                 }
               } else {
+                // 如果没有token且不在白名单路径，重定向到登录页面
+                if (!whiteList.some(url => config.url.endsWith(url))) {
+                  removeToken();
+                  window.location.href = '/auth/login';
+                  return Promise.reject(new Error('未登录或登录已过期'));
+                }
                 resolve(config);
               }
             });

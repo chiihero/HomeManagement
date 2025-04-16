@@ -9,7 +9,7 @@ alwaysApply: true
 HomeManagement/
 ├── bin/
 ├── log/
-├── vue-new/                  # 前端项目
+├── vue3/                  # 前端项目
 │   ├── src/
 │   │   ├── views/            # 页面组件
 │   │   ├── api/              # API接口

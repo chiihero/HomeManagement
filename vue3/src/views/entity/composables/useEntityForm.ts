@@ -92,22 +92,7 @@ export function useEntityForm() {
     return result;
   };
 
-  // 计算对比色，确保文字在背景色上可见
-  const getContrastColor = (bgColor: string) => {
-    if (!bgColor) return "#ffffff";
-    
-    // 将十六进制颜色转换为RGB
-    let color = bgColor.charAt(0) === "#" ? bgColor.substring(1) : bgColor;
-    let r = parseInt(color.substr(0, 2), 16);
-    let g = parseInt(color.substr(2, 2), 16);
-    let b = parseInt(color.substr(4, 2), 16);
-    
-    // 计算亮度
-    let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    
-    // 如果亮度高于128，返回黑色，否则返回白色
-    return (yiq >= 128) ? "#000000" : "#ffffff";
-  };
+
 
   // 格式化标签数据为后端需要的格式
   const formatTagsForSubmit = (tagIds: any[], existingTags: any[] = []) => {
@@ -133,7 +118,6 @@ export function useEntityForm() {
     rules,
     locationOptions,
     loadLocationOptions,
-    getContrastColor,
     buildLocationTree,
     formatTagsForSubmit
   };

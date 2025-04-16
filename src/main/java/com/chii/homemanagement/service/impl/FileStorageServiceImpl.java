@@ -82,16 +82,13 @@ public class FileStorageServiceImpl implements FileStorageService {
 
 
         // 按日期创建子目录
-        String dateDir = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        //String dateDir = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         // 构建存储路径
-        Path targetDirectory;
+        Path targetDirectory = this.fileStorageLocation;
         if (StringUtils.hasText(directory)) {
-            targetDirectory = this.fileStorageLocation.resolve(directory).resolve(dateDir);
-        } else {
-            targetDirectory = this.fileStorageLocation.resolve(dateDir);
+            targetDirectory = this.fileStorageLocation.resolve(directory);
         }
-
         // 确保目标目录存在
         Files.createDirectories(targetDirectory);
 
@@ -102,9 +99,9 @@ public class FileStorageServiceImpl implements FileStorageService {
         // 构建文件访问URL
         String filePath;
         if (StringUtils.hasText(directory)) {
-            filePath = baseUrl + "/" + directory + "/" + dateDir + "/" + uniqueFilename;
+            filePath = baseUrl + "/" + directory + "/"  + uniqueFilename;
         } else {
-            filePath = baseUrl + "/" + dateDir + "/" + uniqueFilename;
+            filePath = baseUrl + "/"  + uniqueFilename;
         }
 
         logger.info("文件存储成功: {} -> {}", originalFilename, filePath);

@@ -204,6 +204,7 @@ import {
 import { useUserStoreHook } from "@/store/modules/user";
 import type { Entity } from "@/types/entity";
 import type { Reminder } from "@/types/reminder";
+import { formatDate } from "@/utils/date";
 
 const router = useRouter();
 const userStore = useUserStoreHook();
@@ -408,9 +409,6 @@ const formatNumber = (num: number) => {
   });
 };
 
-const formatDate = (date: string) => {
-  return moment(date).format("YYYY-MM-DD");
-};
 
 const getReminderTypeColor = (type: string) => {
   const colors = {

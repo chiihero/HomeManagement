@@ -1,5 +1,6 @@
 package com.chii.homemanagement.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import java.util.Arrays;
  * Web配置类
  */
 @Configuration
+@Slf4j
 public class WebConfig implements WebMvcConfigurer {
     
     @Value("${file.upload-dir:uploads}")
@@ -42,7 +44,9 @@ public class WebConfig implements WebMvcConfigurer {
                 uploadPathString += "/";
             }
         }
-        
+        // 打印调试信息
+        log.info("Upload Path: " + uploadPathString);
+        log.info("Base URL: " + baseUrl);
         // 添加资源处理器，使上传的文件可以被访问
         registry.addResourceHandler(baseUrl + "/**")
                 .addResourceLocations(uploadPathString);

@@ -45,6 +45,7 @@ export interface Tag {
 export interface EntityImage {
   id: number;
   entityId: number;
+  fileUrl: string;
   imageUrl: string;
   imageType: string;
   contentType: string;

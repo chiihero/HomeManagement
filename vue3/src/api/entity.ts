@@ -39,7 +39,7 @@ export const getEntityTree = (userId: string) => {
  * @returns 实体列表
  */
 export const getEntitiesByUser = (userId: string) => {
-  return http.get(`/entities/list/by-user`, { params: { userId } });
+  return http.get<ResponseResult<Entity[]>,string>(`/entities/list/by-user`, { params: { userId } });
 };
 // 获取物品详情
 export const getEntity = (id: string) => {
@@ -72,20 +72,7 @@ export const getAllLocations = () => {
   return http.get<ResponseResult<string[]>,void>("/entities/locations");
 };
 
-// 批量更新物品状态
-export const batchUpdateStatus = (ids: string[], status: string) => {
-  return http.put<ResponseResult<void>,object>("/entities/batch/status", {data: {
-    ids,
-    status
-  }});
-};
 
-// 批量删除物品
-export const batchDeleteEntities = (ids: string[]) => {
-  return http.delete<ResponseResult<void>,string[]>("/entities/batch", {
-    data: { ids }
-  });
-};
 
 // 搜索物品
 export const searchEntities = (userId: string, keyword: string) => {

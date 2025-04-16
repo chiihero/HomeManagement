@@ -116,6 +116,8 @@
 import { computed, watch, onMounted } from "vue";
 import type { Entity } from "@/types/entity";
 import { useEntityDetail } from "../composables/useEntityDetail";
+import { getContrastColor  } from "@/utils/color";
+import { formatDate } from "@/utils/date";
 
 interface Props {
   loading: boolean;
@@ -137,14 +139,9 @@ const {
   getStatusType,
   getStatusText,
   formatPrice,
-  formatDate,
   getPreviewImageUrls
 } = useEntityDetail();
 
-// 计算对比色，确保文字在背景色上可见
-const getContrastColor = (hexColor: string) => {
-  return useEntityDetail().getContrastColor(hexColor);
-};
 
 // 预览图片URL列表
 const previewImageUrls = computed(() => {

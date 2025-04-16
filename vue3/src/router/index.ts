@@ -128,6 +128,15 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       else document.title = item.meta.title as string;
     });
   }
+  
+  const token = getToken();
+  if (to.path !== "/auth/login") {
+    if (!token || !token.accessToken) {
+      removeToken();
+      next({ path: "/auth/login" });
+      return;
+    }
+  }
   /** 如果已经登录并存在登录信息后不能跳转到路由白名单，而是继续保持在当前页面 */
   function toCorrectRoute() {
     whiteList.includes(to.fullPath) ? next(_from.fullPath) : next();

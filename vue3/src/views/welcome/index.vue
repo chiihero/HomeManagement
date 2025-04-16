@@ -4,7 +4,15 @@ defineOptions({
 });
 
 const updateNotes = [
-{
+  {
+    version: "v0.2.0",
+    date: "2025年4月16日",
+    notes: ["重构前端功能",
+      "1.将常用功能函数分离到单独文件夹",
+      "2.将图片改为url显示，后端图片改为保存在文件系统",
+    ]
+  },
+  {
     version: "v0.1.4",
     date: "2025年4月15日",
     notes: ["完善仪表盘功能和数据显示"]
@@ -48,11 +56,7 @@ const updateNotes = [
 
     <div class="update-notes">
       <h2>更新说明</h2>
-      <div
-        v-for="(update, index) in updateNotes"
-        :key="index"
-        class="update-item"
-      >
+      <div v-for="(update, index) in updateNotes" :key="index" class="update-item">
         <div class="update-header">
           <span class="version">{{ update.version }}</span>
           <span class="date">{{ update.date }}</span>

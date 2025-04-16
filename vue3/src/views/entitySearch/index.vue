@@ -123,31 +123,6 @@
           min-width="150"
           show-overflow-tooltip
         >
-          <template #default="{ row }">
-            <div class="flex items-center">
-              <el-image
-                v-if="row.images && row.images[0]"
-                :src="imageUrlCache[row.images[0].id]"
-                fit="cover"
-                class="w-8 h-8 rounded mr-2 object-cover"
-              >
-                <template #error>
-                  <div
-                    class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400"
-                  >
-                    <el-icon><Picture /></el-icon>
-                  </div>
-                </template>
-              </el-image>
-              <div
-                v-else
-                class="w-8 h-8 rounded mr-2 bg-gray-100 flex items-center justify-center text-gray-400"
-              >
-                <el-icon><Document /></el-icon>
-              </div>
-              <span>{{ row.name }}</span>
-            </div>
-          </template>
         </el-table-column>
         <el-table-column prop="type" label="类型" width="100">
           <template #default="{ row }">
@@ -298,11 +273,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from "vue";
-import { ElMessage } from "element-plus";
+import { ref, onMounted } from "vue";
 import { useUserStoreHook } from "@/store/modules/user";
 import { getEntitiesByUser } from "@/api/entity";
-import { getImageData } from "@/api/image";
+import { getContrastColor  } from "@/utils/color";
 import type { Entity } from "@/types/entity";
 import {
   Search,
@@ -314,15 +288,14 @@ import {
   Document,
   Plus
 } from "@element-plus/icons-vue";
-import moment from "moment";
 
 // 导入组件和组合函数
 import EntityDetail from "@/views/entity/components/EntityDetail.vue";
 import EntityForm from "@/views/entity/components/EntityForm.vue";
 import { useEntityCRUD } from "@/views/entity/composables/useEntityCRUD";
+import { formatDate } from "@/utils/date";
 
 const userStore = useUserStoreHook();
-const imageUrlCache = ref<Record<number, string>>({});
 const spaceList = ref<Entity[]>([]);
 
 // 初始化搜索参数
@@ -369,13 +342,13 @@ const {
   handleSizeChange,
   handleCurrentChange,
   handleFormDialogClose,
-  cancelEditOrAdd,
-  openAddEntityForm
+  cancelEditOrAdd
 } = useEntityCRUD({
   isSearchMode: true,
   pagination: initialPagination,
   initialSearchForm
 });
+
 
 // 状态映射
 const statusTypeMap = {
@@ -394,58 +367,20 @@ const statusTextMap = {
 
 // 使用频率映射
 const usageFrequencyMap = {
-  high: "高",
-  medium: "中",
-  low: "低",
-  rare: "很少",
-  never: "从不",
-  rarely: "很少",
-  occasionally: "偶尔",
-  frequently: "经常",
-  daily: "每天"
+  daily: "每天",
+  weekly: "每周",
+  monthly: "每月",
+  rarely: "很少"
 };
 
-// 获取图片URL
-const getImageUrl = async (imageId: number) => {
-  if (imageUrlCache.value[imageId]) {
-    return imageUrlCache.value[imageId];
-  }
 
-  try {
-    // 根据API需要转换为字符串类型
-    const blob = await getImageData(String(imageId));
-    const url = URL.createObjectURL(blob);
-    imageUrlCache.value[imageId] = url;
-    return url;
-  } catch (error) {
-    console.error("获取图片数据失败:", error);
-    return "";
-  }
-};
-
-// 加载实体图片
-const loadEntityImage = async (entity: Entity) => {
-  if (entity.images && entity.images[0] && entity.images[0].id) {
-    await getImageUrl(entity.images[0].id);
-  }
-};
-
-// 加载实体列表后处理图片
-const loadEntityListWithImages = async () => {
-  await loadEntityList();
-  // 加载每个实体的第一张图片
-  for (const entity of entityList.value) {
-    await loadEntityImage(entity);
-  }
-};
 
 // 加载搜索的空间列表
 const loadSpaceList = async () => {
-  if (!userStore.currentUser?.id) return;
+  if (!userStore.userId) return;
 
   try {
-    const response = await getEntitiesByUser(userStore.currentUser.id);
-
+    const response = await getEntitiesByUser(userStore.userId);
     if (response.data) {
       spaceList.value = response.data;
     }
@@ -459,33 +394,12 @@ const handleRowClick = (row: Entity) => {
   handleViewDetail(row);
 };
 
-// 格式化日期
-const formatDate = (date: string) => {
-  if (!date) return "-";
-  return moment(date).format("YYYY-MM-DD");
-};
 
-// 获取标签文字颜色
-const getContrastColor = (bgColor: string) => {
-  if (!bgColor) return "#ffffff";
-
-  // 将十六进制颜色转换为RGB
-  let color = bgColor.charAt(0) === "#" ? bgColor.substring(1) : bgColor;
-  let r = parseInt(color.substr(0, 2), 16);
-  let g = parseInt(color.substr(2, 2), 16);
-  let b = parseInt(color.substr(4, 2), 16);
-
-  // 计算亮度
-  let yiq = (r * 299 + g * 587 + b * 114) / 1000;
-
-  // 如果亮度高于128，返回黑色，否则返回白色
-  return yiq >= 128 ? "#000000" : "#ffffff";
-};
 
 // 在组件挂载时加载数据
 onMounted(() => {
-  // 加载实体列表和图片
-  loadEntityListWithImages();
+  // 加载实体列表
+  loadEntityList();
   // 加载标签数据
   loadAllTags();
   // 加载树形结构数据

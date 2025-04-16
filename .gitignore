@@ -115,3 +115,4 @@ wheels/
 .installed.cfg
 *.egg
 log/~syncthing~info.log.tmp
+/uploads

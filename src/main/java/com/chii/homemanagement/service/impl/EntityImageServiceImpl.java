@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chii.homemanagement.entity.EntityImage;
 import com.chii.homemanagement.mapper.EntityImageMapper;
+import com.chii.homemanagement.mapper.EntityMapper;
 import com.chii.homemanagement.service.EntityImageService;
 import com.chii.homemanagement.service.FileStorageService;
 import com.chii.homemanagement.util.ByteArrayMultipartFile;
@@ -28,6 +29,9 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
     private EntityImageMapper entityImageMapper;
 
     @Autowired
+    private EntityMapper entityMapper;
+
+    @Autowired
     private FileStorageService fileStorageService;
 
 
@@ -44,9 +48,9 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
         if (imageId == null) {
             return false;
         }
-        EntityImage entityImage =  getById(imageId);
-        if (entityImage !=null){
-            if (entityImage.getImageUrl()!=null){
+        EntityImage entityImage = getById(imageId);
+        if (entityImage != null) {
+            if (entityImage.getImageUrl() != null) {
                 fileStorageService.deleteFile(entityImage.getImageUrl());
             }
             return removeById(imageId);
@@ -61,7 +65,7 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
             return false;
         }
         List<EntityImage> existingImages = entityImageMapper.listByEntityId(entityId);
-        for (EntityImage image : existingImages){
+        for (EntityImage image : existingImages) {
             deleteById(image.getId());
         }
         return true;
@@ -70,12 +74,11 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
 
     @Override
     @Transactional
-    public EntityImage saveEntityImage(Long userId ,Long entityId, MultipartFile file, String imageType) throws IOException {
+    public EntityImage saveEntityImage(Long userId, Long entityId, MultipartFile file, String imageType) throws IOException {
         if (entityId == null || file == null || file.isEmpty()) {
             return null;
         }
         log.info("保存实体图片数据: entityId={}, 文件名={}, 大小={}", entityId, file.getOriginalFilename(), file.getSize());
-
 
 
         // 获取当前最大排序号，新图片排序号+1
@@ -86,35 +89,20 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
                 if (img.getSortOrder() != null && img.getSortOrder() > maxSortOrder) {
                     maxSortOrder = img.getSortOrder();
                 }
-                //处理图片在数据库问题，将文件保存在文件系统，删除数据库内的
-                if (img.getImageUrl() == null || img.getImageUrl().isEmpty()) {
-                    if (img.getImageData() != null){
-                        MultipartFile multipartFile = new ByteArrayMultipartFile(
-                                img.getImageData(),
-                                "image",
-                                img.getFileName(),
-                                img.getContentType()
-                        );
-                        String fileUrl = fileStorageService.storeFile(multipartFile, userId+"/entity");
-                        img.setImageUrl(fileUrl);
-                        img.setImageData(null);
-                        updateById(img);
-                    }
 
-                }
             }
         }
         EntityImage entityImage = new EntityImage();
         entityImage.setEntityId(entityId);
         entityImage.setImageType(imageType != null ? imageType : "normal");
         entityImage.setContentType(file.getContentType());
-        entityImage.setImageData(file.getBytes());//todo 后期删除
+        //entityImage.setImageData(file.getBytes());//todo 后期删除
         entityImage.setFileName(file.getOriginalFilename());
         entityImage.setFileSize(file.getSize());
         entityImage.setCreateTime(LocalDateTime.now());
         entityImage.setSortOrder(maxSortOrder + 1);
         //保存到本地
-        String fileUrl = fileStorageService.storeFile(file, userId+"/entity");
+        String fileUrl = fileStorageService.storeFile(file, userId + "/entity");
         entityImage.setImageUrl(fileUrl);
         save(entityImage);
         return entityImage;
@@ -127,22 +115,52 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
         }
         return getById(imageId);
     }
-    
+
     @Override
     public List<EntityImage> getEntityImages(Long entityId, String type) {
         if (entityId == null) {
             return null;
         }
-        
+
         LambdaQueryWrapper<EntityImage> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(EntityImage::getEntityId, entityId);
-        
+
         if (type != null && !type.isEmpty()) {
             queryWrapper.eq(EntityImage::getImageType, type);
         }
-        
+
         queryWrapper.orderByAsc(EntityImage::getSortOrder);
-        
+
         return list(queryWrapper);
     }
-} 
+
+    @Override
+    public void setEntityImagesToFiles() {
+        List<EntityImage> existingImages = list();
+        for (EntityImage img : existingImages) {
+            Long userId = entityMapper.selectById(img.getEntityId()).getUserId();
+            //处理图片在数据库问题，将文件保存在文件系统，删除数据库内
+            if (img.getImageUrl() == null || img.getImageUrl().isEmpty()) {
+                if (img.getImageData() != null) {
+                    MultipartFile multipartFile = new ByteArrayMultipartFile(
+                            img.getImageData(),
+                            "image",
+                            img.getFileName(),
+                            img.getContentType()
+                    );
+                    String fileUrl = null;
+                    try {
+                        fileUrl = fileStorageService.storeFile(multipartFile, userId + "/entity");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    img.setImageUrl(fileUrl);
+                    img.setImageData(null);
+                    updateById(img);
+
+                }
+            }
+        }
+    }
+
+}

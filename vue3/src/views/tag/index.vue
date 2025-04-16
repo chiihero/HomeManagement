@@ -120,11 +120,10 @@ import { Plus, Edit, Delete, DataAnalysis, Promotion, Refresh } from '@element-p
 import { Tag } from '@/types/entity';
 import { useUserStore } from '@/store/modules/user';
 import { getTags, createTag, updateTag, deleteTag } from '@/api/tag';
-import dayjs from 'dayjs';
-import { useRouter } from 'vue-router';
+import { getContrastColor,  rgbaToHex  } from "@/utils/color";
+import { formatDateTime } from "@/utils/date";
 
 const userStore = useUserStore();
-const router = useRouter();
 
 const loading = ref(false);
 const tagList = ref<Tag[]>([]);
@@ -307,61 +306,9 @@ const handleSizeChange = (size: number) => {
   loadTagList();
 };
 
-// 格式化日期时间
-const formatDateTime = (dateTime: string) => {
-  return dayjs(dateTime).format('YYYY-MM-DD HH:mm');
-};
 
-// 获取标签文字颜色
-const getContrastColor = (color: string) => {
-  // 简单的对比度算法，根据背景色计算应该使用黑色还是白色文字
-  const rgb = hexToRgb(color);
-  if (!rgb) return '#ffffff';
-  
-  const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-  return brightness > 128 ? '#000000' : '#ffffff';
-};
 
-// 将十六进制颜色转换为RGB
-const hexToRgb = (hex: string) => {
-  // 处理rgba格式
-  if (hex.startsWith('rgba')) {
-    const matches = hex.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/);
-    if (matches) {
-      return {
-        r: parseInt(matches[1], 10),
-        g: parseInt(matches[2], 10),
-        b: parseInt(matches[3], 10)
-      };
-    }
-    return null;
-  }
-  
-  // 处理十六进制格式
-  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
-  
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-      }
-    : null;
-};
 
-// 将rgba颜色转换为十六进制
-const rgbaToHex = (rgba: string) => {
-  const matches = rgba.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/);
-  if (matches) {
-    const r = parseInt(matches[1], 10);
-    const g = parseInt(matches[2], 10);
-    const b = parseInt(matches[3], 10);
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-  }
-  return '#409EFF'; // 默认返回蓝色
-};
 
 // 监听用户登录状态变化
 watch(

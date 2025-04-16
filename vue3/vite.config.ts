@@ -31,6 +31,13 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           changeOrigin: true
           // 不需要重写路径，因为环境变量中的 URL 已包含 /api
           // rewrite: (path) => path.replace(/^\/api/, "")
+        },
+        "/uploads": {
+          // target: "http://192.168.123.4:26000",
+          target: "http://localhost:26000",
+          changeOrigin: true
+          // 不需要重写路径，因为环境变量中的 URL 已包含 /api
+          // rewrite: (path) => path.replace(/^\/api/, "")
         }
       },
       // 预热文件以提前转换和缓存结果，降低启动期间的初始页面加载时长并防止转换瀑布

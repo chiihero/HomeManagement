@@ -239,21 +239,10 @@ export function useEntityImageUpload() {
         return image;
       }
 
-      // 如果是字符串URL
-      if (typeof image === "string") {
-        return {
-          name: image.split("/").pop() || "",
-          url: image,
-          uid: Date.now() + Math.random(),
-          status: "success"
-        };
-      }
-
       // 如果是EntityImage对象 - 使用后端直接引用图片
       if (image.id) {
         // 构建API URL
         console.log("添加图片，ID:", image.id, "URL:", image.imageUrl);
-
         return {
           name: image.fileName || `图片${image.id}`,
           url: image.imageUrl,

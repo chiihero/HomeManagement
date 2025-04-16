@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { ElMessage, ElMessageBox, ElSelect } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import {
   getEntityTree,
   getEntity,
@@ -406,7 +406,9 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
   // 加载实体列表（搜索模式）
   const loadEntityList = async () => {
     if (!authStore.userId) return;
-
+    if(searchForm.value.userId !== authStore.userId){
+      searchForm.value.userId = authStore.userId
+    }
     loading.value = true;
     try {
       const response = await pageEntities({

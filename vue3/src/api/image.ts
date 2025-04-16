@@ -13,17 +13,6 @@ export function getEntityImages(entityId: string, type?: string) {
 }
 
 /**
- * 获取图片数据
- * @param imageId 图片ID
- * @returns 图片Blob对象
- */
-export function getImageData(imageId: string): Promise<Blob> {
-  return http.get(`/entity-images/${imageId}`, {
-    responseType: "blob"
-  });
-}
-
-/**
  * 上传实体图片
  * @param entityId 实体ID
  * @param file 文件对象
