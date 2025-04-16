@@ -27,13 +27,12 @@
       <!-- 左侧树形结构 -->
       <el-card class="tree-wrapper border-0 shadow-sm w-full lg:w-72 shrink-0">
         <template #header>
-          <div class="flex items-center justify-between">
-            <span class="text-gray-700 font-medium">分类结构</span>
+          <div class="flex  flex-col items-center justify-between">
+            <span class="text-gray-700  font-bold">分类物品树</span>
             <el-input
               v-model="searchKeyword"
               placeholder="搜索物品"
               class="w-32 md:w-40"
-              size="small"
               clearable
               :prefix-icon="Search"
             />
@@ -51,7 +50,7 @@
       <el-card class="detail-container grow border-0 shadow-sm">
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="text-gray-700 font-medium">
+            <span class="text-gray-700 font-bold">
               {{ getDetailTitle }}
             </span>
             <div v-if="!isEditing && currentEntity" class="flex gap-2 mt-1">

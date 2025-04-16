@@ -1,29 +1,13 @@
 <template>
   <div class="w-full">
-    <el-form
-      ref="formRef"
-      :model="form"
-      :rules="rules"
-      label-width="auto"
-      class="max-w-3xl mx-auto"
-      style="max-width: 600px"
-      status-icon
-    >
-      <el-row :gutter="20">
-        <el-col :offset="14">
-          <el-form-item>
-            <el-button
-              type="primary"
-              size="large"
-              :loading="saving"
-              :icon="Check"
-              @click="handleSubmit"
-              >保存</el-button
-            >
-            <el-button size="large" :icon="Close" @click="handleCancel">取消</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="auto" class="max-w-3xl mx-auto"
+      style="max-width: 600px" status-icon>
+      <div class="container">
+        <el-form-item>
+          <el-button type="primary" size="large" :loading="saving" :icon="Check" @click="handleSubmit">保存</el-button>
+          <el-button size="large" :icon="Close" @click="handleCancel">取消</el-button>
+        </el-form-item>
+      </div>
       <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="名称" prop="name">
@@ -33,15 +17,8 @@
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="类型" prop="type">
             <!-- <el-input v-model="form.type" placeholder="请输入物品类型" /> -->
-            <el-select
-              v-model="form.type"
-              filterable
-              allow-create
-              default-first-option
-              :reserve-keyword="false"
-              placeholder="Choose tags for your article"
-              style="width: 240px"
-            >
+            <el-select v-model="form.type" filterable allow-create default-first-option :reserve-keyword="false"
+              placeholder="Choose tags for your article" style="width: 240px">
               <el-option value="物品" />
               <el-option value="空间" />
               <el-option value="药品" />
@@ -53,11 +30,7 @@
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="状态" prop="status">
-            <el-select
-              v-model="form.status"
-              placeholder="请选择状态"
-              class="w-full"
-            >
+            <el-select v-model="form.status" placeholder="请选择状态" class="w-full">
               <el-option label="正常" value="normal" />
               <el-option label="损坏" value="damaged" />
               <el-option label="丢弃" value="discarded" />
@@ -68,78 +41,47 @@
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="价格" prop="price">
-            <el-input-number
-              v-model="form.price"
-              :precision="2"
-              :step="0.1"
-              :min="0"
-              placeholder="请输入价格"
-              class="w-full"
-            />
+            <el-input-number v-model="form.price" :precision="2" :step="0.1" :min="0" placeholder="请输入价格"
+              class="w-full" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="购买日期" prop="purchaseDate">
-            <el-date-picker
-              v-model="form.purchaseDate"
-              type="date"
-              placeholder="请选择购买日期"
-              value-format="YYYY-MM-DD"
-              class="w-full"
-            />
+            <el-date-picker v-model="form.purchaseDate" type="date" placeholder="请选择购买日期" value-format="YYYY-MM-DD"
+              class="w-full" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="生产日期" prop="productionDate">
-            <el-date-picker
-              v-model="form.productionDate"
-              type="date"
-              placeholder="请选择生产日期"
-              value-format="YYYY-MM-DD"
-              class="w-full"
-            />
+            <el-date-picker v-model="form.productionDate" type="date" placeholder="请选择生产日期" value-format="YYYY-MM-DD"
+              class="w-full" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="保修期" prop="warrantyPeriod">
-            <el-input-number
-              v-model="form.warrantyPeriod"
-              :min="0"
-              :max="120"
-              placeholder="请输入保修期（月）"
-              class="w-full"
-            />
+            <el-input-number v-model="form.warrantyPeriod" :min="0" :max="120" placeholder="请输入保修期（月）" class="w-full" />
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="10">
           <el-form-item label="保修截止日期" prop="warrantyEndDate">
-            <el-date-picker
-              v-model="form.warrantyEndDate"
-              type="date"
-              placeholder="请选择保修截止日期"
-              value-format="YYYY-MM-DD"
-              class="w-full"
-            />
+            <el-date-picker v-model="form.warrantyEndDate" type="date" placeholder="请选择保修截止日期" value-format="YYYY-MM-DD"
+              class="w-full" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="所属位置" prop="parentId">
-        <el-tree
-          :current-node-key="currentNodeKey"
-          :data="computedTreeData"
-          :props="{ label: 'name', children: 'children' }"
-          node-key="id"
-          highlight-current
-          default-expand-all
-          :expand-on-click-node="false"
-          class="location-tree"
-          @current-change="handleLocationSelect"
-        >
+        <el-tree :current-node-key="currentNodeKey" :data="computedTreeData"
+          :props="{ label: 'name', children: 'children' }" node-key="id" highlight-current default-expand-all
+          :expand-on-click-node="false" class="location-tree" @current-change="handleLocationSelect">
           <template #default="{ node, data }">
             <div class="custom-tree-node">
               <span>
-                <el-icon v-if="data.type === 'space'"><Folder /></el-icon>
-                <el-icon v-else><Goods /></el-icon>
+                <el-icon v-if="data.type === 'space'">
+                  <Folder />
+                </el-icon>
+                <el-icon v-else>
+                  <Goods />
+                </el-icon>
                 {{ node.label }}
               </span>
             </div>
@@ -147,52 +89,28 @@
         </el-tree>
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input
-          v-model="form.description"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入物品描述"
-        />
+        <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入物品描述" />
       </el-form-item>
 
       <el-form-item label="标签" prop="tags">
-        <el-select
-          v-model="form.tags"
-          multiple
-          filterable
-          default-first-option
-          placeholder="请选择或输入标签"
-          @change="handleTagsChange"
-        >
-          <el-option
-            v-for="tag in existingTags"
-            :key="tag.id"
-            :label="tag.name"
-            :value="tag.id"
-          >     
-          <div class="flex items-center">
-            <el-tag :color="tag.color" style="margin-right: 12px"/>
-            <span :style="{ color: tag.color }">{{ tag.name }}</span>
-          </div>
-        </el-option>
+        <el-select v-model="form.tags" multiple filterable default-first-option placeholder="请选择或输入标签"
+          @change="handleTagsChange">
+          <el-option v-for="tag in existingTags" :key="tag.id" :label="tag.name" :value="tag.id">
+            <div class="flex items-center">
+              <el-tag :color="tag.color" style="margin-right: 12px" />
+              <span :style="{ color: tag.color }">{{ tag.name }}</span>
+            </div>
+          </el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="图片" prop="images">
-        <el-upload
-          ref="uploadRef"
-          :file-list="imageList"
-          @update:file-list="imageList = $event"
-          action="#"
-          list-type="picture-card"
-          multiple
-          :auto-upload="false"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :before-upload="beforeImageUpload"
-          :on-change="handleImageChange"
-        >
-          <el-icon><Plus /></el-icon>
+        <el-upload ref="uploadRef" :file-list="imageList" @update:file-list="imageList = $event" action="#"
+          list-type="picture-card" multiple :auto-upload="false" :on-preview="handlePictureCardPreview"
+          :on-remove="handleRemove" :before-upload="beforeImageUpload" :on-change="handleImageChange">
+          <el-icon>
+            <Plus />
+          </el-icon>
         </el-upload>
         <el-dialog v-model="dialogVisible" append-to-body>
           <img class="w-full" :src="dialogImageUrl" alt="Preview Image" />
@@ -592,5 +510,15 @@ watch(
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  max-width: 100%;
+  grid-gap: 18rem;
+  padding: 0 2rem;
 }
 </style>
