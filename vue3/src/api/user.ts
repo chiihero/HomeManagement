@@ -58,7 +58,7 @@ export interface UserSettings {
  * @returns 包含用户信息的响应
  */
 export function getUserInfo(): Promise<ResponseResult<Record<string, any>>> {
-  return http.post("/users/info");
+  return http.get("/users/info");
 }
 
 /**

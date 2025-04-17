@@ -24,6 +24,8 @@
               <el-option value="药品" />
               <el-option value="耗材" />
               <el-option value="食品" />
+              <el-option value="包装" />
+
             </el-select>
 
           </el-form-item>
