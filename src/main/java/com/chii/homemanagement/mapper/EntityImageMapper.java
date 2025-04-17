@@ -27,6 +27,17 @@ public interface EntityImageMapper extends BaseMapper<EntityImage> {
     @Select("SELECT * FROM entity_image WHERE entity_id = #{entityId} ORDER BY sort_order ASC")
     List<EntityImage> listByEntityId(@Param("entityId") Long entityId);
 
+
+    /**
+     * 获取实体的图片排序最大的
+     *
+     * @param entityId 实体ID
+     * @return 图片列表
+     */
+    @Select("SELECT max(sort_order) FROM entity_image WHERE entity_id = #{entityId}")
+    Integer maxSortByEntityId(@Param("entityId") Long entityId);
+
+
     /**
      * 根据实体ID删除所有图片
      *

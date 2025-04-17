@@ -9,3 +9,24 @@ server:
 spring:
   profiles:
     active: prod
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB 
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+# 文件上传配置
+file:
+  upload-dir: uploads  # 文件上传目录（相对于应用根目录）
+  base-url: /uploads   # 文件访问基础URL
+  max-size: 10MB   # 最大文件大小限制
+
+
+logging:
+  config: classpath:log4j2/log4j2.xml
+

@@ -40,11 +40,41 @@ public interface FileStorageService {
      */
     String storeFile(MultipartFile file, String directory, String fileName ) throws IOException;
 
-        /**
-         * 删除文件
-         *
-         * @param fileUrl 文件URL或路径
-         * @return 是否成功删除
-         */
+    /**
+     * 存储图片并转换为AVIF格式
+     *
+     * @param file 要存储的图片文件
+     * @return 转换后的AVIF图片访问URL
+     * @throws IOException 如果存储或转换过程中发生IO异常
+     */
+    String storeImageAsAvif(MultipartFile file) throws IOException;
+
+    /**
+     * 存储图片到指定目录并转换为AVIF格式
+     *
+     * @param file 要存储的图片文件
+     * @param directory 存储子目录，例如 "entities", "users"等
+     * @return 转换后的AVIF图片访问URL
+     * @throws IOException 如果存储或转换过程中发生IO异常
+     */
+    String storeImageAsAvif(MultipartFile file, String directory) throws IOException;
+
+    /**
+     * 存储图片到指定目录并转换为AVIF格式，指定质量参数
+     *
+     * @param file 要存储的图片文件
+     * @param directory 存储子目录，例如 "entities", "users"等
+     * @param quality 压缩质量 (0-63)，数值越低质量越高
+     * @return 转换后的AVIF图片访问URL
+     * @throws IOException 如果存储或转换过程中发生IO异常
+     */
+    String storeImageAsAvif(MultipartFile file, String directory, int quality) throws IOException;
+
+    /**
+     * 删除文件
+     *
+     * @param fileUrl 文件URL或路径
+     * @return 是否成功删除
+     */
     boolean deleteFile(String fileUrl);
 } 

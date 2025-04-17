@@ -49,6 +49,18 @@ public interface EntityImageService extends IService<EntityImage> {
     EntityImage saveEntityImage(Long userId, Long entityId, MultipartFile file, String imageType) throws IOException;
 
     /**
+     * 保存实体图片并转换为AVIF格式
+     *
+     * @param userId    用户ID
+     * @param entityId  实体ID
+     * @param file      图片文件
+     * @param imageType 图片类型
+     * @return 保存的图片对象
+     * @throws IOException 如果文件处理过程中发生错误
+     */
+    EntityImage saveEntityImageAsAvif(Long userId, Long entityId, MultipartFile file, String imageType) throws IOException;
+
+    /**
      * 根据ID获取图片数据
      *
      * @param imageId 图片ID
