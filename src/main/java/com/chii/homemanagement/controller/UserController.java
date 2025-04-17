@@ -10,8 +10,8 @@ import com.chii.homemanagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +34,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "用户管理", description = "用户管理相关接口")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -45,26 +46,27 @@ public class UserController {
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 
-
-
     /**
      * 获取当前用户信息 (适用于前端导航栏和认证检查)
      */
-    @PostMapping("/info")
+    @GetMapping("/info")
     @Operation(summary = "获取当前用户基本信息", description = "获取当前登录用户的基本信息，用于导航栏显示和认证检查")
     public ApiResponse<Map<String, Object>> getUserInfo() {
         try {
+            log.info("获取当前用户基本信息");
             // 获取当前认证用户
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            
-            if (authentication == null || !authentication.isAuthenticated() || 
-                "anonymousUser".equals(authentication.getPrincipal())) {
+
+            if (authentication == null || !authentication.isAuthenticated() ||
+                    "anonymousUser".equals(authentication.getPrincipal())) {
                 return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
             }
-            
+
             // 获取用户名
             String username = authentication.getName();
-            
+
+            log.info("获取当前用户基本信息");
+
             // 获取用户实体信息
             User user = userService.getUserByUsername(username);
             if (user == null) {
@@ -81,8 +83,10 @@ public class UserController {
             userInfo.put("role", user.getRole());
             userInfo.put("status", user.getStatus());
             
+            log.info("获取当前用户基本信息成功: username={}", user.getUsername());
             return ApiResponse.success(userInfo);
         } catch (Exception e) {
+            log.error("获取用户信息异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取用户信息失败: " + e.getMessage());
         }
     }
@@ -92,30 +96,38 @@ public class UserController {
      */
     @PutMapping("/profile")
     @Operation(summary = "更新个人资料", description = "更新当前登录用户的个人资料")
-    public ApiResponse<User> updateProfile(@RequestBody User userParam, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
-
-        // 更新个人资料
-        User user = new User();
-        user.setId(currentUser.getId());
-        // 只允许更新以下字段
-        user.setNickname(userParam.getNickname());
-        user.setEmail(userParam.getEmail());
-        user.setPhone(userParam.getPhone());
-        user.setUpdateTime(LocalDateTime.now());
-
+    public ApiResponse<User> updateProfile(@RequestBody User userParam) {
         try {
+            log.info("更新个人资料");
+            
+
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userParam.getId());
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+
+            // 更新个人资料
+            User user = new User();
+            user.setId(currentUser.getId());
+            // 只允许更新以下字段
+            user.setNickname(userParam.getNickname());
+            user.setEmail(userParam.getEmail());
+            user.setPhone(userParam.getPhone());
+            user.setUpdateTime(LocalDateTime.now());
+
             userService.updateUser(user);
+            
             // 更新session中的用户信息
             User updatedUser = userService.getUserById(currentUser.getId());
-            session.setAttribute("user", updatedUser);
+            
             // 清除密码
             updatedUser.setPassword(null);
+
+            log.info("更新密码成功: username={}", updatedUser.getUsername());
             return ApiResponse.success(updatedUser);
         } catch (Exception e) {
+            log.error("更新个人资料异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新个人资料失败: " + e.getMessage());
         }
     }
@@ -125,34 +137,42 @@ public class UserController {
      */
     @PutMapping("/password")
     @Operation(summary = "更新密码", description = "更新当前登录用户的密码")
-    public ApiResponse<Boolean> updatePassword(@RequestBody Map<String, String> params, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
-
-        String currentPassword = params.get("currentPassword");
-        String newPassword = params.get("newPassword");
-
-        if (currentPassword == null || newPassword == null) {
-            return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "当前密码和新密码不能为空");
-        }
-
-        // 验证当前密码
-        if (!userService.validatePassword(currentUser.getUsername(), currentPassword)) {
-            return ApiResponse.error(ErrorCode.USER_CREDENTIALS_ERROR.getCode(), "当前密码不正确");
-        }
-
-        // 更新密码
-        User user = new User();
-        user.setId(currentUser.getId());
-        user.setPassword(newPassword);
-        user.setUpdateTime(LocalDateTime.now());
-
+    public ApiResponse<Boolean> updatePassword(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
+            @Parameter(description = "旧密码") @RequestParam(value = "currentPassword") String currentPassword,
+            @Parameter(description = "新密码") @RequestParam(value = "newPassword") String newPassword
+    ) {
         try {
+            log.info("更新密码");
+
+
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+
+            if (currentPassword == null || newPassword == null) {
+                return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "当前密码和新密码不能为空");
+            }
+
+            // 验证当前密码
+            if (!userService.validatePassword(currentUser.getUsername(), currentPassword)) {
+                return ApiResponse.error(ErrorCode.USER_CREDENTIALS_ERROR.getCode(), "当前密码不正确");
+            }
+
+            // 更新密码
+            User user = new User();
+            user.setId(currentUser.getId());
+            user.setPassword(newPassword);
+            user.setUpdateTime(LocalDateTime.now());
+
             userService.updateUser(user);
+            
+            log.info("更新密码成功: username={}", user.getUsername());
             return ApiResponse.success(true);
         } catch (Exception e) {
+            log.error("更新密码异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新密码失败: " + e.getMessage());
         }
     }
@@ -162,33 +182,56 @@ public class UserController {
      */
     @PostMapping("/avatar")
     @Operation(summary = "上传头像", description = "上传当前登录用户的头像")
-    public ApiResponse<User> uploadAvatar(@Parameter(description = "实体ID") @PathVariable(value = "id") Long id,
-                                          @RequestParam("file") MultipartFile file) {
-        if (id == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
+    public ApiResponse<User> uploadAvatar(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            log.info("上传头像");
 
-        // 检查文件是否为空
-        if (file.isEmpty()) {
-            return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "请选择要上传的文件");
-        }
-        User user = userService.uploadAvatar(id, file);
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
 
+            // 检查文件是否为空
+            if (file.isEmpty()) {
+                return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "请选择要上传的文件");
+            }
             
-        return ApiResponse.success(user);
+            User user = userService.uploadAvatar(currentUser.getId(), file);
+            
+            log.info("上传头像成功: username={}", currentUser.getUsername());
+            return ApiResponse.success(user);
+        } catch (Exception e) {
+            log.error("上传头像异常: ", e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "上传头像失败: " + e.getMessage());
+        }
     }
 
     /**
      * 删除头像
      */
-    @DeleteMapping("/avatar")
+    @DeleteMapping("/avatar/{userId}")
     @Operation(summary = "删除头像", description = "删除当前登录用户的头像")
-    public ApiResponse<User> deleteAvatar(@Parameter(description = "实体ID") @PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
+    public ApiResponse<User> deleteAvatar(@Parameter(description = "用户ID") @PathVariable(value = "userId") Long userId) {
+        try {
+            log.info("删除头像");
+
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+            
+            User user = userService.deeleteAvatar(currentUser.getId());
+            
+            log.info("删除头像成功: username={}", currentUser.getUsername());
+            return ApiResponse.success(user);
+        } catch (Exception e) {
+            log.error("删除头像异常: ", e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除头像失败: " + e.getMessage());
         }
-        User user = userService.deeleteAvatar(id);
-        return ApiResponse.success(user);
     }
 
     /**
@@ -196,42 +239,53 @@ public class UserController {
      */
     @PutMapping("/notifications")
     @Operation(summary = "更新通知设置", description = "更新当前登录用户的通知设置")
-    public ApiResponse<Boolean> updateNotifications(@RequestBody Map<String, Object> params, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
+    public ApiResponse<Boolean> updateNotifications(
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
+            @Parameter(description = "是否开启邮件通知") @RequestParam(value = "emailNotification") Boolean emailNotification,
+            @Parameter(description = "是否开启到期提醒") @RequestParam(value = "expirationReminder") Boolean expirationReminder,
+            @Parameter(description = "提前提醒天数") @RequestParam(value = "reminderDays") Integer reminderDays
 
+            ) {
         try {
+            log.info("更新通知设置: {},是否开启邮件通知: {},是否开启到期提醒: {},提前提醒天数: {}",userId,emailNotification,expirationReminder,reminderDays);
+
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+
             // 保存邮件通知设置
-            if (params.containsKey("emailNotification")) {
+            if (emailNotification) {
                 SystemSetting emailNotificationSetting = new SystemSetting();
                 emailNotificationSetting.setSettingKey("email_notification");
-                emailNotificationSetting.setSettingValue(String.valueOf(params.get("emailNotification")));
+                emailNotificationSetting.setSettingValue(String.valueOf(emailNotification));
                 emailNotificationSetting.setType("user");
                 systemSettingService.saveUserSetting(emailNotificationSetting, currentUser.getId());
             }
             
             // 保存到期提醒设置
-            if (params.containsKey("expirationReminder")) {
+            if (expirationReminder) {
                 SystemSetting expirationReminderSetting = new SystemSetting();
                 expirationReminderSetting.setSettingKey("expiration_reminder");
-                expirationReminderSetting.setSettingValue(String.valueOf(params.get("expirationReminder")));
+                expirationReminderSetting.setSettingValue(String.valueOf(expirationReminder));
                 expirationReminderSetting.setType("user");
                 systemSettingService.saveUserSetting(expirationReminderSetting, currentUser.getId());
             }
             
             // 保存提前提醒天数设置
-            if (params.containsKey("reminderDays")) {
+            if (reminderDays !=null) {
                 SystemSetting reminderDaysSetting = new SystemSetting();
                 reminderDaysSetting.setSettingKey("reminder_days");
-                reminderDaysSetting.setSettingValue(String.valueOf(params.get("reminderDays")));
+                reminderDaysSetting.setSettingValue(String.valueOf(reminderDays));
                 reminderDaysSetting.setType("user");
                 systemSettingService.saveUserSetting(reminderDaysSetting, currentUser.getId());
             }
             
+            log.info("更新通知设置成功: username={}", currentUser.getUsername());
             return ApiResponse.success(true);
         } catch (Exception e) {
+            log.error("更新通知设置异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新通知设置失败: " + e.getMessage());
         }
     }
@@ -241,13 +295,16 @@ public class UserController {
      */
     @GetMapping("/notifications")
     @Operation(summary = "获取用户通知设置", description = "获取当前登录用户的通知设置")
-    public ApiResponse<Map<String, Object>> getNotifications(HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
-        
+    public ApiResponse<Map<String, Object>> getNotifications(@Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         try {
+            log.info("获取用户通知设置");
+
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+            
             Map<String, Object> userSettings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
             
             // 如果没有设置，返回默认值
@@ -256,8 +313,10 @@ public class UserController {
             result.put("expirationReminder", userSettings.getOrDefault("expiration_reminder", "true"));
             result.put("reminderDays", userSettings.getOrDefault("reminder_days", "7"));
             
+            log.info("获取用户通知设置成功: username={}", currentUser.getUsername());
             return ApiResponse.success(result);
         } catch (Exception e) {
+            log.error("获取通知设置异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取通知设置失败: " + e.getMessage());
         }
     }
@@ -267,14 +326,24 @@ public class UserController {
      */
     @GetMapping("/settings")
     @Operation(summary = "获取用户个人设置", description = "获取当前登录用户的个人设置")
-    public ApiResponse<Map<String, Object>> getUserSettings(HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
+    public ApiResponse<Map<String, Object>> getUserSettings(@Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+        try {
+            log.info("获取用户个人设置");
+            
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
 
-        Map<String, Object> settings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
-        return ApiResponse.success(settings);
+            Map<String, Object> settings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
+            
+            log.info("获取用户个人设置成功: username={}", currentUser.getUsername());
+            return ApiResponse.success(settings);
+        } catch (Exception e) {
+            log.error("获取用户设置异常: ", e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取用户设置失败: " + e.getMessage());
+        }
     }
     
     /**
@@ -282,14 +351,17 @@ public class UserController {
      */
     @PutMapping("/settings")
     @Operation(summary = "更新用户个人设置", description = "更新当前用户的个人设置")
-    public ApiResponse<Boolean> updateUserSettings(@RequestBody Map<String, Object> params, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-        }
-
+    public ApiResponse<Boolean> updateUserSettings(@Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
+                                                   @RequestBody Map<String, Object> params) {
         try {
-            Map<String, Object> existingSettings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
+            log.info("更新用户个人设置: {}", params.keySet());
+            
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 SystemSetting setting = new SystemSetting();
                 setting.setSettingKey(entry.getKey());
@@ -298,8 +370,10 @@ public class UserController {
                 systemSettingService.saveUserSetting(setting, currentUser.getId());
             }
             
+            log.info("更新用户个人设置成功: username={}", currentUser.getUsername());
             return ApiResponse.success(true);
         } catch (Exception e) {
+            log.error("更新用户设置异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "更新用户设置失败: " + e.getMessage());
         }
     }
@@ -309,14 +383,24 @@ public class UserController {
      */
     @DeleteMapping("/settings/{key}")
     @Operation(summary = "删除用户个人设置", description = "删除当前用户的指定个人设置")
-    public ApiResponse<Boolean> deleteUserSetting(@PathVariable("key") String key, HttpSession session) {
-        User currentUser = (User) session.getAttribute("user");
-        if (currentUser == null) {
-            return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
+    public ApiResponse<Boolean> deleteUserSetting(@Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
+                                                  @PathVariable("key") String key) {
+        try {
+            log.info("删除用户个人设置: key={}", key);
+            
+            // 获取用户实体信息
+            User currentUser = userService.getUserById(userId);
+            if (currentUser == null) {
+                return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
+            }
+            
+            systemSettingService.deleteUserSetting(key, currentUser.getId());
+            
+            log.info("删除用户个人设置成功: key={}, username={}", key, currentUser.getUsername());
+            return ApiResponse.success(true);
+        } catch (Exception e) {
+            log.error("删除用户设置异常: key={}", key, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "删除用户设置失败: " + e.getMessage());
         }
-        
-        systemSettingService.deleteUserSetting(key, currentUser.getId());
-        
-        return ApiResponse.success(true);
     }
 } 

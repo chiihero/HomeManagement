@@ -25,59 +25,6 @@ public class LibAvifUtil {
     private int avifQuality;
 
     /**
-     * 将图片转换为AVIF格式
-     *
-     * @param inputPath  输入图片路径
-     * @param outputPath 输出AVIF图片路径
-     * @return 是否转换成功
-     */
-    public boolean convertToAvif(Path inputPath, Path outputPath) {
-        try {
-            // 检查目标文件所在目录是否存在，不存在则创建
-            File outputDir = outputPath.getParent().toFile();
-            if (!outputDir.exists()) {
-                outputDir.mkdirs();
-            }
-            
-            // 构建libavif命令 (cavif工具)
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    libavifPath,
-                    "-q", String.valueOf(avifQuality),
-                    "-o", outputPath.toString(),
-                    inputPath.toString()
-            );
-            
-            // 设置错误输出和标准输出合并
-            processBuilder.redirectErrorStream(true);
-            
-            // 执行命令
-            Process process = processBuilder.start();
-            
-            // 等待命令执行完成，最多等待30秒
-            boolean completed = process.waitFor(30, TimeUnit.SECONDS);
-            
-            // 检查是否超时或命令执行失败
-            if (!completed) {
-                process.destroyForcibly();
-                logger.error("LibAvif转换超时: {}", inputPath);
-                return false;
-            }
-            
-            int exitCode = process.exitValue();
-            if (exitCode == 0) {
-                logger.info("图片成功转换为AVIF格式: {} -> {}", inputPath, outputPath);
-                return true;
-            } else {
-                logger.error("LibAvif转换失败: {}，退出码: {}", inputPath, exitCode);
-                return false;
-            }
-        } catch (IOException | InterruptedException e) {
-            logger.error("LibAvif转换图片时发生错误", e);
-            return false;
-        }
-    }
-    
-    /**
      * 将图片转换为AVIF格式并指定质量
      *
      * @param inputPath  输入图片路径

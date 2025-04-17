@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useNav } from "@/layout/hooks/useNav";
+import { useRouter } from "vue-router";
 import LaySearch from "../lay-search/index.vue";
 import LayNotice from "../lay-notice/index.vue";
 import LayNavMix from "../lay-sidebar/NavMix.vue";
@@ -9,6 +10,9 @@ import LaySidebarTopCollapse from "../lay-sidebar/components/SidebarTopCollapse.
 
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
 import Setting from "@iconify-icons/ri/settings-3-line";
+import UserLine from "@iconify-icons/ri/user-line";
+
+const router = useRouter();
 
 const {
   layout,
@@ -21,6 +25,10 @@ const {
   avatarsStyle,
   toggleSideBar
 } = useNav();
+
+const toUserProfile = () => {
+  router.push("/user/profile");
+};
 </script>
 
 <template>
@@ -54,6 +62,13 @@ const {
         </span>
         <template #dropdown>
           <el-dropdown-menu class="logout">
+            <el-dropdown-item @click="toUserProfile">
+              <IconifyIconOffline
+                :icon="UserLine"
+                style="margin: 5px"
+              />
+              个人信息
+            </el-dropdown-item>
             <el-dropdown-item @click="logout">
               <IconifyIconOffline
                 :icon="LogoutCircleRLine"

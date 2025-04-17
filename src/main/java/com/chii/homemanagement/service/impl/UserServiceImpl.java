@@ -186,7 +186,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             // 更新用户头像URL
             User user = new User();
             user.setId(id);
-            String avatarUrl = fileStorageService.storeFile(file, id.toString(),"avatar.jpg");;
+            String avatarUrl = fileStorageService.storeImageAsAvif(file, id.toString(),"avatar.avif",-1);;
             user.setAvatar(avatarUrl);
             user.setUpdateTime(LocalDateTime.now());
             updateUser(user);

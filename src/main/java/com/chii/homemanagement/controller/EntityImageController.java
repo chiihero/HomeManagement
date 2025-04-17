@@ -59,7 +59,6 @@ public class EntityImageController {
         
         try {
             log.info("上传实体图片: entityId={}, imageType={}", entityId, imageType);
-            //EntityImage entityImage = entityImageService.saveEntityImage(userId ,entityId, image, imageType);
             EntityImage entityImage = entityImageService.saveEntityImageAsAvif(userId ,entityId, image, imageType);
 
             return ApiResponse.success(entityImage);

@@ -80,39 +80,11 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
 
     @Override
     @Transactional
-    public EntityImage saveEntityImage(Long userId, Long entityId, MultipartFile file, String imageType) throws IOException {
+    public EntityImage saveEntityImage(Long userId, Long entityId, MultipartFile file, String imageType,String contentType) throws IOException {
         if (entityId == null || file == null || file.isEmpty()) {
             return null;
         }
-        log.info("保存实体图片数据: entityId={}, 文件名={}, 大小={}", entityId, file.getOriginalFilename(), file.getSize());
-
-        // 获取当前最大排序号，新图片排序号+1
-        Integer maxSort = entityImageMapper.maxSortByEntityId(entityId);
-        int maxSortOrder = Math.max(0, maxSort != null ? maxSort : 0);
-
-        EntityImage entityImage = new EntityImage();
-        entityImage.setEntityId(entityId);
-        entityImage.setImageType(imageType != null ? imageType : "normal");
-        entityImage.setContentType(file.getContentType());
-        //entityImage.setImageData(file.getBytes());//todo 后期删除
-        entityImage.setFileName(file.getOriginalFilename());
-        entityImage.setFileSize(file.getSize());
-        entityImage.setCreateTime(LocalDateTime.now());
-        entityImage.setSortOrder(maxSortOrder + 1);
-        //保存到本地
-        String fileUrl = fileStorageService.storeFile(file, userId + "/entities");
-        entityImage.setImageUrl(fileUrl);
-        save(entityImage);
-        return entityImage;
-    }
-
-    @Override
-    @Transactional
-    public EntityImage saveEntityImageAsAvif(Long userId, Long entityId, MultipartFile file, String imageType) throws IOException {
-        if (entityId == null || file == null || file.isEmpty()) {
-            return null;
-        }
-        log.info("保存实体图片为AVIF格式: entityId={}, 文件名={}, 原始大小={} KB", 
+        log.info("保存实体图片为AVIF格式: entityId={}, 文件名={}, 原始大小={} KB",
                 entityId, file.getOriginalFilename(), file.getSize() / 1024);
 
         // 获取当前最大排序值
@@ -123,41 +95,54 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
         EntityImage entityImage = new EntityImage();
         entityImage.setEntityId(entityId);
         entityImage.setImageType(imageType != null ? imageType : "normal");
-        entityImage.setContentType("image/avif");  // AVIF格式的MIME类型
-        entityImage.setFileName(StringUtils.cleanPath(file.getOriginalFilename()) + ".avif");
+        entityImage.setContentType(contentType != null ? contentType : file.getContentType());
         entityImage.setCreateTime(LocalDateTime.now());
         entityImage.setSortOrder(maxSortOrder + 1);
-        
-        // 转换并存储为AVIF格式
-        String fileUrl = fileStorageService.storeImageAsAvif(file, userId + "/entities");
-        entityImage.setImageUrl(fileUrl);
-        
-        // 获取转换后的文件大小
-        String relativePath = fileUrl.startsWith("/uploads") ? fileUrl.substring("/uploads".length()) : fileUrl;
-        if (relativePath.startsWith("/")) {
-            relativePath = relativePath.substring(1);
-        }
-        try {
-            java.nio.file.Path filePath = java.nio.file.Paths.get("uploads", relativePath);
-            if (java.nio.file.Files.exists(filePath)) {
-                long avifSize = java.nio.file.Files.size(filePath);
-                entityImage.setFileSize(avifSize);
-                log.info("AVIF转换完成: 原始大小={} KB, AVIF大小={} KB, 压缩率={}%", 
-                        file.getSize() / 1024, avifSize / 1024, 
-                        Math.round((1 - (double)avifSize / file.getSize()) * 100));
-            } else {
-                // 如果无法获取实际大小，则保留原始文件大小
-                entityImage.setFileSize(file.getSize());
-                logger.warn("无法获取转换后的AVIF文件大小，使用原始文件大小: {}", filePath);
+        entityImage.setFileSize(file.getSize());
+
+
+        if (contentType != null && contentType.equals("image/avif")) {
+            // 转换并存储为AVIF格式
+            String fileUrl = fileStorageService.storeImageAsAvif(file, userId + "/entities");
+            entityImage.setImageUrl(fileUrl);
+            entityImage.setFileName(StringUtils.getFilename(fileUrl));
+
+            // 获取转换后的文件大小
+            String relativePath = fileUrl.startsWith("/uploads") ? fileUrl.substring("/uploads".length()) : fileUrl;
+            if (relativePath.startsWith("/")) {
+                relativePath = relativePath.substring(1);
             }
-        } catch (Exception e) {
-            // 如果获取文件大小失败，使用原始文件大小
-            entityImage.setFileSize(file.getSize());
-            logger.error("获取AVIF文件大小失败", e);
+            try {
+                java.nio.file.Path filePath = java.nio.file.Paths.get("uploads", relativePath);
+                if (java.nio.file.Files.exists(filePath)) {
+                    long avifSize = java.nio.file.Files.size(filePath);
+                    entityImage.setFileSize(avifSize);
+                    log.info("AVIF转换完成: 原始大小={} KB, AVIF大小={} KB, 压缩率={}%",
+                            file.getSize() / 1024, avifSize / 1024,
+                            Math.round((1 - (double) avifSize / file.getSize()) * 100));
+                } else {
+                    logger.warn("无法获取转换后的AVIF文件大小，使用原始文件大小: {}", filePath);
+                }
+            } catch (Exception e) {
+                logger.error("获取AVIF文件大小失败", e);
+            }
+        }else {
+            String fileUrl = fileStorageService.storeFile(file, userId + "/entities");
+            entityImage.setImageUrl(fileUrl);
+            entityImage.setFileName(StringUtils.getFilename(fileUrl));
         }
-        
         save(entityImage);
         return entityImage;
+
+    }
+
+    @Override
+    @Transactional
+    public EntityImage saveEntityImageAsAvif(Long userId, Long entityId, MultipartFile file, String imageType) throws IOException {
+        if (entityId == null || file == null || file.isEmpty()) {
+            return null;
+        }
+        return saveEntityImage(userId, entityId, file, imageType,"image/avif");
     }
 
     @Override
@@ -186,33 +171,5 @@ public class EntityImageServiceImpl extends ServiceImpl<EntityImageMapper, Entit
         return list(queryWrapper);
     }
 
-    @Override
-    public void setEntityImagesToFiles() {
-        List<EntityImage> existingImages = list();
-        for (EntityImage img : existingImages) {
-            Long userId = entityMapper.selectById(img.getEntityId()).getUserId();
-            //处理图片在数据库问题，将文件保存在文件系统，删除数据库内
-            if (img.getImageUrl() == null || img.getImageUrl().isEmpty()) {
-                if (img.getImageData() != null) {
-                    MultipartFile multipartFile = new ByteArrayMultipartFile(
-                            img.getImageData(),
-                            "image",
-                            img.getFileName(),
-                            img.getContentType()
-                    );
-                    String fileUrl = null;
-                    try {
-                        fileUrl = fileStorageService.storeImageAsAvif (multipartFile, userId + "/entities");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    img.setImageUrl(fileUrl);
-                    img.setImageData(null);
-                    updateById(img);
-
-                }
-            }
-        }
-    }
 
 }

@@ -9,9 +9,11 @@ import { storageLocal, isAllEmpty } from "@pureadmin/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import LaySidebarItem from "../lay-sidebar/components/SidebarItem.vue";
 import LaySidebarFullScreen from "../lay-sidebar/components/SidebarFullScreen.vue";
+import { useRouter } from "vue-router";
 
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
 import Setting from "@iconify-icons/ri/settings-3-line";
+import UserLine from "@iconify-icons/ri/user-line";
 
 const menuRef = ref();
 const showLogo = ref(
@@ -32,6 +34,8 @@ const {
   avatarsStyle
 } = useNav();
 
+const router = useRouter();
+
 const defaultActive = computed(() =>
   !isAllEmpty(route.meta?.activePath) ? route.meta.activePath : route.path
 );
@@ -45,6 +49,10 @@ onMounted(() => {
     showLogo.value = key;
   });
 });
+
+const toUserProfile = () => {
+  router.push("/user/profile");
+};
 </script>
 
 <template>
@@ -85,6 +93,13 @@ onMounted(() => {
         </span>
         <template #dropdown>
           <el-dropdown-menu class="logout">
+            <el-dropdown-item @click="toUserProfile">
+              <IconifyIconOffline
+                :icon="UserLine"
+                style="margin: 5px"
+              />
+              个人信息
+            </el-dropdown-item>
             <el-dropdown-item @click="logout">
               <IconifyIconOffline
                 :icon="LogoutCircleRLine"

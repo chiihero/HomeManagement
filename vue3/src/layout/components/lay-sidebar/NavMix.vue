@@ -9,12 +9,15 @@ import { getParentPaths, findRouteByPath } from "@/router/utils";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import LaySidebarExtraIcon from "../lay-sidebar/components/SidebarExtraIcon.vue";
 import LaySidebarFullScreen from "../lay-sidebar/components/SidebarFullScreen.vue";
+import { useRouter } from "vue-router";
 
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
 import Setting from "@iconify-icons/ri/settings-3-line";
+import UserLine from "@iconify-icons/ri/user-line";
 
 const menuRef = ref();
 const defaultActive = ref(null);
+const router = useRouter();
 
 const {
   route,
@@ -51,6 +54,11 @@ watch(
     getDefaultActive(route.path);
   }
 );
+
+// 跳转到个人信息页面
+const toUserProfile = () => {
+  router.push("/user/profile");
+};
 </script>
 
 <template>
@@ -105,6 +113,13 @@ watch(
         </span>
         <template #dropdown>
           <el-dropdown-menu class="logout">
+            <el-dropdown-item @click="toUserProfile">
+              <IconifyIconOffline
+                :icon="UserLine"
+                style="margin: 5px"
+              />
+              个人信息
+            </el-dropdown-item>
             <el-dropdown-item @click="logout">
               <IconifyIconOffline
                 :icon="LogoutCircleRLine"

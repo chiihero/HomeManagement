@@ -9,6 +9,8 @@
           <el-button type="primary" class="flex items-center gap-2" @click="openTagForm(null)">
             <el-icon><Plus /></el-icon>添加标签
           </el-button>
+          <el-button type="primary" @click="loadTagList"
+          ><el-icon><Refresh /></el-icon>刷新</el-button>
         </div>
       </div>
     </el-card>
@@ -25,11 +27,8 @@
         <el-table-column type="index" width="50" />
         <el-table-column prop="name" label="标签名称" min-width="150">
           <template #default="{ row }">
-            <el-tag
-              :style="{ backgroundColor: row.color, color: getContrastColor(row.color) }"
-            >
+
               {{ row.name }}
-            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="color" label="颜色" width="100">
@@ -38,9 +37,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="entityCount" label="使用数量" width="120" />
-        <el-table-column prop="createdTime" label="创建时间" width="170">
+        <el-table-column prop="createTime" label="创建时间" width="170">
           <template #default="{ row }">
-            {{ formatDateTime(row.createdTime) }}
+            {{ formatDateTime(row.createTime) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
@@ -118,12 +117,11 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Plus, Edit, Delete, DataAnalysis, Promotion, Refresh } from '@element-plus/icons-vue';
 import { Tag } from '@/types/entity';
-import { useUserStore } from '@/store/modules/user';
 import { getTags, createTag, updateTag, deleteTag } from '@/api/tag';
 import { getContrastColor,  rgbaToHex  } from "@/utils/color";
 import { formatDateTime } from "@/utils/date";
-
-const userStore = useUserStore();
+import { useUserStoreHook } from "@/store/modules/user";
+const userStore = useUserStoreHook();
 
 const loading = ref(false);
 const tagList = ref<Tag[]>([]);
@@ -143,7 +141,7 @@ const tagForm = reactive({
   id: undefined as number | undefined,
   name: '',
   color: '#409EFF',
-  userId: undefined as number | undefined
+  userId: undefined as string | undefined
 });
 
 // 表单校验规则
@@ -159,7 +157,7 @@ const rules = {
 
 // 加载标签列表
 const loadTagList = async () => {
-  if (!userStore.currentUser?.id) {
+  if (!userStore.userId) {
     console.error('用户未登录或缺少ID');
     return;
   }
@@ -169,7 +167,7 @@ const loadTagList = async () => {
     const params = {
       current: pagination.current,
       size: pagination.size,
-      userId: userStore.currentUser.id
+      userId: userStore.userId
     };
     
     console.log('请求标签列表，参数:', params);
@@ -177,17 +175,9 @@ const loadTagList = async () => {
     console.log('标签列表响应:', response);
     
     if (response.code === 200 && response.data) {
-      if (response.data.records) {
-        tagList.value = response.data.records;
-        pagination.total = response.data.total;
-      } else if (Array.isArray(response.data)) {
         tagList.value = response.data;
         pagination.total = response.data.length;
-      } else {
-        tagList.value = [];
-        pagination.total = 0;
-      }
-      
+
       if (tagList.value.length === 0) {
         ElMessage.info('暂无标签数据，请添加');
       }
@@ -218,7 +208,7 @@ const openTagForm = (tag: Tag | null) => {
     tagForm.name = '';
     tagForm.color = '#409EFF';
   }
-  tagForm.userId = userStore.currentUser?.id;
+  tagForm.userId = userStore.userId;
   dialogVisible.value = true;
 };
 
@@ -309,16 +299,16 @@ const handleSizeChange = (size: number) => {
 
 // 监听用户登录状态变化
 watch(
-  () => userStore.isAuthenticated,
-  (isAuthenticated) => {
-    if (isAuthenticated) {
+  () => userStore.userId,
+  (userId) => {
+    if (userId) {
       loadTagList();
     }
   }
 );
 
 onMounted(() => {
-  if (userStore.isAuthenticated) {
+  if (userStore.userId) {
     loadTagList();
   }
 });

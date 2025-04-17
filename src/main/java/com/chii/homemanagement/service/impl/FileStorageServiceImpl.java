@@ -115,25 +115,26 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public String storeImageAsAvif(MultipartFile file) throws IOException {
-        return storeImageAsAvif(file, "", -1);
+        return storeImageAsAvif(file, "","", -1);
     }
 
     @Override
     public String storeImageAsAvif(MultipartFile file, String directory) throws IOException {
-        return storeImageAsAvif(file, directory, -1);
+        return storeImageAsAvif(file, directory,"", -1);
     }
 
     @Override
-    public String storeImageAsAvif(MultipartFile file, String directory, int quality) throws IOException {
+    public String storeImageAsAvif(MultipartFile file, String directory, String fileName, int quality) throws IOException {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("文件不能为空");
         }
-        
+
         // 获取原始文件名和检查其合法性
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
         if (originalFilename.contains("..")) {
             throw new IOException("文件名包含非法路径字符: " + originalFilename);
         }
+
         
         // 如果未指定质量，则根据文件大小动态计算压缩质量
         int compressionQuality = quality;
@@ -159,6 +160,12 @@ public class FileStorageServiceImpl implements FileStorageService {
             
             // 生成AVIF文件名
             String avifFilename = generateUniqueFilename(".avif");
+            //有文件名按照文件名
+            if (fileName != null && !fileName.isEmpty()){
+                avifFilename = fileName;
+            }
+
+
             Path avifFilePath = targetDirectory.resolve(avifFilename);
             
             // 使用LibAvif转换为AVIF格式

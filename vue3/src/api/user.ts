@@ -5,6 +5,7 @@
 import { http } from "@/utils/http";
 import type { User } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
+import { useUserStoreHook } from "@/store/modules/user";
 
 /**
  * 用户个人资料接口
@@ -61,18 +62,6 @@ export function getUserInfo(): Promise<ResponseResult<Record<string, any>>> {
 }
 
 /**
- * 修改用户密码
- * @param data - 包含当前密码和新密码的对象
- * @returns 修改结果
- */
-export function changePassword(data: {
-  currentPassword: string;
-  newPassword: string;
-}): Promise<ResponseResult<boolean>> {
-  return http.post("/auth/change-password", {data: data});
-}
-
-/**
  * 更新用户基本信息
  * @param data - 要更新的用户数据
  * @returns 更新后的用户信息
@@ -100,10 +89,11 @@ export const updateUserProfile = (
  * @returns 更新结果
  */
 export const updateUserPassword = (params: {
+  
   currentPassword: string;
   newPassword: string;
 }): Promise<ResponseResult<boolean>> => {
-  return http.put("/users/password", {data: params});
+  return http.put("/users/password", {data: {userId, ...params}});
 };
 
 /**
@@ -116,6 +106,7 @@ export const uploadUserAvatar = (
 ): Promise<ResponseResult<string>> => {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("userId", userId);
 
   return http.post("/users/avatar", {data: formData}, {
     headers: {
@@ -129,7 +120,7 @@ export const uploadUserAvatar = (
  * @returns 删除结果
  */
 export const deleteUserAvatar = (): Promise<ResponseResult<boolean>> => {
-  return http.delete("/users/avatar");
+  return http.delete("/users/avatar", {data: {userId}});
 };
 
 /**
@@ -140,7 +131,7 @@ export const deleteUserAvatar = (): Promise<ResponseResult<boolean>> => {
 export const updateUserNotifications = (
   data: UserNotificationSettings
 ): Promise<ResponseResult<UserNotificationSettings>> => {
-  return http.put("/user/notifications",  {data: data});
+  return http.put("/user/notifications",  {data: {userId, ...data}});
 };
 
 /**
@@ -148,7 +139,7 @@ export const updateUserNotifications = (
  * @returns 用户所有设置项
  */
 export const getUserSettings = (): Promise<ResponseResult<UserSettings[]>> => {
-  return http.get("/settings/user");
+  return http.get("/settings/user", {data: {userId}});
 };
 
 /**
@@ -161,5 +152,5 @@ export const updateUserSetting = (
   key: string,
   value: string
 ): Promise<ResponseResult<UserSettings>> => {
-  return http.put(`/settings/user/${key}`, { data:value });
+  return http.put(`/settings/user/${key}`, { data: {userId, value} });
 };

@@ -64,11 +64,12 @@ public interface FileStorageService {
      *
      * @param file 要存储的图片文件
      * @param directory 存储子目录，例如 "entities", "users"等
+     * @param fileName 存储文件名
      * @param quality 压缩质量 (0-63)，数值越低质量越高
      * @return 转换后的AVIF图片访问URL
      * @throws IOException 如果存储或转换过程中发生IO异常
      */
-    String storeImageAsAvif(MultipartFile file, String directory, int quality) throws IOException;
+    String storeImageAsAvif(MultipartFile file, String directory, String fileName, int quality) throws IOException;
 
     /**
      * 删除文件
