@@ -117,7 +117,7 @@ public class SettingController {
                 settings.add(setting);
             }
             
-            systemSettingService.saveSystemSettings(settings, currentUser.getId());
+            systemSettingService.saveSystemSettings(settings, currentUser.getUserId());
             
             log.info("更新系统设置成功");
             return ApiResponse.success(true);
@@ -158,7 +158,7 @@ public class SettingController {
                 return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
             }
             
-            systemSettingService.initDefaultSystemSettings(currentUser.getId());
+            systemSettingService.initDefaultSystemSettings(currentUser.getUserId());
             
             log.info("初始化默认系统设置成功");
             return ApiResponse.success(true);
@@ -268,7 +268,7 @@ public class SettingController {
             
             List<SystemSetting> settings = new ArrayList<>();
             settings.add(logoSetting);
-            systemSettingService.saveSystemSettings(settings, currentUser.getId());
+            systemSettingService.saveSystemSettings(settings, currentUser.getUserId());
             
             // 返回Logo URL
             Map<String, String> result = new HashMap<>();

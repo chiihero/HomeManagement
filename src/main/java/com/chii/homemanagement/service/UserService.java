@@ -14,10 +14,10 @@ public interface UserService extends UserDetailsService {
     /**
      * 根据ID获取用户
      *
-     * @param id 用户ID
+     * @param userId 用户ID
      * @return 用户对象
      */
-    User getUserById(Long id);
+    User getUserById(Long userId);
 
     /**
      * 根据用户名获取用户
@@ -46,10 +46,10 @@ public interface UserService extends UserDetailsService {
     /**
      * 删除用户
      *
-     * @param id 用户ID
+     * @param userId 用户ID
      * @return 是否删除成功
      */
-    boolean deleteUser(Long id);
+    boolean deleteUser(Long userId);
 
     /**
      * 获取所有用户
@@ -108,17 +108,17 @@ public interface UserService extends UserDetailsService {
     /**
      * 上传当前登录用户的头像
      *
-     * @param id 用户id
+     * @param userId 用户id
      * @param file 头像
      * @return 用户头像url
      */
-    User uploadAvatar(Long id, MultipartFile file);
+    User uploadAvatar(Long userId, MultipartFile file);
 
     /**
      * 删除当前登录用户的头像
      *
-     * @param id 用户id
+     * @param userId 用户id
      */
-    User deeleteAvatar(Long id);
+    User deeleteAvatar(Long userId);
 
 } 

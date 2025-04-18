@@ -86,7 +86,7 @@ public class AuthController {
             
             // 用户信息
             Map<String, Object> userInfo = new HashMap<>();
-            userInfo.put("id", user.getId());
+            userInfo.put("userId", user.getUserId());
             userInfo.put("username", user.getUsername());
             userInfo.put("email", user.getEmail());
             userInfo.put("phone", user.getPhone());

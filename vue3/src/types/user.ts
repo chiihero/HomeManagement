@@ -1,6 +1,6 @@
 // 用户接口定义
 export interface User {
-  id: number;
+  userId: number;
   username: string;
   email: string;
   avatar: string;

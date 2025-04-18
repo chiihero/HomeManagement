@@ -305,7 +305,7 @@ const initialSearchForm = {
   specification: "",
   status: "",
   usageFrequency: "",
-  userId: userStore.currentUser.id || "",
+  userId: userStore.userId || "",
   parentId: "" as string | undefined
 };
 

@@ -5,14 +5,13 @@
 import { http } from "@/utils/http";
 import type { User } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
-import { useUserStoreHook } from "@/store/modules/user";
 
 /**
  * 用户个人资料接口
  */
 export interface UserProfile {
   /** 用户ID */
-  id?: number;
+  userId?: number;
   /** 用户名 */
   username: string;
   /** 用户昵称 */

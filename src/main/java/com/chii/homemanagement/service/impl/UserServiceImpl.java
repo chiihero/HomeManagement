@@ -68,8 +68,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User getUserById(Long id) {
-        return getById(id);
+    public User getUserById(Long userId) {
+        return getById(userId);
     }
 
     @Override
@@ -101,8 +101,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean deleteUser(Long id) {
-        return removeById(id);
+    public boolean deleteUser(Long userId) {
+        return removeById(userId);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 使用JWT创建密码重置令牌，设置特殊的claims
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", "password_reset");
-        claims.put("userId", user.getId().toString());
+        claims.put("userId", user.getUserId().toString());
         claims.put("id", UUID.randomUUID().toString()); // 确保令牌唯一性
         
         // 使用generateToken方法，该方法会使用JwtUtil中的doGenerateToken
@@ -181,12 +181,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User uploadAvatar(Long id, MultipartFile file) {
+    public User uploadAvatar(Long userId, MultipartFile file) {
         try {
             // 更新用户头像URL
             User user = new User();
-            user.setId(id);
-            String avatarUrl = fileStorageService.storeImageAsAvif(file, id.toString(),"avatar.avif",-1);;
+            user.setUserId(userId);
+            String avatarUrl = fileStorageService.storeImageAsAvif(file, userId.toString(),"avatar.avif",-1);;
             user.setAvatar(avatarUrl);
             user.setUpdateTime(LocalDateTime.now());
             updateUser(user);
@@ -197,10 +197,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User deeleteAvatar(Long id) {
+    public User deeleteAvatar(Long userId) {
         // 更新用户信息，清空头像URL
         User user = new User();
-        user.setId(id);
+        user.setUserId(userId);
         user.setAvatar(null);
         user.setUpdateTime(LocalDateTime.now());
         updateUser(user);
