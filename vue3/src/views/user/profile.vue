@@ -9,6 +9,7 @@ import {
   getUserInfo
 } from "@/api/user";
 import type { UserProfile } from "@/api/user";
+import { Plus } from '@element-plus/icons-vue';
 
 const userStore = useUserStoreHook();
 const avatarUrl = ref(userStore.avatar || "");

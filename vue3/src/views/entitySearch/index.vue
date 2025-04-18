@@ -283,10 +283,7 @@ import {
   Refresh,
   Edit,
   Delete,
-  View,
-  Picture,
-  Document,
-  Plus
+  View
 } from "@element-plus/icons-vue";
 
 // 导入组件和组合函数
