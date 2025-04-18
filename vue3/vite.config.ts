@@ -70,7 +70,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
             'echarts': ['echarts'],
             'utils': ['@pureadmin/utils', '@vueuse/core', 'dayjs', 'axios'],
             'ui-components': [
-              '@pureadmin/descriptions', 
+              // '@pureadmin/descriptions', 
               '@pureadmin/table'
             ]
           },

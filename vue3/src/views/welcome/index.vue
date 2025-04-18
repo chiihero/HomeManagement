@@ -5,6 +5,12 @@ defineOptions({
 
 const updateNotes = [
 {
+    version: "v0.3.2",
+    date: "2025年4月19日",
+    notes: ["精简项目组件，优化echarts、 element-plus的引用，将体积减少50%"
+    ]
+  },
+{
     version: "v0.3.1",
     date: "2025年4月18日",
     notes: ["完善压缩代码",

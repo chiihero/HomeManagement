@@ -6,7 +6,7 @@ import {
   // LineChart      // 折线图
 } from "echarts/charts";
 import { 
-  CanvasRenderer,  // Canvas渲染器
+  // CanvasRenderer,  // Canvas渲染器
   SVGRenderer      // SVG渲染器
 } from "echarts/renderers";
 import {
@@ -27,7 +27,7 @@ use([
   PieChart,          // 饼图
   BarChart,          // 柱状图
   // LineChart,         // 折线图
-  CanvasRenderer,    // Canvas渲染器
+  // CanvasRenderer,    // Canvas渲染器
   SVGRenderer,       // SVG渲染器
   GridComponent,     // 网格组件
   TitleComponent,    // 标题组件
