@@ -209,7 +209,7 @@ import { formatDate } from "@/utils/date";
 const router = useRouter();
 const userStore = useUserStoreHook();
 const userInfo = computed(
-  () => userStore.currentUser || { nickname: "", username: "" }
+  () => userStore.userId || { nickname: "", username: "" }
 );
 
 // 当前日期和欢迎语

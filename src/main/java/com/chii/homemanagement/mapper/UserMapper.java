@@ -28,12 +28,12 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 更新用户状态
      *
-     * @param id     用户ID
+     * @param userId     用户ID
      * @param status 状态
      * @return 影响行数
      */
-    @Update("UPDATE user SET status = #{status} WHERE id = #{id}")
-    int updateStatus(@Param("id") Long id, @Param("status") Integer status);
+    @Update("UPDATE user SET status = #{status} WHERE userId = #{userId}")
+    int updateStatus(@Param("userId") Long userId, @Param("status") Integer status);
     
     /**
      * 根据用户ID获取用户名
@@ -41,6 +41,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @param userId 用户ID
      * @return 用户名
      */
-    @Select("SELECT username FROM user WHERE id = #{userId}")
+    @Select("SELECT username FROM user WHERE userId = #{userId}")
     String getUserName(@Param("userId") Long userId);
 } 

@@ -10,7 +10,7 @@ import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, getToken, setToken, removeToken, userKey } from "@/utils/auth";
 import { storageLocal } from "@pureadmin/utils";
 import { login, logout, refreshToken, register } from "@/api/auth";
-import { getUserInfo, updateUserInfo } from "@/api/user";
+// import { getUserInfo, updateUserInfo } from "@/api/user";
 import { ElMessage } from "element-plus";
 import type { User } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
@@ -69,13 +69,7 @@ export const useUserStore = defineStore("pure-user", {
     isAuthenticated(): boolean {
       return !!this.token && !isTokenExpired(this.tokenExpiry);
     },
-    /**
-     * 获取当前用户信息
-     * @returns 当前用户对象或null
-     */
-    currentUser(): User | null {
-      return this.userId;
-    },
+
     /**
      * 检查用户是否有指定权限
      * @returns 用于检查特定权限的函数
@@ -197,7 +191,6 @@ export const useUserStore = defineStore("pure-user", {
       nickname?: string;
       roles?: Array<string>;
       permissions?: Array<string>;
-      refreshToken?: string;
       expires?: number;
     }) {
       // 更新store中的状态
@@ -210,7 +203,6 @@ export const useUserStore = defineStore("pure-user", {
 
       // 保存到本地存储
       storageLocal().setItem(userKey, {
-        refreshToken: data.refreshToken || "",
         expires: data.expires || 0,
         avatar: data.avatar || "",
         userId: data.userId || "",
@@ -277,19 +269,34 @@ export const useUserStore = defineStore("pure-user", {
           const { token, refreshToken, expiresIn, user } = response.data;
 
           // 设置认证信息
-          this.setAuth(token, refreshToken, expiresIn);
+          // this.setAuth(token, refreshToken, expiresIn);
 
-          // 保存用户信息到本地存储
-          this.setUserInfo({
-            avatar: user.avatar || "",
-            userId: user.id,
-            username: user.username,
-            nickname: user.username, // 如果后端没有提供nickname，使用username代替
-            roles: [user.role],      // 将用户角色转为数组格式
-            permissions: [],         // 根据实际情况填充权限列表
-            refreshToken,
-            expires: Date.now() + expiresIn * 1000
+          // // 保存用户信息到本地存储
+          // this.setUserInfo({
+          //   avatar: user.avatar || "",
+          //   userId: user.id,
+          //   username: user.username,
+          //   nickname: user.username, // 如果后端没有提供nickname，使用username代替
+          //   roles: [user.role],      // 将用户角色转为数组格式
+          //   permissions: [],         // 根据实际情况填充权限列表
+          //   refreshToken,
+          //   expires: Date.now() + expiresIn * 1000
+          // });
+
+          // 转换过期时间为时间戳
+          this.tokenExpiry = Date.now() + expiresIn * 1000;
+
+          // 同时设置token到本地存储
+          setToken({
+            accessToken: token,
+            refreshToken: refreshToken,
+            expires: new Date(this.tokenExpiry),
+            ...user
           });
+
+          // 更新最后活动时间
+          this.updateLastActivity();
+
 
           // 记住登录状态
           this.SET_ISREMEMBERED(!!data.remember);
@@ -313,51 +320,51 @@ export const useUserStore = defineStore("pure-user", {
      * 获取用户信息
      * @returns 获取结果，成功返回true，失败返回false
      */
-    async fetchUserInfo(): Promise<boolean> {
-      const token = getToken();
-      if (!token) return false;
+    // async fetchUserInfo(): Promise<boolean> {
+    //   const token = getToken();
+    //   if (!token) return false;
 
-      this.loading = true;
-      try {
-        const response = await getUserInfo();
+    //   this.loading = true;
+    //   try {
+    //     const response = await getUserInfo();
 
-        if (response.code === 200 && response.data) {
-          // 将后端返回的用户信息转换为前端用户模型
-          const userInfo = response.data;
+    //     if (response.code === 200 && response.data) {
+    //       // 将后端返回的用户信息转换为前端用户模型
+    //       const userInfo = response.data;
 
-          // 保存用户信息到本地存储
-          this.setUserInfo({
-            avatar: userInfo.avatar || "",
-            userId: userInfo.id,
-            username: userInfo.username,
-            nickname: userInfo.username, // 如果后端没有提供nickname，使用username代替
-            roles: [userInfo.role],      // 将用户角色转为数组格式
-            permissions: []              // 根据实际情况填充权限列表
-          });
+    //       // 保存用户信息到本地存储
+    //       this.setUserInfo({
+    //         avatar: userInfo.avatar || "",
+    //         userId: userInfo.id,
+    //         username: userInfo.username,
+    //         nickname: userInfo.username, // 如果后端没有提供nickname，使用username代替
+    //         roles: [userInfo.role],      // 将用户角色转为数组格式
+    //         permissions: []              // 根据实际情况填充权限列表
+    //       });
           
-          return true;
-        } else {
-          // 如果获取用户信息失败，尝试刷新Token
-          if (this.refreshTokenValue) {
-            const refreshed = await this.refreshUserToken();
-            if (refreshed) {
-              // 再次尝试获取用户信息
-              return await this.fetchUserInfo();
-            }
-          }
+    //       return true;
+    //     } else {
+    //       // 如果获取用户信息失败，尝试刷新Token
+    //       if (this.refreshTokenValue) {
+    //         const refreshed = await this.refreshUserToken();
+    //         if (refreshed) {
+    //           // 再次尝试获取用户信息
+    //           return await this.fetchUserInfo();
+    //         }
+    //       }
 
-          // 如果刷新Token失败或没有刷新Token，则登出
-          this.logOut();
-          return false;
-        }
-      } catch (error) {
-        console.error("获取用户信息错误:", error);
-        this.logOut();
-        return false;
-      } finally {
-        this.loading = false;
-      }
-    },
+    //       // 如果刷新Token失败或没有刷新Token，则登出
+    //       this.logOut();
+    //       return false;
+    //     }
+    //   } catch (error) {
+    //     console.error("获取用户信息错误:", error);
+    //     this.logOut();
+    //     return false;
+    //   } finally {
+    //     this.loading = false;
+    //   }
+    // },
 
     /** 
      * 用户登出

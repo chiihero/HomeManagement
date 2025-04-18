@@ -1,5 +1,5 @@
 package com.chii.homemanagement.entity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -15,8 +15,13 @@ import java.time.LocalDateTime;
 public class User {
 
     @TableId(type = IdType.AUTO)
-    @Schema(description = "用户ID", required = true)
+    @Schema(description = "用户ID")
     private Long id;
+
+    @TableField(exist = false)
+    @Schema(description = "用户ID", required = true)
+    private Long userId;
+
 
     @Schema(description = "用户名", required = true, example = "admin")
     private String username;
@@ -49,4 +54,9 @@ public class User {
 
     @Schema(description = "更新时间", example = "2023-01-01 12:00:00")
     private LocalDateTime updateTime;
+
+    // 添加 getUserId() 方法，返回 id 的值
+    public Long getUserId() {
+        return this.id;
+    }
 }

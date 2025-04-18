@@ -43,9 +43,6 @@ public class UserController {
     @Autowired
     private SystemSettingService systemSettingService;
     
-    @Value("${app.upload.dir:uploads}")
-    private String uploadDir;
-
     /**
      * 获取当前用户信息 (适用于前端导航栏和认证检查)
      */
@@ -75,7 +72,7 @@ public class UserController {
             
             // 准备返回数据
             Map<String, Object> userInfo = new HashMap<>();
-            userInfo.put("id", user.getId());
+            userInfo.put("userId", user.getUserId());
             userInfo.put("username", user.getUsername());
             userInfo.put("email", user.getEmail());
             userInfo.put("phone", user.getPhone());
@@ -102,14 +99,14 @@ public class UserController {
             
 
             // 获取用户实体信息
-            User currentUser = userService.getUserById(userParam.getId());
+            User currentUser = userService.getUserById(userParam.getUserId());
             if (currentUser == null) {
                 return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
 
             // 更新个人资料
             User user = new User();
-            user.setId(currentUser.getId());
+            user.setUserId(currentUser.getUserId());
             // 只允许更新以下字段
             user.setNickname(userParam.getNickname());
             user.setEmail(userParam.getEmail());
@@ -119,7 +116,7 @@ public class UserController {
             userService.updateUser(user);
             
             // 更新session中的用户信息
-            User updatedUser = userService.getUserById(currentUser.getId());
+            User updatedUser = userService.getUserById(currentUser.getUserId());
             
             // 清除密码
             updatedUser.setPassword(null);
@@ -163,7 +160,7 @@ public class UserController {
 
             // 更新密码
             User user = new User();
-            user.setId(currentUser.getId());
+            user.setUserId(currentUser.getUserId());
             user.setPassword(newPassword);
             user.setUpdateTime(LocalDateTime.now());
 
@@ -199,7 +196,7 @@ public class UserController {
                 return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "请选择要上传的文件");
             }
             
-            User user = userService.uploadAvatar(currentUser.getId(), file);
+            User user = userService.uploadAvatar(currentUser.getUserId(), file);
             
             log.info("上传头像成功: username={}", currentUser.getUsername());
             return ApiResponse.success(user);
@@ -224,7 +221,7 @@ public class UserController {
                 return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
             
-            User user = userService.deeleteAvatar(currentUser.getId());
+            User user = userService.deeleteAvatar(currentUser.getUserId());
             
             log.info("删除头像成功: username={}", currentUser.getUsername());
             return ApiResponse.success(user);
@@ -261,7 +258,7 @@ public class UserController {
                 emailNotificationSetting.setSettingKey("email_notification");
                 emailNotificationSetting.setSettingValue(String.valueOf(emailNotification));
                 emailNotificationSetting.setType("user");
-                systemSettingService.saveUserSetting(emailNotificationSetting, currentUser.getId());
+                systemSettingService.saveUserSetting(emailNotificationSetting, currentUser.getUserId());
             }
             
             // 保存到期提醒设置
@@ -270,7 +267,7 @@ public class UserController {
                 expirationReminderSetting.setSettingKey("expiration_reminder");
                 expirationReminderSetting.setSettingValue(String.valueOf(expirationReminder));
                 expirationReminderSetting.setType("user");
-                systemSettingService.saveUserSetting(expirationReminderSetting, currentUser.getId());
+                systemSettingService.saveUserSetting(expirationReminderSetting, currentUser.getUserId());
             }
             
             // 保存提前提醒天数设置
@@ -279,7 +276,7 @@ public class UserController {
                 reminderDaysSetting.setSettingKey("reminder_days");
                 reminderDaysSetting.setSettingValue(String.valueOf(reminderDays));
                 reminderDaysSetting.setType("user");
-                systemSettingService.saveUserSetting(reminderDaysSetting, currentUser.getId());
+                systemSettingService.saveUserSetting(reminderDaysSetting, currentUser.getUserId());
             }
             
             log.info("更新通知设置成功: username={}", currentUser.getUsername());
@@ -305,7 +302,7 @@ public class UserController {
                 return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
             
-            Map<String, Object> userSettings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
+            Map<String, Object> userSettings = systemSettingService.getUserSettingsAsMap(currentUser.getUserId());
             
             // 如果没有设置，返回默认值
             Map<String, Object> result = new HashMap<>();
@@ -336,7 +333,7 @@ public class UserController {
                 return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
 
-            Map<String, Object> settings = systemSettingService.getUserSettingsAsMap(currentUser.getId());
+            Map<String, Object> settings = systemSettingService.getUserSettingsAsMap(currentUser.getUserId());
             
             log.info("获取用户个人设置成功: username={}", currentUser.getUsername());
             return ApiResponse.success(settings);
@@ -367,7 +364,7 @@ public class UserController {
                 setting.setSettingKey(entry.getKey());
                 setting.setSettingValue(entry.getValue().toString());
                 setting.setType("user");
-                systemSettingService.saveUserSetting(setting, currentUser.getId());
+                systemSettingService.saveUserSetting(setting, currentUser.getUserId());
             }
             
             log.info("更新用户个人设置成功: username={}", currentUser.getUsername());
@@ -394,7 +391,7 @@ public class UserController {
                 return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
             
-            systemSettingService.deleteUserSetting(key, currentUser.getId());
+            systemSettingService.deleteUserSetting(key, currentUser.getUserId());
             
             log.info("删除用户个人设置成功: key={}, username={}", key, currentUser.getUsername());
             return ApiResponse.success(true);

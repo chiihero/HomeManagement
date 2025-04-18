@@ -4,6 +4,13 @@ defineOptions({
 });
 
 const updateNotes = [
+{
+    version: "v0.3.1",
+    date: "2025年4月18日",
+    notes: ["完善压缩代码",
+    "添加个人资料修改页面（待完善）"
+    ]
+  },
   {
     version: "v0.3.0",
     date: "2025年4月17日",

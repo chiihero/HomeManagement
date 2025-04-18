@@ -147,11 +147,17 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     const token = getToken();
 
     if (token && !userStore.userId) {
-      try {
-        await userStore.fetchUserInfo();
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
+      if (whiteList.indexOf(to.path) !== -1) {
+        next();
+      } else {
+        removeToken();
+        next({ path: "/auth/login" });
       }
+      // try {
+      //   await userStore.fetchUserInfo();
+      // } catch (error) {
+      //   console.error("Failed to fetch user info:", error);
+      // }
     }
   }
 

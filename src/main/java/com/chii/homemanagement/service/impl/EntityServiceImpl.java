@@ -191,7 +191,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
             if (authentication != null && authentication.isAuthenticated()) {
                 String username = authentication.getName();
                 User user = userService.getUserByUsername(username);
-                entity.setCreateUserId(user != null ? user.getId() : 1L);
+                entity.setCreateUserId(user != null ? user.getUserId() : 1L);
                 log.debug("设置创建用户ID: name={}, createUserId={}", entity.getName(), entity.getCreateUserId());
             } else {
                 entity.setCreateUserId(1L);
