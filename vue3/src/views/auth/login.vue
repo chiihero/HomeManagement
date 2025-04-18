@@ -55,9 +55,9 @@ const onLogin = async (formEl: FormInstance | undefined) => {
         .then(async res => {
           if (res.success) {
             // 确保用户信息正确设置
-            if (!useUserStoreHook().user) {
-              await useUserStoreHook().fetchUserInfo();
-            }
+            // if (!useUserStoreHook().user) {
+            //   await useUserStoreHook().fetchUserInfo();
+            // }
 
             // 全部采取静态路由模式
             usePermissionStoreHook().handleWholeMenus([]);
