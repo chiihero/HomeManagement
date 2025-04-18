@@ -46,6 +46,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       }
     },
     plugins: getPluginsList(VITE_CDN, VITE_COMPRESSION),
+
     // https://cn.vitejs.dev/config/dep-optimization-options.html#dep-optimization-options
     optimizeDeps: {
       include,
@@ -63,6 +64,16 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         },
         // 静态资源分类打包
         output: {
+          manualChunks: {
+            'vue-vendor': ['vue', 'vue-router', 'pinia'],
+            'element-plus': ['element-plus'],
+            'echarts': ['echarts'],
+            'utils': ['@pureadmin/utils', '@vueuse/core', 'dayjs', 'axios'],
+            'ui-components': [
+              '@pureadmin/descriptions', 
+              '@pureadmin/table'
+            ]
+          },
           chunkFileNames: "static/js/[name]-[hash].js",
           entryFileNames: "static/js/[name]-[hash].js",
           assetFileNames: "static/[ext]/[name]-[hash].[ext]"

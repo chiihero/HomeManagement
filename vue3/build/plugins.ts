@@ -9,7 +9,7 @@ import removeNoMatch from "vite-plugin-router-warn";
 import { visualizer } from "rollup-plugin-visualizer";
 import removeConsole from "vite-plugin-remove-console";
 import { codeInspectorPlugin } from "code-inspector-plugin";
-
+import ElementPlus from "unplugin-element-plus/vite";
 export function getPluginsList(
   VITE_CDN: boolean,
   VITE_COMPRESSION: ViteCompression
@@ -39,6 +39,7 @@ export function getPluginsList(
 
     // svg组件化支持
     svgLoader(),
+    ElementPlus({}),
     VITE_CDN ? cdn : null,
     configCompressPlugin(VITE_COMPRESSION),
     // 线上环境删除console

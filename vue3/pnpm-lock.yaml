@@ -47,9 +47,6 @@ importers:
       mitt:
         specifier: ^3.0.1
         version: 3.0.1
-      moment:
-        specifier: ^2.30.1
-        version: 2.30.1
       nprogress:
         specifier: ^0.2.0
         version: 0.2.0
@@ -222,6 +219,9 @@ importers:
       typescript:
         specifier: 5.6.3
         version: 5.6.3
+      unplugin-element-plus:
+        specifier: ^0.9.1
+        version: 0.9.1
       vite:
         specifier: ^6.2.6
         version: 6.2.6(@types/node@20.17.30)(jiti@2.4.2)(sass@1.86.3)(yaml@2.7.1)
@@ -1831,6 +1831,9 @@ packages:
   es-module-lexer@0.4.1:
     resolution: {integrity: sha512-ooYciCUtfw6/d2w56UVeqHPcoCFAiJdz5XOkYpv/Txl1HMUozpXjz/2RIQgqwKdXNDPSF1W7mJCFse3G+HDyAA==}
 
+  es-module-lexer@1.6.0:
+    resolution: {integrity: sha512-qqnD1yMU6tk/jnaMosogGySTZP8YtUgAffA9nMN+E/rjxcfRQ6IEk7IiozUjgxKoFHBGjTLnrHB/YC45r/59EQ==}
+
   es-object-atoms@1.1.1:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
@@ -2578,9 +2581,6 @@ packages:
 
   mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
-
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -3490,6 +3490,10 @@ packages:
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
+
+  unplugin-element-plus@0.9.1:
+    resolution: {integrity: sha512-TtQ7bj82gM1Hw5A+LmG/oFrvYb6L0BqhxVUl7djMiicvk7LjdUiP70QhTKaBY/tiFR9NJCIPYSmw4naCuhK7Hg==}
+    engines: {node: '>=18.12.0'}
 
   unplugin-utils@0.2.4:
     resolution: {integrity: sha512-8U/MtpkPkkk3Atewj1+RcKIjb5WBimZ/WSLhhR3w6SsIj8XJuKTacSP8g+2JhfSGw0Cb125Y+2zA/IzJZDVbhA==}
@@ -5339,6 +5343,8 @@ snapshots:
 
   es-module-lexer@0.4.1: {}
 
+  es-module-lexer@1.6.0: {}
+
   es-object-atoms@1.1.1:
     dependencies:
       es-errors: 1.3.0
@@ -6125,8 +6131,6 @@ snapshots:
       ufo: 1.6.1
     optional: true
 
-  moment@2.30.1: {}
-
   ms@2.1.3: {}
 
   muggle-string@0.4.1: {}
@@ -6264,8 +6268,7 @@ snapshots:
   path-type@6.0.0:
     optional: true
 
-  pathe@2.0.3:
-    optional: true
+  pathe@2.0.3: {}
 
   perfect-debounce@1.0.0:
     optional: true
@@ -7079,18 +7082,23 @@ snapshots:
 
   universalify@2.0.1: {}
 
+  unplugin-element-plus@0.9.1:
+    dependencies:
+      es-module-lexer: 1.6.0
+      magic-string: 0.30.17
+      unplugin: 2.3.2
+      unplugin-utils: 0.2.4
+
   unplugin-utils@0.2.4:
     dependencies:
       pathe: 2.0.3
       picomatch: 4.0.2
-    optional: true
 
   unplugin@2.3.2:
     dependencies:
       acorn: 8.14.1
       picomatch: 4.0.2
       webpack-virtual-modules: 0.6.2
-    optional: true
 
   untyped@2.0.0:
     dependencies:
@@ -7230,8 +7238,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  webpack-virtual-modules@0.6.2:
-    optional: true
+  webpack-virtual-modules@0.6.2: {}
 
   which@1.3.1:
     dependencies:

@@ -193,7 +193,7 @@
 import { ref, computed, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Box, Wallet, CircleClose, Refresh } from "@element-plus/icons-vue";
-import moment from "moment";
+import dayjs from "dayjs";
 import Pie from "@/components/charts/Pie.vue";
 import Bar from "@/components/charts/Bar.vue";
 import {
@@ -213,9 +213,9 @@ const userInfo = computed(
 );
 
 // 当前日期和欢迎语
-const currentDate = computed(() => moment().format("YYYY年MM月DD日"));
+const currentDate = computed(() => dayjs().format("YYYY年MM月DD日"));
 const welcomeMessage = computed(() => {
-  const hour = moment().hour();
+  const hour = dayjs().hour();
   if (hour < 6) {
     return "夜深了，注意休息！";
   } else if (hour < 9) {

@@ -7,11 +7,10 @@ import router from "./router";
 import { setupStore } from "@/store";
 import { getPlatformConfig } from "./config";
 import { MotionPlugin } from "@vueuse/motion";
-// import { useEcharts } from "@/plugins/echarts";
+import { useEcharts } from "@/plugins/echarts";
 import { createApp, type Directive } from "vue";
 import { useElementPlus } from "@/plugins/elementPlus";
 import { injectResponsiveStorage } from "@/utils/responsive";
-import { useUserStoreHook } from "@/store/modules/user";
 
 import Table from "@pureadmin/table";
 // import PureDescriptions from "@pureadmin/descriptions";
@@ -81,9 +80,9 @@ getPlatformConfig(app).then(async config => {
   injectResponsiveStorage(app, config);
   
   // 挂载插件
-  app.use(MotionPlugin).use(useElementPlus).use(Table);
+  app.use(MotionPlugin).use(useElementPlus).use(Table)
   // .use(PureDescriptions)
-  // .use(useEcharts);
+  .use(useEcharts);
   
   // 挂载应用到DOM
   app.mount("#app");
