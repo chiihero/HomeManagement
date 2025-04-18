@@ -5,6 +5,8 @@
 import { http } from "@/utils/http";
 import type { User } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
+import { useUserStoreHook } from "@/store/modules/user";
+const userId = useUserStoreHook().userId;
 
 /**
  * 用户个人资料接口
@@ -57,7 +59,7 @@ export interface UserSettings {
  * @returns 包含用户信息的响应
  */
 export function getUserInfo(): Promise<ResponseResult<Record<string, any>>> {
-  return http.get("/users/info");
+  return http.get(`/users/info/${userId}`);
 }
 
 /**
@@ -104,8 +106,8 @@ export const uploadUserAvatar = (
   file: File
 ): Promise<ResponseResult<string>> => {
   const formData = new FormData();
-  formData.append("file", file);
   formData.append("userId", userId);
+  formData.append("image", file);
 
   return http.post("/users/avatar", {data: formData}, {
     headers: {

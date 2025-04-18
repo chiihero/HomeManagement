@@ -1,20 +1,20 @@
 -- 用户表
 CREATE TABLE IF NOT EXISTS `user` (
-    `userId` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
     `password` VARCHAR(100) NOT NULL COMMENT '密码',
     `email` VARCHAR(100) COMMENT '邮箱',
     `phone` VARCHAR(20) COMMENT '手机号',
     `nickname` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
     `avatar` VARCHAR(255) COMMENT '头像URL',
-    `role` varchar(50) NOT NULL DEFAULT 'USER' COMMENT '角色：ADMIN-管理员，USER-普通用户',
+    `roles` varchar(50) NOT NULL DEFAULT 'USER' COMMENT '角色：ADMIN-管理员，USER-普通用户',
     `status` VARCHAR(20) NOT NULL DEFAULT 'active' COMMENT '状态: active-活跃, locked-锁定, disabled-禁用',
     `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (`userId`),
+    PRIMARY KEY (`id`),
     UNIQUE KEY `uk_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
-ALTER TABLE `user` ADD COLUMN `role` varchar(50) DEFAULT "USER" COMMENT "角色：ADMIN-管理员，USER-普通用户" AFTER `avatar`
+ALTER TABLE `user` ADD COLUMN `roles` varchar(50) DEFAULT "USER" COMMENT "角色：ADMIN-管理员，USER-普通用户" AFTER `avatar`
 
 -- 标签表
 CREATE TABLE IF NOT EXISTS `tag` (

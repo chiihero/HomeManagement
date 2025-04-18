@@ -43,7 +43,7 @@ public class User {
 
     // 修改role字段注解
     @Schema(description = "角色：ADMIN-管理员，USER-普通用户", allowableValues = {"ADMIN", "USER"}, defaultValue = "USER")
-    private String role;
+    private String roles;
 
     // 修改status字段注解
     @Schema(description = "状态: active-活跃, locked-锁定, disabled-禁用", defaultValue = "active")
@@ -59,4 +59,10 @@ public class User {
     public Long getUserId() {
         return this.id;
     }
+
+    public void setUserId(Long userId) {
+        this.id = userId;
+    }
+
+
 }

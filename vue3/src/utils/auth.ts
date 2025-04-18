@@ -112,13 +112,12 @@ export function setToken(data: DataInfo<Date>) {
 
   // 如果有用户ID和角色信息，使用传入的数据
   if (data.userId && data.roles) {
-    const { username, roles } = data;
     setUserKey({
       avatar: data?.avatar ?? "",
       userId: data?.userId ?? "",
-      username,
+      username: data?.username ?? "",
       nickname: data?.nickname ?? "",
-      roles,
+      roles: data?.roles ?? "",
       permissions: data?.permissions ?? []
     });
   } else {

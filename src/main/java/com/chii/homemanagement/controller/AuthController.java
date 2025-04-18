@@ -91,7 +91,7 @@ public class AuthController {
             userInfo.put("email", user.getEmail());
             userInfo.put("phone", user.getPhone());
             userInfo.put("avatar", user.getAvatar());
-            userInfo.put("role", user.getRole());
+            userInfo.put("roles", user.getRoles());
             userInfo.put("status", user.getStatus());
             
             // 返回数据包括token和用户信息
@@ -211,7 +211,7 @@ public class AuthController {
             user.setUsername(username);
             user.setPassword(password); // Service层会处理密码加密
             user.setEmail(email);
-            user.setRole("USER"); // 默认角色
+            user.setRoles("USER"); // 默认角色
             user.setStatus("active"); // 默认状态
             user.setCreateTime(LocalDateTime.now());
             

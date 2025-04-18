@@ -105,7 +105,7 @@ public class SettingController {
             }
             
             // 检查是否有管理员权限
-            if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
+            if (currentUser.getRoles() == null || !currentUser.getRoles().equals("ADMIN")) {
                 return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
             }
 
@@ -154,7 +154,7 @@ public class SettingController {
             }
             
             // 检查是否有管理员权限
-            if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
+            if (currentUser.getRoles() == null || !currentUser.getRoles().equals("ADMIN")) {
                 return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
             }
             
@@ -195,7 +195,7 @@ public class SettingController {
             }
             
             // 检查是否有管理员权限
-            if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
+            if (currentUser.getRoles() == null || !currentUser.getRoles().equals("ADMIN")) {
                 return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
             }
             
@@ -236,7 +236,7 @@ public class SettingController {
             }
             
             // 检查是否有管理员权限
-            if (currentUser.getRole() == null || !currentUser.getRole().equals("ADMIN")) {
+            if (currentUser.getRoles() == null || !currentUser.getRoles().equals("ADMIN")) {
                 return ApiResponse.error(ErrorCode.PERMISSION_DENIED.getCode(), ErrorCode.PERMISSION_DENIED.getMessage());
             }
 

@@ -6,7 +6,7 @@ export interface User {
   avatar: string;
   nickname?: string;
   phone: string;
-  role: string;
+  roles: string;
   status: number;
   enabled: boolean;
   lastLoginTime?: string;
@@ -44,6 +44,6 @@ export interface UserQueryParams {
   size?: number;
   username?: string;
   email?: string;
-  role?: string;
+  roles?: string;
   enabled?: boolean;
 }

@@ -46,26 +46,14 @@ public class UserController {
     /**
      * 获取当前用户信息 (适用于前端导航栏和认证检查)
      */
-    @GetMapping("/info")
+    @GetMapping("/info/{userId}")
     @Operation(summary = "获取当前用户基本信息", description = "获取当前登录用户的基本信息，用于导航栏显示和认证检查")
-    public ApiResponse<Map<String, Object>> getUserInfo() {
+    public ApiResponse<Map<String, Object>> getUserInfo(
+            @Parameter(description = "用户ID") @PathVariable(value = "userId") Long userId) {
         try {
             log.info("获取当前用户基本信息");
-            // 获取当前认证用户
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (authentication == null || !authentication.isAuthenticated() ||
-                    "anonymousUser".equals(authentication.getPrincipal())) {
-                return ApiResponse.error(ErrorCode.USER_NOT_LOGIN.getCode(), "未登录或登录已过期");
-            }
-
-            // 获取用户名
-            String username = authentication.getName();
-
-            log.info("获取当前用户基本信息");
-
             // 获取用户实体信息
-            User user = userService.getUserByUsername(username);
+            User user = userService.getUserById(userId);
             if (user == null) {
                 return ApiResponse.error(ErrorCode.USER_ACCOUNT_NOT_EXIST.getCode(), "用户不存在");
             }
@@ -77,7 +65,7 @@ public class UserController {
             userInfo.put("email", user.getEmail());
             userInfo.put("phone", user.getPhone());
             userInfo.put("avatar", user.getAvatar());
-            userInfo.put("role", user.getRole());
+            userInfo.put("roles", user.getRoles());
             userInfo.put("status", user.getStatus());
             
             log.info("获取当前用户基本信息成功: username={}", user.getUsername());
@@ -141,8 +129,6 @@ public class UserController {
     ) {
         try {
             log.info("更新密码");
-
-
             // 获取用户实体信息
             User currentUser = userService.getUserById(userId);
             if (currentUser == null) {
@@ -179,9 +165,9 @@ public class UserController {
      */
     @PostMapping("/avatar")
     @Operation(summary = "上传头像", description = "上传当前登录用户的头像")
-    public ApiResponse<User> uploadAvatar(
+    public ApiResponse<String> uploadAvatar(
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId,
-            @RequestParam("file") MultipartFile file) {
+            @Parameter(description = "图片") @RequestParam(value = "image") MultipartFile image) {
         try {
             log.info("上传头像");
 
@@ -192,14 +178,14 @@ public class UserController {
             }
 
             // 检查文件是否为空
-            if (file.isEmpty()) {
+            if (image.isEmpty()) {
                 return ApiResponse.error(ErrorCode.PARAM_IS_BLANK.getCode(), "请选择要上传的文件");
             }
             
-            User user = userService.uploadAvatar(currentUser.getUserId(), file);
+            User user = userService.uploadAvatar(currentUser.getUserId(), image);
             
             log.info("上传头像成功: username={}", currentUser.getUsername());
-            return ApiResponse.success(user);
+            return ApiResponse.success(user.getAvatar());
         } catch (Exception e) {
             log.error("上传头像异常: ", e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "上传头像失败: " + e.getMessage());

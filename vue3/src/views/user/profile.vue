@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox, UploadProps } from "element-plus";
 import { useUserStoreHook } from "@/store/modules/user";
 import {
   updateUserProfile,
@@ -94,13 +94,13 @@ onMounted(() => {
 // 头像上传前的校验
 const beforeAvatarUpload = (file) => {
   const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-  const isLt2M = file.size / 1024 / 1024 < 2;
+  const isLt2M = file.size / 1024 / 1024 < 5;
 
   if (!isJPG) {
     ElMessage.error("上传头像图片只能是 JPG 或 PNG 格式!");
   }
   if (!isLt2M) {
-    ElMessage.error("上传头像图片大小不能超过 2MB!");
+    ElMessage.error("上传头像图片大小不能超过 5MB!");
   }
   return isJPG && isLt2M;
 };
@@ -108,12 +108,32 @@ const beforeAvatarUpload = (file) => {
 // 上传头像
 const handleAvatarSuccess = async (file) => {
   loading.value = true;
+  avatarUrl.value = URL.createObjectURL(file.file!)
   try {
-    const res = await uploadUserAvatar(file.raw);
+    const res = await uploadUserAvatar(file.file as File);
     if (res.code === 200 && res.data) {
-      avatarUrl.value = res.data;
-      profileForm.avatar = res.data;
-      userStore.SET_AVATAR(res.data);
+      // 将res.data断言为string类型
+      const avatarUrl = res.data as string;
+      profileForm.avatar = avatarUrl;
+      
+      // 更新store中的头像
+      userStore.SET_AVATAR(avatarUrl);
+      
+      // 只更新头像而不影响其他信息
+      // 从store获取当前信息
+      const currentInfo = {
+        userId: userStore.userId,
+        username: userStore.username,
+        nickname: userStore.nickname,
+        roles: userStore.roles,
+        permissions: userStore.permissions,
+        // 更新头像
+        avatar: avatarUrl
+      };
+      
+      // 更新本地存储
+      userStore.setUserInfo(currentInfo);
+      
       ElMessage.success("头像上传成功");
     } else {
       ElMessage.error(res.message || "头像上传失败");
@@ -223,6 +243,7 @@ const submitPassword = async () => {
               :show-file-list="false"
               :before-upload="beforeAvatarUpload"
               :http-request="handleAvatarSuccess"
+
             >
               <img v-if="avatarUrl" :src="avatarUrl" class="avatar" />
               <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>

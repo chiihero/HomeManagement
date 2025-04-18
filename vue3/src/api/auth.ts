@@ -3,7 +3,6 @@
  * 处理用户登录、注册、登出、令牌刷新等身份验证相关功能
  */
 import { http } from "@/utils/http";
-import type { RegisterRequest } from "@/types/user";
 import type { ResponseResult } from "@/types/http";
 
 /**
