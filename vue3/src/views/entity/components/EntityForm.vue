@@ -159,7 +159,7 @@ const form = reactive<Omit<Entity, "tags"> & { tags: any[] }>({
   parentId: "",
   status: "normal" as EntityStatus,
   location: "",
-  quantity: 0,
+  quantity: 1,
   price: 0,
   purchaseDate: "",
   productionDate: "",
@@ -441,7 +441,7 @@ watch(
       form.status =
         (newEntity.status as EntityStatus) || ("normal" as EntityStatus);
       form.location = (newEntity as any).location || "";
-      form.quantity = newEntity.quantity || 0;
+      form.quantity = newEntity.quantity || 1;
       form.price = newEntity.price || 0;
       form.purchaseDate = newEntity.purchaseDate || "";
       form.productionDate = newEntity.productionDate || "";
@@ -497,7 +497,7 @@ watch(
       // @ts-ignore
       form.status = "normal" as EntityStatus;
       form.location = "";
-      form.quantity = 0;
+      form.quantity = 1;
       form.price = 0;
       form.purchaseDate = "";
       form.warrantyPeriod = 0;

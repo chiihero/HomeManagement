@@ -6,7 +6,8 @@ defineOptions({
 const updateNotes = [{
     version: "v0.3.3",
     date: "2025年4月22日",
-    notes: ["优化系统细节"
+    notes: ["优化系统细节",
+    "实现点击分类物品树的具体内容之后，添加物品时候的所属位置要对应起来分类物品树的内容"
     ]
   },
 {

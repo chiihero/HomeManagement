@@ -99,16 +99,16 @@ watch(filterText, val => {
 // 在组件挂载后自动展开根节点
 onMounted(() => {
   // 延迟执行，确保树已经渲染完成
-  setTimeout(() => {
-    // 默认展开第一级节点
-    if (props.treeData && props.treeData.length > 0) {
-      props.treeData.forEach(node => {
-        if (node.id) {
-          expandedKeys.value.push(node.id);
-        }
-      });
-    }
-  }, 100);
+  // setTimeout(() => {
+  //   // 默认展开第一级节点
+  //   if (props.treeData && props.treeData.length > 0) {
+  //     props.treeData.forEach(node => {
+  //       if (node.id) {
+  //         expandedKeys.value.push(node.id);
+  //       }
+  //     });
+  //   }
+  // }, 100);
 });
 
 // 处理节点点击
