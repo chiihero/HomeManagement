@@ -1,15 +1,15 @@
 <template>
-  <div class="tag-container bg-gray-50 min-h-screen p-4 md:p-6">
+  <div class=" bg-gray-50 min-h-screen">
     <el-card class="header-card mb-6 border-0 shadow-sm">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
           <el-icon class="mr-2 text-primary"><Promotion /></el-icon>标签管理
         </h1>
         <div class="flex items-center gap-2">
-          <el-button type="primary" class="flex items-center gap-2" @click="openTagForm(null)">
+          <el-button type="primary" size="large" class="flex items-center gap-2" @click="openTagForm(null)">
             <el-icon><Plus /></el-icon>添加标签
           </el-button>
-          <el-button type="primary" @click="loadTagList"
+          <el-button type="primary" size="large" @click="loadTagList"
           ><el-icon><Refresh /></el-icon>刷新</el-button>
         </div>
       </div>
@@ -24,25 +24,25 @@
         stripe
         class="w-full"
       >
-        <el-table-column type="index" width="50" />
-        <el-table-column prop="name" label="标签名称" min-width="150">
+      <el-table-column type="index" label="序号" align="center" width="50" />
+      <el-table-column prop="name"  label="标签名称" min-width="150">
           <template #default="{ row }">
 
               {{ row.name }}
           </template>
         </el-table-column>
-        <el-table-column prop="color" label="颜色" width="100">
+        <el-table-column prop="color" align="center" label="颜色" width="60">
           <template #default="{ row }">
             <div class="color-box rounded" :style="{ backgroundColor: row.color }"></div>
           </template>
         </el-table-column>
-        <el-table-column prop="entityCount" label="使用数量" width="120" />
-        <el-table-column prop="createTime" label="创建时间" width="170">
+        <el-table-column prop="entityCount" align="center" label="使用数量" width="100" />
+        <el-table-column prop="createTime" align="center" label="创建时间" width="170">
           <template #default="{ row }">
             {{ formatDateTime(row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" align="center" width="140" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="openTagForm(row)">
               <el-icon><Edit /></el-icon>编辑
@@ -315,9 +315,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.tag-container {
-  width: 100%;
-}
 
 .header-card {
   background-color: rgba(255, 255, 255, 0.95);

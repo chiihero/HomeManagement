@@ -79,11 +79,7 @@
           >
             {{ tag.name }}
           </el-tag>
-          <el-empty
-            v-if="!entity.tags?.length"
-            description="暂无标签"
-            :image-size="60"
-          />
+          <p v-if="!entity.tags?.length" class="text-gray-600 whitespace-pre-line">暂无标签</p>
         </div>
       </div>
 

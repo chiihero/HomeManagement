@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="">
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <el-card class="mb-4" shadow="hover">
@@ -484,9 +484,7 @@ const viewEntityDetail = (entity: Entity) => {
 </script>
 
 <style scoped>
-.dashboard-container {
-  padding: 20px;
-}
+
 
 .card-content {
   display: flex;

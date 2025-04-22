@@ -55,7 +55,7 @@ import {
   ElImage,         // 图片组件
   // ElImageViewer,   // 图片查看器组件 (未使用)
   ElInput,         // 输入框组件
-  // ElInputNumber,   // 数字输入框组件 (未使用)
+  ElInputNumber,   // 数字输入框组件
   ElLink,          // 链接组件
   ElMenu,          // 菜单组件
   ElMenuItem,      // 菜单项组件
@@ -86,7 +86,7 @@ import {
   // ElCountdown,     // 倒计时组件 (未使用)
   ElSteps,         // 步骤条组件
   ElStep,          // 步骤条项组件
-  // ElSwitch,        // 开关组件 (未使用)
+  ElSwitch,        // 开关组件 (未使用)
   ElTable,         // 表格组件
   ElTableColumn,   // 表格列组件
   // ElTableV2,       // 虚拟列表表格组件 (未使用)
@@ -171,7 +171,7 @@ const components = [
   ElImage,         // 图片组件
   // ElImageViewer,   // 图片查看器组件 (未使用)
   ElInput,         // 输入框组件
-  // ElInputNumber,   // 数字输入框组件 (未使用)
+  ElInputNumber,   // 数字输入框组件
   ElLink,          // 链接组件
   ElMenu,          // 菜单组件
   ElMenuItem,      // 菜单项组件
@@ -202,7 +202,7 @@ const components = [
   // ElCountdown,     // 倒计时组件 (未使用)
   ElSteps,         // 步骤条组件
   ElStep,          // 步骤条项组件
-  // ElSwitch,        // 开关组件 (未使用)
+  ElSwitch,        // 开关组件 (未使用)
   ElTable,         // 表格组件
   ElTableColumn,   // 表格列组件
   // ElTableV2,       // 虚拟列表表格组件 (未使用)

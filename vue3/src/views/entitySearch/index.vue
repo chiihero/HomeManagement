@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-gray-50 min-h-screen p-4 md:p-6">
+  <div class="bg-gray-50 min-h-screen">
     <!-- 头部 -->
-    <el-card class="mb-6 shadow-sm border-0">
+    <el-card class="mb-4 shadow-sm border-0">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 class="text-xl md:text-2xl font-bold text-gray-800 m-0">
           <el-icon class="mr-2 text-primary"><Search /></el-icon>物品搜索
@@ -10,7 +10,7 @@
     </el-card>
 
     <!-- 搜索条件 -->
-    <el-card class="mb-6 shadow-sm border-0">
+    <el-card class="mb-4 shadow-sm border-0">
       <template #header>
         <div class="flex items-center">
           <span class="text-gray-700 font-medium">搜索条件</span>
@@ -89,10 +89,10 @@
           </el-col>
         </el-row>
         <div class="flex justify-end">
-          <el-button type="primary" class="mr-2" @click="handleSearch">
+          <el-button type="primary" size="large" class="mr-2" @click="handleSearch">
             <el-icon class="mr-1"><Search /></el-icon>搜索
           </el-button>
-          <el-button @click="resetSearch">
+          <el-button size="large" @click="resetSearch">
             <el-icon class="mr-1"><Refresh /></el-icon>重置
           </el-button>
         </div>
@@ -113,10 +113,11 @@
         :data="entityList"
         border
         stripe
+        max-height="350"
         class="w-full"
         @row-click="handleRowClick"
       >
-        <el-table-column type="index" width="50" />
+        <el-table-column type="index" label="序号" align="center" width="50" />
         <el-table-column
           prop="name"
           label="名称"
@@ -124,35 +125,29 @@
           show-overflow-tooltip
         >
         </el-table-column>
-        <el-table-column prop="type" label="类型" width="100">
+        <el-table-column prop="type" align="center" label="类型" width="100">
           <template #default="{ row }">
             <el-tag
-              :type="row.type === 'item' ? 'success' : 'primary'"
+              class="primary"
               size="small"
             >
-              {{ row.type === "item" ? "物品" : "空间" }}
+              {{ row.type }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="specification"
-          label="规格"
-          min-width="120"
-          show-overflow-tooltip
-        />
-        <el-table-column prop="price" label="价格" width="120">
+        <el-table-column prop="price" align="center" label="价格" width="120">
           <template #default="{ row }">
             {{ row.price ? "¥" + row.price.toFixed(2) : "-" }}
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" align="center" label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="statusTypeMap[row.status] || 'info'" size="small">
               {{ statusTextMap[row.status] || row.status }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="usageFrequency" label="使用频率" width="100">
+        <el-table-column prop="usageFrequency" align="center" label="使用频率" width="100">
           <template #default="{ row }">
             {{ usageFrequencyMap[row.usageFrequency] || row.usageFrequency }}
           </template>
@@ -160,6 +155,7 @@
         <el-table-column
           prop="tags"
           label="标签"
+          align="center"
           min-width="160"
           show-overflow-tooltip
         >
@@ -184,18 +180,18 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="expirationDate" label="过保日期" width="120">
+        <el-table-column prop="expirationDate" align="center" label="过保日期" width="120">
           <template #default="{ row }">
             {{ row.expirationDate ? formatDate(row.expirationDate) : "-" }}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" align="center" label="操作" width="130">
           <template #default="{ row }">
-            <el-button type="primary" link size="small" @click.stop="handleViewDetail(row)">
-              <el-icon class="mr-1"><View /></el-icon>查看
+            <el-button type="primary" link size="small"  @click.stop="handleViewDetail(row)">
+              查看
             </el-button>
-            <el-button type="primary" link size="small" @click.stop="handleEdit(row)">
-              <el-icon class="mr-1"><Edit /></el-icon>编辑
+            <el-button type="primary" link size="small"  @click.stop="handleEdit(row)">
+              编辑
             </el-button>
             <el-popconfirm
               title="确定删除此实体吗？"
@@ -204,8 +200,8 @@
               @confirm="handleDelete(row)"
             >
               <template #reference>
-                <el-button type="danger" link size="small" @click.stop>
-                  <el-icon class="mr-1"><Delete /></el-icon>删除
+                <el-button type="danger" link size="small"  @click.stop>
+                  删除
                 </el-button>
               </template>
             </el-popconfirm>
@@ -232,7 +228,7 @@
     <el-dialog
       v-model="detailDialogVisible"
       title="物品详情"
-      width="650px"
+      width="90%"
       :destroy-on-close="true"
       :close-on-click-modal="false"
     >
@@ -253,7 +249,7 @@
     <el-dialog
       v-model="formDialogVisible"
       :title="currentEntity ? '编辑物品' : '添加物品'"
-      width="750px"
+      width="90%"
       :destroy-on-close="true"
       :close-on-click-modal="false"
       :before-close="handleFormDialogClose"
@@ -405,3 +401,16 @@ onMounted(() => {
   loadSpaceList();
 });
 </script>
+<style scoped>
+.el-table .cell {
+  box-sizing: border-box;
+  line-height: 23px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+.el-button+.el-button {
+    margin-left: 4px;
+}
+</style>

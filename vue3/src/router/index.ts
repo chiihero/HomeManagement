@@ -130,7 +130,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   
   const token = getToken();
-  if (to.path !== "/auth/login") {
+  if (whiteList.indexOf(to.path)==-1) {
     if (!token || !token.accessToken) {
       removeToken();
       next({ path: "/auth/login" });

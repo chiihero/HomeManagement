@@ -133,6 +133,7 @@ onBeforeUnmount(() => {
                 <el-input
                   v-model="ruleForm.password"
                   clearable
+                  type="password"
                   show-password
                   placeholder="密码"
                   :prefix-icon="useRenderIcon(Lock)"
@@ -149,7 +150,7 @@ onBeforeUnmount(() => {
             <Motion :delay="250">
               <el-button
                 class="w-full mt-4"
-                size="default"
+                size="large"
                 type="primary"
                 :loading="loading"
                 @click="onLogin(ruleFormRef)"

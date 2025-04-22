@@ -76,7 +76,7 @@ const updateNotes = [
 </script>
 
 <template>
-  <div class="welcome-container">
+  <div class="p-4">
     <h1 style="text-align: center">家庭物品管理系统</h1>
 
     <div class="update-notes">
@@ -101,11 +101,6 @@ const updateNotes = [
 </template>
 
 <style scoped>
-.welcome-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
 
 .update-notes {
   margin-top: 40px;

@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-gray-50 min-h-screen p-4 md:p-6">
-    <el-card class="header-card mb-6 border-0 shadow-sm">
+  <div class="bg-gray-50 min-h-screen">
+    <el-card class="header-card mb-4 border-0 shadow-sm">
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
       >
@@ -10,12 +10,15 @@
         <div class="flex items-center gap-2">
           <el-button
             type="primary"
+            size="large"
             class="flex items-center gap-2"
             @click="openAddEntityForm"
           >
             <el-icon><Plus /></el-icon>添加物品
           </el-button>
-          <el-button type="primary" :loading="treeLoading" @click="loadTreeData"
+          <el-button type="primary"
+          size="large"
+          :loading="treeLoading" @click="loadTreeData"
             ><el-icon><Refresh /></el-icon>刷新树结构</el-button
           >
         </div>
@@ -23,7 +26,7 @@
     </el-card>
 
     <!-- 主要内容区域 -->
-    <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex flex-col lg:flex-row gap-4">
       <!-- 左侧树形结构 -->
       <el-card class="tree-wrapper border-0 shadow-sm w-full lg:w-72 shrink-0">
         <template #header>
