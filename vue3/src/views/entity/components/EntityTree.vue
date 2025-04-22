@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import { Search, Folder, Document } from "@element-plus/icons-vue";
+import { Folder, Document } from "@element-plus/icons-vue";
 import type { Entity } from "@/types/entity";
 
 interface Props {

@@ -449,6 +449,13 @@ watch(
       form.warrantyEndDate = newEntity.warrantyEndDate || "";
 
       form.description = newEntity.description || "";
+      
+      // 设置当前选中的节点为传入的parentId
+      if (newEntity.parentId) {
+        currentNodeKey.value = newEntity.parentId;
+        // 更新选中位置的名称
+        updateSelectedLocationName();
+      }
 
       // 确保正确设置标签数据 - 如果标签是对象数组则使用它们的ID
       if (Array.isArray(newEntity.tags)) {

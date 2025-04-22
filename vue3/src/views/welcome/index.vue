@@ -3,7 +3,12 @@ defineOptions({
   name: "Welcome"
 });
 
-const updateNotes = [
+const updateNotes = [{
+    version: "v0.3.3",
+    date: "2025年4月22日",
+    notes: ["优化系统细节"
+    ]
+  },
 {
     version: "v0.3.2",
     date: "2025年4月19日",

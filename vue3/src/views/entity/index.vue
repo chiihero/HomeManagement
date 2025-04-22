@@ -12,7 +12,7 @@
             type="primary"
             size="large"
             class="flex items-center gap-2"
-            @click="openAddEntityForm"
+            @click="() => openAddEntityForm(currentEntity?.id)"
           >
             <el-icon><Plus /></el-icon>添加物品
           </el-button>

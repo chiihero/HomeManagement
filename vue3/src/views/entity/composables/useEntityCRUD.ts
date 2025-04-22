@@ -157,10 +157,11 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
   };
 
   // 打开添加表单
-  const openAddEntityForm = () => {
+  const openAddEntityForm = (parentId?: string) => {
     isAdding.value = true;
     isEditing.value = false;
-    currentEntity.value = null;
+    // 如果提供了parentId，则创建一个带有parentId的初始实体
+    currentEntity.value = parentId ? { parentId } as Entity : null;
     if (isSearchMode) {
       formDialogVisible.value = true;
     }
