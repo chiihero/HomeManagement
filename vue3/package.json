@@ -1,6 +1,6 @@
 {
-  "name": "pure-admin-thin",
-  "version": "5.9.0",
+  "name": "home-management",
+  "version": "0.3.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -43,9 +43,9 @@
   },
   "license": "MIT",
   "author": {
-    "name": "xiaoxian521",
-    "email": "pureadmin@163.com",
-    "url": "https://github.com/xiaoxian521"
+    "name": "chii",
+    "email": "853879993@qq.com",
+    "url": "https://github.com/chiihero"
   },
   "dependencies": {
     "@pureadmin/descriptions": "^1.2.1",

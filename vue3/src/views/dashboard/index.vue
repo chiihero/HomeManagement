@@ -14,7 +14,7 @@
             </div>
             <el-button
               type="primary"
-              :icon="Refresh"
+              :icon="useRenderIcon(Refresh)"
               circle
               @click="refreshData"
             />
@@ -28,7 +28,7 @@
         <el-card shadow="hover">
           <div class="card-content">
             <div class="card-icon bg-primary">
-              <el-icon><Box /></el-icon>
+              <el-icon><IconifyIconOffline :icon="Box" /></el-icon>
             </div>
             <div class="card-data">
               <div class="data-title">物品总数</div>
@@ -44,7 +44,7 @@
         <el-card shadow="hover">
           <div class="card-content">
             <div class="card-icon bg-primary">
-              <el-icon><CircleClose /></el-icon>
+              <el-icon><IconifyIconOffline :icon="CircleClose" /></el-icon>
             </div>
             <div class="card-data">
               <div class="data-title">即将过期</div>
@@ -60,7 +60,7 @@
         <el-card shadow="hover">
           <div class="card-content">
             <div class="card-icon bg-primary">
-              <el-icon><Wallet /></el-icon>
+              <el-icon><IconifyIconOffline :icon="Wallet" /></el-icon>
             </div>
             <div class="card-data">
               <div class="data-title">总价值</div>
@@ -179,7 +179,6 @@
                     </el-tag>
                   </template>
                 </el-table-column>
-                
               </el-table>
             </div>
           </div>
@@ -192,7 +191,12 @@
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { Box, Wallet, CircleClose, Refresh } from "@element-plus/icons-vue";
+import Box from "@iconify-icons/ep/box";
+import Wallet from "@iconify-icons/ep/wallet";
+import CircleClose from "@iconify-icons/ep/circle-close";
+import Refresh from "@iconify-icons/ep/refresh";
+import { useRenderIcon } from "@/components/ReIcon/src/hooks";
+
 import dayjs from "dayjs";
 import Pie from "@/components/charts/Pie.vue";
 import Bar from "@/components/charts/Bar.vue";

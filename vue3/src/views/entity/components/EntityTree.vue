@@ -1,36 +1,49 @@
 <template>
   <div class="w-full h-full">
-    <el-skeleton v-if="loading"
-    :throttle="{ leading: 500, trailing: 500 }" :rows="1" animated />
+    <el-skeleton
+      v-if="loading"
+      :throttle="{ leading: 500, trailing: 500 }"
+      :rows="1"
+      animated
+    />
     <el-empty v-else-if="!treeData.length" description="暂无物品数据" />
     <el-tree
       v-else
       ref="treeRef"
+      :key="'entity-tree'"
       :data="treeData"
       :props="defaultProps"
       :filter-node-method="filterNode"
       node-key="id"
       highlight-current
       :expand-on-click-node="false"
-      :key="'entity-tree'"
       :default-expanded-keys="expandedKeys"
+      class="h-full overflow-auto"
       @node-expand="handleNodeExpand"
       @node-collapse="handleNodeCollapse"
-      class="h-full overflow-auto"
       @node-click="handleNodeClick"
     >
       <template #default="{ node, data }">
         <div class="flex justify-between items-center w-full py-1">
           <div class="flex items-center">
-            <el-icon
-              v-if="data.children && data.children.length"
-              class="mr-2 text-blue-500"
-            >
-              <Folder />
+            <el-icon v-if="data.children && data.children.length">
+              <IconifyIconOffline :icon="EpMessageBox" />
             </el-icon>
-            <el-icon v-else class="mr-2 text-gray-500">
-              <Document />
-            </el-icon>
+            <IconifyIconOffline v-else-if="data.type === '食品'" :icon="food" />
+            <IconifyIconOffline
+              v-else-if="data.type === '药品'"
+              :icon="EpFirstAidKit"
+            />
+            <IconifyIconOffline
+              v-else-if="data.type === '耗材'"
+              :icon="EpToiletPaper"
+            />
+            <IconifyIconOffline
+              v-else-if="data.type === '包装'"
+              :icon="EpBox"
+            />
+            <IconifyIconOffline v-else :icon="Document" />
+
             <span class="text-sm">{{ node.label }}</span>
           </div>
           <el-tag size="small" :type="getStatusType(data.status)" class="ml-2">
@@ -44,9 +57,13 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import { Folder, Document } from "@element-plus/icons-vue";
 import type { Entity } from "@/types/entity";
-
+import EpMessageBox from "@iconify-icons/ep/message-box";
+import EpBox from "@iconify-icons/ep/box";
+import food from "@iconify-icons/ep/food";
+import Document from "@iconify-icons/ep/Document";
+import EpFirstAidKit from "@iconify-icons/ep/first-aid-kit";
+import EpToiletPaper from "@iconify-icons/ep/toilet-paper";
 interface Props {
   loading: boolean;
   treeData: Entity[];

@@ -12,7 +12,7 @@ import { createApp, type Directive } from "vue";
 import { useElementPlus } from "@/plugins/elementPlus";
 import { injectResponsiveStorage } from "@/utils/responsive";
 
-import Table from "@pureadmin/table";
+// import Table from "@pureadmin/table";
 // import PureDescriptions from "@pureadmin/descriptions";
 
 // 引入重置样式
@@ -75,15 +75,18 @@ getPlatformConfig(app).then(async config => {
   app.use(router);
   // 等待路由准备就绪
   await router.isReady();
-  
+
   // 注入响应式存储
   injectResponsiveStorage(app, config);
-  
+
   // 挂载插件
-  app.use(MotionPlugin).use(useElementPlus).use(Table)
-  // .use(PureDescriptions)
-  .use(useEcharts);
-  
+  app
+    .use(MotionPlugin)
+    .use(useElementPlus)
+    //.use(Table)
+    // .use(PureDescriptions)
+    .use(useEcharts);
+
   // 挂载应用到DOM
   app.mount("#app");
 });
