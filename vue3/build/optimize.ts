@@ -13,7 +13,7 @@ const include = [
   "vue-types",
   "js-cookie",
   "vue-tippy",
-  "pinyin-pro",
+  // "pinyin-pro",
   "sortablejs",
   "@vueuse/core",
   "@pureadmin/utils",

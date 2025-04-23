@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { match } from "pinyin-pro";
+// import { match } from "pinyin-pro";
 import { getConfig } from "@/config";
 import { useRouter } from "vue-router";
 import SearchResult from "./SearchResult.vue";
@@ -109,13 +109,14 @@ function search() {
     keyword.value
       ? menu.meta?.title
           .toLocaleLowerCase()
-          .includes(keyword.value.toLocaleLowerCase().trim()) ||
-        !isAllEmpty(
-          match(
-            menu.meta?.title.toLocaleLowerCase(),
-            keyword.value.toLocaleLowerCase().trim()
-          )
-        )
+          .includes(keyword.value.toLocaleLowerCase().trim()) 
+        //   ||
+        // !isAllEmpty(
+        //   match(
+        //     menu.meta?.title.toLocaleLowerCase(),
+        //     keyword.value.toLocaleLowerCase().trim()
+        //   )
+        // )
       : false
   );
   activePath.value =
@@ -289,7 +290,7 @@ onKeyStroke("ArrowDown", handleDown);
       v-model="keyword"
       size="large"
       clearable
-      placeholder="搜索菜单（支持拼音搜索）"
+      placeholder="搜索菜单"
       @input="handleSearch"
     >
       <template #prefix>

@@ -4,6 +4,11 @@ defineOptions({
 });
 
 const updateNotes = [{
+    version: "v0.3.4",
+    date: "2025年4月23日",
+    notes: ["完善图标显示"
+    ]
+  },{
     version: "v0.3.3",
     date: "2025年4月22日",
     notes: ["优化系统细节",

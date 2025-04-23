@@ -64,19 +64,17 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         },
         // 静态资源分类打包
         output: {
+          experimentalMinChunkSize: 10*1024, // 单位b
           manualChunks: {
             'vue-vendor': ['vue', 'vue-router', 'pinia'],
+
             'element-plus': ['element-plus'],
             'echarts': ['echarts'],
             'utils': ['@pureadmin/utils', '@vueuse/core', 'dayjs', 'axios'],
-            'ui-components': [
-              // '@pureadmin/descriptions', 
-              '@pureadmin/table'
-            ]
           },
-          chunkFileNames: "static/js/[name]-[hash].js",
-          entryFileNames: "static/js/[name]-[hash].js",
-          assetFileNames: "static/[ext]/[name]-[hash].[ext]"
+          chunkFileNames: "static/js/[name]-[hash:8].js",
+          entryFileNames: "static/js/[name]-[hash:8].js",
+          assetFileNames: "static/[ext]/[name]-[hash:8].[ext]"
         }
       }
     },
