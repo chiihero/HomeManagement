@@ -49,6 +49,119 @@
         </el-descriptions>
       </div>
 
+      <!-- 二维码和条形码 -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3
+            class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
+          >
+            标识码
+          </h3>
+        </div>
+        <div class="flex flex-wrap gap-6">
+          <div class="flex flex-col items-center">
+            <span class="mb-2 text-sm text-gray-600">二维码</span>
+            <ReQrcode v-if="entity" :text="getQrcodeValue()" :size="150" class="qrcode" />
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="mb-2 text-sm text-gray-600">条形码</span>
+            <ReBarcode v-if="entity" :text="getBarcodeValue()" :type="Pharmacode" :options="{height: 80, width: 1.5}" class="barcode" />
+          </div>
+        </div>
+        <div class="mt-3">
+          <el-button type="success" size="small" @click="downloadQrCode">下载二维码</el-button>
+          <el-button type="info" size="small" @click="downloadBarCode">下载条形码</el-button>
+        </div>
+      </div>
+
+      <!-- 药品特有信息显示 -->
+      <div v-if="entity.type === '药品' && entity.activeIngredient" class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3
+            class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
+          >
+            药品特有信息
+          </h3>
+        </div>
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="有效成分">{{
+            entity.activeIngredient || '暂无'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="剂型">{{
+            entity.dosageForm || '暂无'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="批号">{{
+            entity.batchNumber || '暂无'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="用法用量">{{
+            entity.usageDosage || '暂无'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="批准文号">{{
+            entity.approvalNumber || '暂无'
+          }}</el-descriptions-item>
+        </el-descriptions>
+
+        <!-- 药品说明书 -->
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-4">
+            <h4
+              class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
+            >
+              药品说明书
+            </h4>
+          </div>
+          <div v-if="entity.instructionText" class="whitespace-pre-line p-3 bg-gray-50 rounded">
+            {{ entity.instructionText }}
+          </div>
+          <el-empty v-else description="暂无说明书内容" :image-size="60" />
+          
+          <!-- 说明书图片 -->
+          <div v-if="entity.instructionImages" class="mt-4">
+            <div class="flex items-center justify-between mb-4">
+              <h5 class="text-sm font-medium text-gray-700">说明书图片</h5>
+            </div>
+            <div class="flex flex-wrap gap-4">
+              <el-image
+                v-for="(image, index) in instructionImageList"
+                :key="'instruction-' + index"
+                :src="image"
+                :preview-src-list="instructionImageList"
+                fit="cover"
+                class="w-28 h-28 rounded-md object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 耗材特有信息显示 -->
+      <div v-if="entity.type === '耗材' && entity.consumptionRate" class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3
+            class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
+          >
+            耗材特有信息
+          </h3>
+        </div>
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="消耗速率">{{
+            entity.consumptionRate || '暂无'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="剩余数量">
+            {{ entity.remainingQuantity || '0' }} {{ entity.unit || '' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="更换周期">
+            {{ entity.replacementCycle || '0' }} 天
+          </el-descriptions-item>
+          <el-descriptions-item label="上次更换日期">{{
+            formatDate(entity.lastReplacementDate) || '暂无'
+          }}</el-descriptions-item>
+          <el-descriptions-item label="下次更换日期">{{
+            calculateNextReplacementDate(entity.lastReplacementDate, entity.replacementCycle)
+          }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+
       <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
           <h3
@@ -112,11 +225,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted } from "vue";
+import { computed, watch, onMounted, ref } from "vue";
 import type { Entity } from "@/types/entity";
 import { useEntityDetail } from "../composables/useEntityDetail";
 import { getContrastColor  } from "@/utils/color";
 import { formatDate } from "@/utils/date";
+import ReQrcode from "@/components/ReQrcode";
+import ReBarcode from "@/components/ReBarcode";
+import { ElMessage } from "element-plus";
 
 interface Props {
   loading: boolean;
@@ -141,6 +257,26 @@ const {
   getPreviewImageUrls
 } = useEntityDetail();
 
+// 计算说明书图片列表
+const instructionImageList = computed(() => {
+  if (props.entity?.instructionImages) {
+    return props.entity.instructionImages.split(',').filter(url => url.trim() !== '');
+  }
+  return [];
+});
+
+// 计算下次更换日期
+const calculateNextReplacementDate = (lastDate: string, cycle: number) => {
+  if (!lastDate || !cycle) return '暂无';
+  
+  try {
+    const date = new Date(lastDate);
+    date.setDate(date.getDate() + cycle);
+    return formatDate(date.toISOString().split('T')[0]);
+  } catch (e) {
+    return '暂无';
+  }
+};
 
 // 预览图片URL列表
 const previewImageUrls = computed(() => {
@@ -164,4 +300,109 @@ onMounted(() => {
     loadAllImages(props.entity);
   }
 });
+
+// 二维码和条形码相关函数
+// 生成二维码内容
+const getQrcodeValue = () => {
+  if (!props.entity) return "";
+  return JSON.stringify({
+    id: props.entity.id,
+    name: props.entity.name,
+    type: props.entity.type,
+  });
+};
+
+// 生成条形码内容
+const getBarcodeValue = () => {
+  if (!props.entity) return "";
+  // 使用ID作为条形码内容，确保长度合适
+  return props.entity.id ? props.entity.id.toString().padStart(12, '0') : "000000000000";
+};
+
+
+// 下载二维码
+const downloadQrCode = () => {
+  if (!props.entity) return;
+  
+  const qrcodeComponent = document.querySelector('.qrcode');
+  if (!qrcodeComponent) {
+    ElMessage.error('找不到二维码元素');
+    return;
+  }
+  
+  // 获取二维码内的canvas或svg元素
+  const qrcodeElement = qrcodeComponent.querySelector('canvas, svg') as HTMLElement;
+  if (!qrcodeElement) {
+    ElMessage.error('找不到二维码图像元素');
+    return;
+  }
+  
+  try {
+    if (qrcodeElement instanceof HTMLCanvasElement) {
+      // 如果是Canvas元素直接导出
+      const link = document.createElement('a');
+      link.download = `${props.entity.name}_QR码.png`;
+      link.href = qrcodeElement.toDataURL('image/png');
+      link.click();
+    } else {
+      // 如果是其他元素，可能需要其他处理方式
+      ElMessage.info('不支持的二维码元素类型');
+    }
+  } catch (error) {
+    console.error('下载二维码失败:', error);
+    ElMessage.error('下载二维码失败');
+  }
+};
+
+// 下载条形码
+const downloadBarCode = () => {
+  if (!props.entity) return;
+  
+  const barcodeComponent = document.querySelector('.barcode');
+  if (!barcodeComponent) {
+    ElMessage.error('找不到条形码元素');
+    return;
+  }
+  
+  // 获取条形码内的svg元素
+  const barcodeElement = barcodeComponent.querySelector('svg') as SVGElement;
+  if (!barcodeElement) {
+    ElMessage.error('找不到条形码图像元素');
+    return;
+  }
+  
+  try {
+    // 将SVG转换为字符串
+    const serializer = new XMLSerializer();
+    const svgStr = serializer.serializeToString(barcodeElement);
+    
+    // 创建一个Canvas元素
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('无法获取canvas上下文');
+    
+    // 创建图像
+    const img = new Image();
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
+    
+    img.onload = function() {
+      // 设置Canvas尺寸
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // 绘制图像
+      ctx.drawImage(img, 0, 0);
+      
+      // 下载图像
+      const link = document.createElement('a');
+      link.download = `${props.entity.name}_条形码.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+  } catch (error) {
+    console.error('下载条形码失败:', error);
+    ElMessage.error('下载条形码失败');
+  }
+};
+
 </script>

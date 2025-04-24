@@ -64,6 +64,8 @@ CREATE TABLE IF NOT EXISTS `entity` (
     `sort` INT DEFAULT 0 COMMENT '排序',
     `status` VARCHAR(20) NOT NULL DEFAULT 'normal' COMMENT '状态: normal-正常, damaged-损坏, discarded-丢弃, lent-借出, expired-过期',
     `description` VARCHAR(500) DEFAULT NULL COMMENT '描述/备注',
+    `barcode` VARCHAR(50) DEFAULT NULL COMMENT '条形码',
+    `qrcode` VARCHAR(50) DEFAULT NULL COMMENT '二维码',
     `create_user_id` BIGINT NOT NULL COMMENT '创建者ID',
     `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -71,7 +73,9 @@ CREATE TABLE IF NOT EXISTS `entity` (
     KEY `idx_parent` (`parent_id`),
     KEY `idx_user` (`user_id`),
     KEY `idx_status` (`status`),
-    KEY `idx_type` (`type`)
+    KEY `idx_type` (`type`),
+    KEY `idx_barcode` (`barcode`),
+    KEY `idx_qrcode` (`qrcode`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体表（统一的物品和空间）';
 
 -- 实体图片表

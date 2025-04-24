@@ -184,6 +184,18 @@ public class Entity {
     private String description;
 
     /**
+     * 条形码
+     */
+    @Schema(description = "条形码")
+    private String barcode;
+
+    /**
+     * 二维码
+     */
+    @Schema(description = "二维码")
+    private String qrcode;
+
+    /**
      * 图片列表（非数据库字段）
      */
     @TableField(exist = false)

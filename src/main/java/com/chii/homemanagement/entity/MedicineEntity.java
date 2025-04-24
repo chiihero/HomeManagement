@@ -45,6 +45,18 @@ public class MedicineEntity extends Entity {
     private String approvalNumber;
     
     /**
+     * 说明书文本
+     */
+    @Schema(description = "说明书内容文本")
+    private String instructionText;
+    
+    /**
+     * 说明书图片URL列表，以逗号分隔
+     */
+    @Schema(description = "说明书图片URL列表，以逗号分隔")
+    private String instructionImages;
+    
+    /**
      * 验证药品是否过期
      */
     public boolean isExpired() {

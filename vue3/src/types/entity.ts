@@ -31,6 +31,25 @@ export interface Entity {
   createTime?: string;
   updateTime?: string;
   location?: string;
+  barcode?: string;
+  qrcode?: string;
+  
+  // 药品特有字段
+  activeIngredient?: string;        // 有效成分
+  dosageForm?: string;              // 剂型
+  batchNumber?: string;             // 批号
+  usageDosage?: string;             // 用法用量
+  approvalNumber?: string;          // 批准文号
+  instructionText?: string;         // 说明书内容文本
+  instructionImages?: string;       // 说明书图片URL列表，以逗号分隔
+  instructionImagesList?: any[];    // 说明书图片列表对象
+
+  // 耗材特有字段
+  consumptionRate?: string;         // 消耗速率
+  remainingQuantity?: number;       // 剩余数量
+  unit?: string;                    // 单位
+  replacementCycle?: number;        // 更换周期（天）
+  lastReplacementDate?: string;     // 上次更换日期
 }
 
 // 定义标签类型

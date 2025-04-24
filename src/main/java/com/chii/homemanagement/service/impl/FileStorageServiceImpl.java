@@ -181,8 +181,8 @@ public class FileStorageServiceImpl implements FileStorageService {
             
             // 检查转换后的文件大小，如果仍然超过目标大小且质量还可以降低，则尝试重新压缩
             long avifFileSize = Files.size(avifFilePath);
-            if (avifFileSize > 204800 && compressionQuality > 15) { // 如果超过200KB且质量可继续降低
-                int newQuality = Math.max(15, compressionQuality - 15); // 再降低质量，但不低于15
+            if (avifFileSize > 104800 && compressionQuality > 15) { // 如果超过100KB且质量可继续降低
+                int newQuality = Math.max(10, compressionQuality - 15); // 再降低质量，但不低于10
                 logger.info("AVIF文件仍然过大({} KB)，尝试以更低质量{}重新压缩", avifFileSize / 1024, newQuality);
                 
                 // 重新压缩
@@ -264,7 +264,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     
     /**
      * 根据文件大小动态计算AVIF压缩质量
-     * 目标是将图片压缩到约200KB以下
+     * 目标是将图片压缩到约100KB以下
      * 
      * @param fileSize 原始文件大小（字节）
      * @return 计算得出的压缩质量(1-100)
@@ -274,7 +274,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         long fileSizeKB = fileSize / 1024;
         
         // 1MB = 1024KB
-        if (fileSizeKB <= 200) {
+        if (fileSizeKB <= 100) {
             // 小图片使用较高质量
             return 70;
         } else if (fileSizeKB <= 500) {

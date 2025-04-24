@@ -218,4 +218,22 @@ public interface EntityService extends IService<Entity> {
      * @return 实体列表
      */
     List<Entity> searchEntities(Long userId, String keyword);
+    
+    /**
+     * 根据条形码查询实体
+     *
+     * @param barcode 条形码
+     * @param userId 用户ID
+     * @return 实体信息
+     */
+    Entity getEntityByBarcode(String barcode, Long userId);
+    
+    /**
+     * 根据二维码查询实体
+     *
+     * @param qrcode 二维码
+     * @param userId 用户ID
+     * @return 实体信息
+     */
+    Entity getEntityByQRCode(String qrcode, Long userId);
 } 

@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 
 # 家庭管理系统设计文档
 
@@ -21,6 +26,7 @@
 
 ### 2.2 前端架构
 
+- **管理工具**：pnpm
 - **框架**：Vue3
 - **开发语言**：TypeScript
 - **构建工具**：Vite

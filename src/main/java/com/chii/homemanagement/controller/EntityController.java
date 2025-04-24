@@ -392,13 +392,60 @@ public class EntityController {
             @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
         
         try {
-            log.info("获取最近添加的实体列表: days={}, userId={}", days, userId);
+            log.info("获取最近添加的实体列表: userId={}, days={}", userId, days);
             
             List<Entity> entities = entityService.getRecentEntitiesByDays(userId, days);
+            
             return ApiResponse.success(entities);
         } catch (Exception e) {
-            log.error("获取最近添加的实体列表异常: days={}, userId={}", days, userId, e);
+            log.error("获取最近添加的实体列表异常: userId={}, days={}", userId, days, e);
             return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "获取最近添加的实体列表失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/by-barcode")
+    @Operation(summary = "根据条形码查询实体", description = "根据条形码查询实体信息")
+    public ApiResponse<Entity> getEntityByBarcode(
+            @Parameter(description = "条形码") @RequestParam(value = "barcode") String barcode,
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+        
+        try {
+            log.info("根据条形码查询实体: barcode={}, userId={}", barcode, userId);
+            
+            // 调用服务层方法查询
+            Entity entity = entityService.getEntityByBarcode(barcode, userId);
+            
+            if (entity == null) {
+                return ApiResponse.error(ErrorCode.DATA_NOT_EXIST.getCode(), "未找到对应条形码的实体");
+            }
+            
+            return ApiResponse.success(entity);
+        } catch (Exception e) {
+            log.error("根据条形码查询实体异常: barcode={}", barcode, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "查询失败: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/by-qrcode")
+    @Operation(summary = "根据二维码查询实体", description = "根据二维码查询实体信息")
+    public ApiResponse<Entity> getEntityByQRCode(
+            @Parameter(description = "二维码") @RequestParam(value = "qrcode") String qrcode,
+            @Parameter(description = "用户ID") @RequestParam(value = "userId") Long userId) {
+        
+        try {
+            log.info("根据二维码查询实体: qrcode={}, userId={}", qrcode, userId);
+            
+            // 调用服务层方法查询
+            Entity entity = entityService.getEntityByQRCode(qrcode, userId);
+            
+            if (entity == null) {
+                return ApiResponse.error(ErrorCode.DATA_NOT_EXIST.getCode(), "未找到对应二维码的实体");
+            }
+            
+            return ApiResponse.success(entity);
+        } catch (Exception e) {
+            log.error("根据二维码查询实体异常: qrcode={}", qrcode, e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "查询失败: " + e.getMessage());
         }
     }
 } 

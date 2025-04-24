@@ -103,3 +103,13 @@ export const restoreEntityVersion = (id: string, historyId: string) => {
     `/entities/${id}/restore/${historyId}`
   );
 };
+
+// 根据条形码查询物品
+export const getEntityByBarcode = (barcode: string, userId: string) => {
+  return http.get<ResponseResult<Entity>,{ barcode: string; userId: string }>(`/entities/by-barcode`, { params: { barcode, userId } });
+};
+
+// 根据二维码查询物品
+export const getEntityByQRCode = (qrcode: string, userId: string) => {
+  return http.get<ResponseResult<Entity>,{ qrcode: string; userId: string }>(`/entities/by-qrcode`, { params: { qrcode, userId } });
+};

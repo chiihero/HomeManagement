@@ -100,6 +100,119 @@
         <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入物品描述" />
       </el-form-item>
 
+      <!-- 药品特有字段 -->
+      <div v-if="form.type === '药品'">
+        <h3 class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full mt-4 mb-4">
+          药品特有信息
+        </h3>
+        <el-row :gutter="20">
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="有效成分">
+              <el-input v-model="form.activeIngredient" placeholder="请输入有效成分" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="剂型">
+              <el-select v-model="form.dosageForm" filterable allow-create placeholder="请选择或输入剂型">
+                <el-option value="片剂" />
+                <el-option value="胶囊" />
+                <el-option value="口服液" />
+                <el-option value="注射剂" />
+                <el-option value="粉剂" />
+                <el-option value="颗粒剂" />
+                <el-option value="滴剂" />
+                <el-option value="贴剂" />
+                <el-option value="软膏" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="批号">
+              <el-input v-model="form.batchNumber" placeholder="请输入批号" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="用法用量">
+              <el-input v-model="form.usageDosage" placeholder="请输入用法用量" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="批准文号">
+              <el-input v-model="form.approvalNumber" placeholder="请输入批准文号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        
+        <el-form-item label="说明书内容" prop="instructionText">
+          <el-input v-model="form.instructionText" type="textarea" :rows="6" placeholder="请输入药品说明书内容" />
+        </el-form-item>
+        
+        <el-form-item label="说明书图片" prop="instructionImages">
+          <el-upload 
+            ref="instructionUploadRef" 
+            :file-list="instructionImageList" 
+            @update:file-list="instructionImageList = $event" 
+            action="#" 
+            list-type="picture-card" 
+            multiple 
+            :auto-upload="false" 
+            :on-preview="handleInstructionPreview" 
+            :on-remove="handleInstructionRemove" 
+            :before-upload="beforeImageUpload" 
+            :on-change="handleInstructionChange">
+            <el-icon>
+              <Plus />
+            </el-icon>
+          </el-upload>
+          <el-dialog v-model="instructionDialogVisible" append-to-body>
+            <img class="w-full" :src="instructionDialogImageUrl" alt="Preview Image" />
+          </el-dialog>
+        </el-form-item>
+      </div>
+
+      <!-- 耗材特有字段 -->
+      <div v-if="form.type === '耗材'">
+        <h3 class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full mt-4 mb-4">
+          耗材特有信息
+        </h3>
+        <el-row :gutter="20">
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="消耗速率">
+              <el-input v-model="form.consumptionRate" placeholder="如：每月1包" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="剩余数量">
+              <el-input-number v-model="form.remainingQuantity" :min="0" :precision="2" :step="0.1" placeholder="请输入剩余数量" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="单位">
+              <el-select v-model="form.unit" filterable allow-create placeholder="请选择或输入单位">
+                <el-option value="包" />
+                <el-option value="卷" />
+                <el-option value="瓶" />
+                <el-option value="个" />
+                <el-option value="片" />
+                <el-option value="支" />
+                <el-option value="盒" />
+                <el-option value="箱" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="更换周期(天)">
+              <el-input-number v-model="form.replacementCycle" :min="0" placeholder="请输入更换周期" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="10">
+            <el-form-item label="上次更换日期">
+              <el-date-picker v-model="form.lastReplacementDate" type="date" placeholder="请选择上次更换日期" value-format="YYYY-MM-DD" class="w-full" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+
       <el-form-item label="标签" prop="tags">
         <el-select v-model="form.tags" multiple filterable default-first-option placeholder="请选择或输入标签"
           @change="handleTagsChange">
@@ -152,10 +265,28 @@ interface Props {
 // 获取用户store
 const userStore = useUserStoreHook();
 
+// 扩展Entity类型，创建表单数据类型
+type EntityFormData = Entity & {
+  tags: any[];
+  // 以下字段已经在Entity接口中定义，此处无需重复
+  // activeIngredient?: string;
+  // dosageForm?: string;
+  // batchNumber?: string;
+  // usageDosage?: string;
+  // approvalNumber?: string;
+  // instructionText?: string;
+  // instructionImages?: string;
+  // consumptionRate?: string;
+  // remainingQuantity?: number;
+  // unit?: string;
+  // replacementCycle?: number;
+  // lastReplacementDate?: string;
+};
+
 // 表单数据
-const form = reactive<Omit<Entity, "tags"> & { tags: any[] }>({
+const form = reactive<EntityFormData>({
   name: "",
-  type: "item",
+  type: "物品",
   parentId: "",
   status: "normal" as EntityStatus,
   location: "",
@@ -168,7 +299,23 @@ const form = reactive<Omit<Entity, "tags"> & { tags: any[] }>({
   tags: [], // 这里存储标签ID数组
   images: [],
   deletedImageIds: [],
-  userId: "" // 添加userId字段
+  userId: "", // 添加userId字段
+  
+  // 药品特有字段
+  activeIngredient: "",
+  dosageForm: "",
+  batchNumber: "",
+  usageDosage: "",
+  approvalNumber: "",
+  instructionText: "",
+  instructionImages: "",
+  
+  // 耗材特有字段
+  consumptionRate: "",
+  remainingQuantity: 0,
+  unit: "",
+  replacementCycle: 0,
+  lastReplacementDate: "",
 });
 
 const props = defineProps<Props>();
@@ -398,6 +545,7 @@ const handleSubmit = async () => {
 
         // 创建一个新的表单数据对象，包含所有必要的字段
         const formData = {
+          id: props.entity?.id, // 确保在编辑模式下包含ID
           name: form.name,
           type: form.type,
           parentId: form.parentId,
@@ -416,16 +564,88 @@ const handleSubmit = async () => {
           userId: form.userId
         };
 
+        // 根据实体类型添加特有字段
+        if (form.type === "药品") {
+          // 添加药品特有字段
+          Object.assign(formData, {
+            activeIngredient: form.activeIngredient,
+            dosageForm: form.dosageForm,
+            batchNumber: form.batchNumber,
+            usageDosage: form.usageDosage,
+            approvalNumber: form.approvalNumber,
+            instructionText: form.instructionText,
+            instructionImages: form.instructionImages
+          });
+
+          // 处理说明书图片上传，处理成字符串格式的URL列表
+          if (instructionImageList.value && instructionImageList.value.length > 0) {
+            const urls = instructionImageList.value
+              .filter(img => img.url || img.fileUrl)
+              .map(img => img.url || img.fileUrl)
+              .join(',');
+            formData.instructionImages = urls;
+          }
+        } else if (form.type === "耗材") {
+          // 添加耗材特有字段
+          Object.assign(formData, {
+            consumptionRate: form.consumptionRate,
+            remainingQuantity: form.remainingQuantity,
+            unit: form.unit,
+            replacementCycle: form.replacementCycle,
+            lastReplacementDate: form.lastReplacementDate
+          });
+        }
+
         console.log("提交的表单数据:", formData);
         // 添加标签信息的日志输出，帮助调试
         console.log("提交的标签数据:", formData.tags);
-        emit("submit", formData);
+        
+        // 使用类型断言将formData转换为Entity类型以满足emit要求
+        emit("submit", formData as unknown as Entity);
       } catch (error) {
         console.error("提交表单失败:", error);
         ElMessage.error("提交表单失败，请重试");
       }
     }
   });
+};
+
+// 说明书图片相关
+const instructionDialogVisible = ref(false);
+const instructionDialogImageUrl = ref('');
+const instructionImageList = ref<any[]>([]);
+
+// 处理说明书图片预览
+const handleInstructionPreview = (file: any) => {
+  instructionDialogImageUrl.value = file.url;
+  instructionDialogVisible.value = true;
+};
+
+// 处理删除说明书图片
+const handleInstructionRemove = (file: any, fileList: any[]) => {
+  // 如果有ID，添加到待删除列表
+  if (file.id) {
+    deletedImageIds.value.push(file.id);
+  }
+};
+
+// 处理说明书图片变化
+const handleInstructionChange = (file: any, fileList: any[]) => {
+  instructionImageList.value = fileList;
+};
+
+// 设置说明书图片列表
+const setInstructionImageList = (images: any[]) => {
+  instructionImageList.value = images.map(img => ({
+    ...img,
+    name: img.fileName || '说明书图片',
+    url: img.url || img.imageUrl
+  }));
+};
+
+// 重置说明书图片列表
+const resetInstructionImageList = () => {
+  instructionImageList.value = [];
 };
 
 // 监听实体变化
@@ -489,6 +709,33 @@ watch(
       // 更新当前选中的节点和位置名称
       currentNodeKey.value = newEntity.parentId || "";
       updateSelectedLocationName();
+
+      // 设置药品特有字段
+      if (newEntity.type === '药品' && newEntity.activeIngredient !== undefined) {
+        form.activeIngredient = newEntity.activeIngredient || '';
+        form.dosageForm = newEntity.dosageForm || '';
+        form.batchNumber = newEntity.batchNumber || '';
+        form.usageDosage = newEntity.usageDosage || '';
+        form.approvalNumber = newEntity.approvalNumber || '';
+        form.instructionText = newEntity.instructionText || '';
+        form.instructionImages = newEntity.instructionImages || '';
+        
+        // 如果有说明书图片，设置图片列表
+        if (newEntity.instructionImagesList) {
+          setInstructionImageList(newEntity.instructionImagesList);
+        } else {
+          resetInstructionImageList();
+        }
+      }
+      
+      // 设置耗材特有字段
+      if (newEntity.type === '耗材' && newEntity.consumptionRate !== undefined) {
+        form.consumptionRate = newEntity.consumptionRate || '';
+        form.remainingQuantity = newEntity.remainingQuantity || 0;
+        form.unit = newEntity.unit || '';
+        form.replacementCycle = newEntity.replacementCycle || 0;
+        form.lastReplacementDate = newEntity.lastReplacementDate || '';
+      }
     } else {
       // 重置表单
       form.name = "";
@@ -509,6 +756,23 @@ watch(
       resetImageList();
       currentNodeKey.value = "0";
       selectedLocationName.value = "根空间";
+      
+      // 重置药品特有字段
+      form.activeIngredient = '';
+      form.dosageForm = '';
+      form.batchNumber = '';
+      form.usageDosage = '';
+      form.approvalNumber = '';
+      form.instructionText = '';
+      form.instructionImages = '';
+      resetInstructionImageList();
+      
+      // 重置耗材特有字段
+      form.consumptionRate = '';
+      form.remainingQuantity = 0;
+      form.unit = '';
+      form.replacementCycle = 0;
+      form.lastReplacementDate = '';
     }
   },
   { immediate: true }

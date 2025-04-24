@@ -853,34 +853,101 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
             throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "用户ID不能为空");
         }
         
+        if (!StringUtils.hasText(keyword)) {
+            log.warn("搜索关键词为空，返回空结果");
+            return Collections.emptyList();
+        }
+        
         log.info("开始搜索实体: userId={}, keyword={}", userId, keyword);
+        
+        LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<Entity>()
+            .eq(Entity::getUserId, userId)
+            .and(wrapper -> wrapper
+                .like(Entity::getName, keyword)
+                .or()
+                .like(Entity::getCode, keyword)
+                .or()
+                .like(Entity::getDescription, keyword)
+                .or()
+                .like(Entity::getSpecification, keyword)
+            )
+            .ne(Entity::getStatus, "discarded")
+            .orderByDesc(Entity::getCreateTime);
+        
+        List<Entity> entities = list(queryWrapper);
+        log.info("搜索实体完成: userId={}, keyword={}, 结果数量={}", userId, keyword, entities.size());
+        
+        // 加载其他相关信息（标签、图片等）
+        enrichEntityDetails(entities);
+        
+        return entities;
+    }
+    
+    @Override
+    public Entity getEntityByBarcode(String barcode, Long userId) {
+        if (userId == null) {
+            log.error("根据条形码查询实体时用户ID为空");
+            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "用户ID不能为空");
+        }
+        
+        if (!StringUtils.hasText(barcode)) {
+            log.warn("条形码为空，返回空结果");
+            return null;
+        }
+        
+        log.info("开始查询条形码对应的实体: barcode={}, userId={}", barcode, userId);
         
         // 构建查询条件
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<Entity>()
+                .eq(Entity::getBarcode, barcode)
                 .eq(Entity::getUserId, userId)
-                // 排除已丢弃的实体
                 .ne(Entity::getStatus, "discarded")
-                .and(StringUtils.hasText(keyword), wrapper -> wrapper
-                    // 搜索名称
-                    .like(Entity::getName, keyword)
-                    // 或搜索编码
-                    .or().like(Entity::getCode, keyword)
-                    // 或搜索规格
-                    .or().like(Entity::getSpecification, keyword)
-                    // 或搜索描述
-                    .or().like(Entity::getDescription, keyword)
-                )
-                .orderByDesc(Entity::getUpdateTime);
+                .last("LIMIT 1");
         
-        List<Entity> result = list(queryWrapper);
+        // 查询实体
+        Entity entity = getOne(queryWrapper);
         
-        log.info("搜索实体完成: userId={}, keyword={}, 结果数量={}", userId, keyword, result.size());
-        
-        // 加载额外信息
-        if (!result.isEmpty()) {
-            enrichEntityDetails(result);
+        if (entity != null) {
+            log.info("找到条形码对应的实体: barcode={}, entityId={}, name={}", barcode, entity.getId(), entity.getName());
+            // 获取实体详情（加载标签、图片等信息）
+            return getEntityDetail(entity.getId());
+        } else {
+            log.warn("未找到条形码对应的实体: barcode={}", barcode);
+            return null;
+        }
+    }
+    
+    @Override
+    public Entity getEntityByQRCode(String qrcode, Long userId) {
+        if (userId == null) {
+            log.error("根据二维码查询实体时用户ID为空");
+            throw new BusinessException(ErrorCode.PARAM_NOT_VALID.getCode(), "用户ID不能为空");
         }
         
-        return result;
+        if (!StringUtils.hasText(qrcode)) {
+            log.warn("二维码为空，返回空结果");
+            return null;
+        }
+        
+        log.info("开始查询二维码对应的实体: qrcode={}, userId={}", qrcode, userId);
+        
+        // 构建查询条件
+        LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<Entity>()
+                .eq(Entity::getQrcode, qrcode)
+                .eq(Entity::getUserId, userId)
+                .ne(Entity::getStatus, "discarded")
+                .last("LIMIT 1");
+        
+        // 查询实体
+        Entity entity = getOne(queryWrapper);
+        
+        if (entity != null) {
+            log.info("找到二维码对应的实体: qrcode={}, entityId={}, name={}", qrcode, entity.getId(), entity.getName());
+            // 获取实体详情（加载标签、图片等信息）
+            return getEntityDetail(entity.getId());
+        } else {
+            log.warn("未找到二维码对应的实体: qrcode={}", qrcode);
+            return null;
+        }
     }
 } 
