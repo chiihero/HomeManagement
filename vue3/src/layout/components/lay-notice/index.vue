@@ -1,14 +1,74 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { noticesData } from "./data";
 import NoticeList from "./components/NoticeList.vue";
 import BellIcon from "@iconify-icons/ep/bell";
+import { getRecentReminders } from "@/api/dashboard";
+import type { Reminder } from "@/types/reminder";
+import { formatDate } from "@/utils/date";
 
 const noticesNum = ref(0);
 const notices = ref(noticesData);
 const activeKey = ref(noticesData[0]?.key);
+const recentReminders = ref<Reminder[]>([]);
+const loadingReminders = ref(false);
 
-notices.value.map(v => (noticesNum.value += v.list.length));
+// 获取最近提醒
+const fetchRecentReminders = async () => {
+  try {
+    loadingReminders.value = true;
+    const response = await getRecentReminders(5);
+    if (response.code === 200 && response.data) {
+      recentReminders.value = response.data;
+      
+      // 将提醒转换为通知格式
+      const reminderNotices = recentReminders.value.map(reminder => ({
+        avatar: "",
+        title: reminder.entityName || "提醒",
+        description: reminder.content,
+        datetime: formatDate(reminder.remindDate),
+        type: "reminder",
+        status: getReminderStatusType(reminder.status)
+      }));
+      
+      // 更新提醒通知
+      const reminderIndex = notices.value.findIndex(item => item.key === "1");
+      if (reminderIndex !== -1) {
+        notices.value[reminderIndex].list = reminderNotices;
+      }
+      
+      // 更新通知总数
+      updateNoticeCount();
+    }
+  } catch (error) {
+    console.error("获取最近提醒失败:", error);
+  } finally {
+    loadingReminders.value = false;
+  }
+};
+
+// 将提醒状态转换为通知状态类型
+const getReminderStatusType = (status: string): "primary" | "success" | "warning" | "info" | "danger" => {
+  const statusMap = {
+    pending: "warning",
+    sent: "info",
+    processed: "success",
+    ignored: "danger"
+  };
+  return statusMap[status] || "info";
+};
+
+// 更新通知总数
+const updateNoticeCount = () => {
+  noticesNum.value = 0;
+  notices.value.forEach(v => {
+    noticesNum.value += v.list.length;
+  });
+};
+
+onMounted(() => {
+  fetchRecentReminders();
+});
 
 const getLabel = computed(
   () => item =>
@@ -50,6 +110,9 @@ const getLabel = computed(
               <el-tab-pane :label="getLabel(item)" :name="`${item.key}`">
                 <el-scrollbar max-height="330px">
                   <div class="noticeList-container">
+                    <div v-if="item.key === '1' && loadingReminders" class="loading-container">
+                      <el-skeleton :rows="3" animated />
+                    </div>
                     <NoticeList :list="item.list" :emptyText="item.emptyText" />
                   </div>
                 </el-scrollbar>
@@ -79,6 +142,10 @@ const getLabel = computed(
 .dropdown-tabs {
   .noticeList-container {
     padding: 15px 24px 0;
+  }
+
+  .loading-container {
+    padding: 0 0 15px 0;
   }
 
   :deep(.el-tabs__header) {

@@ -7,20 +7,21 @@
       animated
     />
     <el-empty v-else-if="!treeData.length" description="暂无物品数据" />
-    <el-tree
+    <el-tree-v2
       v-else
       ref="treeRef"
       :key="'entity-tree'"
       :data="treeData"
       :props="defaultProps"
-      :filter-node-method="filterNode"
+      :filter-method="filterNode"
       node-key="id"
-      highlight-current
+      :highlight-current="true"
       :expand-on-click-node="false"
       :default-expanded-keys="expandedKeys"
       class="h-full overflow-auto"
-      @node-expand="handleNodeExpand"
-      @node-collapse="handleNodeCollapse"
+      :height="height"
+      @expand="handleNodeExpand"
+      @collapse="handleNodeCollapse"
       @node-click="handleNodeClick"
     >
       <template #default="{ node, data }">
@@ -51,12 +52,12 @@
           </el-tag>
         </div>
       </template>
-    </el-tree>
+    </el-tree-v2>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import type { Entity } from "@/types/entity";
 import EpMessageBox from "@iconify-icons/ep/message-box";
 import EpBox from "@iconify-icons/ep/box";
@@ -78,6 +79,8 @@ const treeRef = ref();
 const filterText = ref("");
 // 存储展开的节点ID
 const expandedKeys = ref<string[]>([]);
+// 虚拟树的高度
+const height = ref(500);
 
 // 树形配置
 const defaultProps = {
@@ -113,19 +116,9 @@ watch(filterText, val => {
   treeRef.value?.filter(val);
 });
 
-// 在组件挂载后自动展开根节点
+// 在组件挂载后设置树高度为容器高度
 onMounted(() => {
-  // 延迟执行，确保树已经渲染完成
-  // setTimeout(() => {
-  //   // 默认展开第一级节点
-  //   if (props.treeData && props.treeData.length > 0) {
-  //     props.treeData.forEach(node => {
-  //       if (node.id) {
-  //         expandedKeys.value.push(node.id);
-  //       }
-  //     });
-  //   }
-  // }, 100);
+
 });
 
 // 处理节点点击

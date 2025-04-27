@@ -89,7 +89,7 @@ import {
   ElSwitch,        // 开关组件 (未使用)
   ElTable,         // 表格组件
   ElTableColumn,   // 表格列组件
-  // ElTableV2,       // 虚拟列表表格组件 (未使用)
+  ElTableV2,       // 虚拟列表表格组件 (未使用)
   ElTabs,          // 标签页组件
   ElTabPane,       // 标签页面板组件
   ElTag,           // 标签组件
@@ -102,7 +102,7 @@ import {
   // ElTransfer,      // 穿梭框组件 (未使用)
   ElTree,          // 树形控件组件
   // ElTreeSelect,    // 树形选择组件 (未使用)
-  // ElTreeV2,        // 虚拟化树形组件 (未使用)
+  ElTreeV2,        // 虚拟化树形组件 (未使用)
   ElUpload,        // 上传组件
   // ElWatermark,     // 水印组件 (未使用)
   // ElTour,          // 导览组件 (未使用)
@@ -205,7 +205,7 @@ const components = [
   ElSwitch,        // 开关组件 (未使用)
   ElTable,         // 表格组件
   ElTableColumn,   // 表格列组件
-  // ElTableV2,       // 虚拟列表表格组件 (未使用)
+  ElTableV2,       // 虚拟列表表格组件 (未使用)
   ElTabs,          // 标签页组件
   ElTabPane,       // 标签页面板组件
   ElTag,           // 标签组件
@@ -218,7 +218,7 @@ const components = [
   // ElTransfer,      // 穿梭框组件 (未使用)
   ElTree,          // 树形控件组件
   // ElTreeSelect,    // 树形选择组件 (未使用)
-  // ElTreeV2,        // 虚拟化树形组件 (未使用)
+  ElTreeV2,        // 虚拟化树形组件 (未使用)
   ElUpload,        // 上传组件
   // ElWatermark,     // 水印组件 (未使用)
   // ElTour,          // 导览组件 (未使用)
