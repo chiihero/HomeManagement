@@ -100,119 +100,6 @@
         <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入物品描述" />
       </el-form-item>
 
-      <!-- 药品特有字段 -->
-      <div v-if="form.type === '药品'">
-        <h3 class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full mt-4 mb-4">
-          药品特有信息
-        </h3>
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="有效成分">
-              <el-input v-model="form.activeIngredient" placeholder="请输入有效成分" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="剂型">
-              <el-select v-model="form.dosageForm" filterable allow-create placeholder="请选择或输入剂型">
-                <el-option value="片剂" />
-                <el-option value="胶囊" />
-                <el-option value="口服液" />
-                <el-option value="注射剂" />
-                <el-option value="粉剂" />
-                <el-option value="颗粒剂" />
-                <el-option value="滴剂" />
-                <el-option value="贴剂" />
-                <el-option value="软膏" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="批号">
-              <el-input v-model="form.batchNumber" placeholder="请输入批号" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="用法用量">
-              <el-input v-model="form.usageDosage" placeholder="请输入用法用量" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="批准文号">
-              <el-input v-model="form.approvalNumber" placeholder="请输入批准文号" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        
-        <el-form-item label="说明书内容" prop="instructionText">
-          <el-input v-model="form.instructionText" type="textarea" :rows="6" placeholder="请输入药品说明书内容" />
-        </el-form-item>
-        
-        <el-form-item label="说明书图片" prop="instructionImages">
-          <el-upload 
-            ref="instructionUploadRef" 
-            :file-list="instructionImageList" 
-            @update:file-list="instructionImageList = $event" 
-            action="#" 
-            list-type="picture-card" 
-            multiple 
-            :auto-upload="false" 
-            :on-preview="handleInstructionPreview" 
-            :on-remove="handleInstructionRemove" 
-            :before-upload="beforeImageUpload" 
-            :on-change="handleInstructionChange">
-            <el-icon>
-              <Plus />
-            </el-icon>
-          </el-upload>
-          <el-dialog v-model="instructionDialogVisible" append-to-body>
-            <img class="w-full" :src="instructionDialogImageUrl" alt="Preview Image" />
-          </el-dialog>
-        </el-form-item>
-      </div>
-
-      <!-- 耗材特有字段 -->
-      <div v-if="form.type === '耗材'">
-        <h3 class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full mt-4 mb-4">
-          耗材特有信息
-        </h3>
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="消耗速率">
-              <el-input v-model="form.consumptionRate" placeholder="如：每月1包" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="剩余数量">
-              <el-input-number v-model="form.remainingQuantity" :min="0" :precision="2" :step="0.1" placeholder="请输入剩余数量" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="单位">
-              <el-select v-model="form.unit" filterable allow-create placeholder="请选择或输入单位">
-                <el-option value="包" />
-                <el-option value="卷" />
-                <el-option value="瓶" />
-                <el-option value="个" />
-                <el-option value="片" />
-                <el-option value="支" />
-                <el-option value="盒" />
-                <el-option value="箱" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="更换周期(天)">
-              <el-input-number v-model="form.replacementCycle" :min="0" placeholder="请输入更换周期" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="10">
-            <el-form-item label="上次更换日期">
-              <el-date-picker v-model="form.lastReplacementDate" type="date" placeholder="请选择上次更换日期" value-format="YYYY-MM-DD" class="w-full" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </div>
-
       <el-form-item label="标签" prop="tags">
         <el-select v-model="form.tags" multiple filterable default-first-option placeholder="请选择或输入标签"
           @change="handleTagsChange">
@@ -280,7 +167,6 @@ type EntityFormData = Entity & {
   // remainingQuantity?: number;
   // unit?: string;
   // replacementCycle?: number;
-  // lastReplacementDate?: string;
 };
 
 // 表单数据
@@ -346,7 +232,7 @@ const currentNodeKey = ref<string>("0");
 
 // 处理位置选择
 const handleLocationSelect = (data: any) => {
-  if (data && data.id) {
+  if (data) {
     form.parentId = data.id;
     selectedLocationName.value = data.name;
   }

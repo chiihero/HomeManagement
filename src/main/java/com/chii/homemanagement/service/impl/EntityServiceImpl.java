@@ -719,7 +719,7 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         
         // 过滤出根实体（没有父实体的实体）
         List<Entity> rootEntities = allEntities.stream()
-                .filter(entity -> entity.getParentId() == null)
+                .filter(entity -> entity.getParentId() == 0)
                 .collect(Collectors.toList());
         
         // 为每个根实体设置子实体

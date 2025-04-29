@@ -78,7 +78,8 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
       } else {
         response = await getEntityTree(authStore.userId);
       }
-      
+      console.log("树列表返回原始数据:", response);
+
       if (response.data) {
         // @ts-ignore - 忽略类型检查，应为响应类型定义问题
         treeData.value = response.data;
@@ -259,11 +260,6 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
     try {
       console.log("保存实体，表单数据:", formData);
 
-      // 特殊处理根空间的情况
-      if (formData.parentId === "0") {
-        // @ts-ignore - 忽略类型检查，因为服务端需要接收null值
-        formData.parentId = null; // 发送null表示没有父节点
-      }
 
       // 临时保存图片数据，因为提交给后端时不需要这些数据
       const images = formData.images ? [...formData.images] : [];
