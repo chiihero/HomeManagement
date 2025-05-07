@@ -10,18 +10,15 @@
     <el-tree-v2
       v-else
       ref="treeRef"
-      :key="'entity-tree'"
       :data="treeData"
       :props="defaultProps"
       :filter-method="filterNode"
       node-key="id"
       :highlight-current="true"
-      :expand-on-click-node="false"
-      :default-expanded-keys="expandedKeys"
+      :current-node-key="selectedKey"
       class="h-full overflow-auto"
       :height="height"
-      @expand="handleNodeExpand"
-      @collapse="handleNodeCollapse"
+      :default-expanded-keys="expandedKeys"
       @node-click="handleNodeClick"
     >
       <template #default="{ node, data }">
@@ -57,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import { ElTreeV2 } from 'element-plus'
 import { ref, watch, onMounted, computed } from "vue";
 import type { Entity } from "@/types/entity";
 import EpMessageBox from "@iconify-icons/ep/message-box";
@@ -74,35 +72,21 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   (e: "node-click", node: Entity): void;
 }>();
-
-const treeRef = ref();
+const treeRef = ref()
+// const treeRef = ref<InstanceType<typeof ElTreeV2>>()
 const filterText = ref("");
-// 存储展开的节点ID
-const expandedKeys = ref<string[]>([]);
+
+// 存储当前选中的节点ID
+const selectedKey = ref<string>("");
 // 虚拟树的高度
 const height = ref(500);
+// 存储展开的节点ID
+const expandedKeys = ref<string[]>([]);
 
 // 树形配置
 const defaultProps = {
   children: "children",
   label: "name"
-};
-
-// 处理节点展开
-const handleNodeExpand = (data: Entity) => {
-  if (data.id && !expandedKeys.value.includes(data.id)) {
-    expandedKeys.value.push(data.id);
-  }
-};
-
-// 处理节点折叠
-const handleNodeCollapse = (data: Entity) => {
-  if (data.id) {
-    const index = expandedKeys.value.indexOf(data.id);
-    if (index !== -1) {
-      expandedKeys.value.splice(index, 1);
-    }
-  }
 };
 
 // 过滤节点
@@ -116,14 +100,81 @@ watch(filterText, val => {
   treeRef.value?.filter(val);
 });
 
-// 在组件挂载后设置树高度为容器高度
-onMounted(() => {
+// 监听树数据变化，确保在数据刷新后仍然保持选中状态和展开状态
+watch(() => props.treeData, () => {
+  expandedKeys.value = [];
+  // 如果有选中的节点，确保在树刷新后仍然选中
+  if (selectedKey.value) {
+    expandedKeys.value.push(selectedKey.value);
+    // 获取并展开所有父节点
+    const parentIds = getParentIds(selectedKey.value, props.treeData);
+    if (parentIds.length > 0) {
+      expandedKeys.value.push(...parentIds);
+    }
+  }
+});
 
+// 递归获取所有节点ID
+const getAllNodeIds = (nodes: Entity[]): string[] => {
+  let ids: string[] = [];
+  nodes.forEach(node => {
+    ids.push(node.id);
+    if (node.children && node.children.length > 0) {
+      ids = ids.concat(getAllNodeIds(node.children));
+    }
+  });
+  return ids;
+};
+
+
+
+// 在组件挂载后设置树高度为容器高度并展开所有节点
+onMounted(() => {
 });
 
 // 处理节点点击
 const handleNodeClick = (data: Entity) => {
+  // 保存当前选中的节点ID
+  selectedKey.value = data.id;
+
   emit("node-click", data);
+};
+
+// 获取节点的所有父节点ID
+const getParentIds = (nodeId: string, nodes: Entity[]): string[] => {
+  const parentIds: string[] = [];
+  
+  // 递归查找父节点
+  const findParent = (id: string, treeNodes: Entity[], path: string[] = []) => {
+    for (const node of treeNodes) {
+      // 当前路径
+      const currentPath = [...path];
+      
+      // 如果找到了节点
+      if (node.id === id) {
+        return currentPath;
+      }
+      
+      // 如果有子节点，则递归查找
+      if (node.children && node.children.length > 0) {
+        // 将当前节点ID添加到路径中
+        currentPath.push(node.id);
+        const result = findParent(id, node.children, currentPath);
+        if (result.length > 0) {
+          return result;
+        }
+      }
+    }
+    return [];
+  };
+  
+  // 查找父节点路径
+  const parentPath = findParent(nodeId, nodes);
+  if (parentPath.length > 0) {
+    parentIds.push(...parentPath);
+  }
+  
+  return parentIds;
 };
 
 // 获取状态类型

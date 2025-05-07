@@ -66,7 +66,6 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
   const loadTreeData = async () => {
     treeLoading.value = true;
     try {
-      // 获取当前展开的节点ID，如果访问树组件ref的话
       // 保存当前选中的物品
       const currentId = currentEntity.value?.id;
 
@@ -192,6 +191,9 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
 
   // 加载实体详情
   const loadEntityDetail = async (id: string) => {
+    if (!id) {
+      return;
+    }
     // 设置详情页加载状态
     detailLoading.value = true;
     try {

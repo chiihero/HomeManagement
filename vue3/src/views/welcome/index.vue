@@ -4,6 +4,10 @@ defineOptions({
 });
 
 const updateNotes = [{
+  version: "v0.3.6",
+  date: "2025年5月07日",
+  notes: ["优化体验"]
+}, {
   version: "v0.3.5",
   date: "2025年4月29日",
   notes: ["修复无法重新选择根空间的问题"

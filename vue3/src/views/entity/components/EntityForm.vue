@@ -155,18 +155,6 @@ const userStore = useUserStoreHook();
 // 扩展Entity类型，创建表单数据类型
 type EntityFormData = Entity & {
   tags: any[];
-  // 以下字段已经在Entity接口中定义，此处无需重复
-  // activeIngredient?: string;
-  // dosageForm?: string;
-  // batchNumber?: string;
-  // usageDosage?: string;
-  // approvalNumber?: string;
-  // instructionText?: string;
-  // instructionImages?: string;
-  // consumptionRate?: string;
-  // remainingQuantity?: number;
-  // unit?: string;
-  // replacementCycle?: number;
 };
 
 // 表单数据
@@ -187,21 +175,6 @@ const form = reactive<EntityFormData>({
   deletedImageIds: [],
   userId: "", // 添加userId字段
   
-  // 药品特有字段
-  activeIngredient: "",
-  dosageForm: "",
-  batchNumber: "",
-  usageDosage: "",
-  approvalNumber: "",
-  instructionText: "",
-  instructionImages: "",
-  
-  // 耗材特有字段
-  consumptionRate: "",
-  remainingQuantity: 0,
-  unit: "",
-  replacementCycle: 0,
-  lastReplacementDate: "",
 });
 
 const props = defineProps<Props>();
@@ -238,11 +211,6 @@ const handleLocationSelect = (data: any) => {
   }
 };
 
-/**
- * 日期计算相关函数和监听器
- * 实现生产日期、保修期和保修截止日期之间的联动计算
- * 当用户填写其中任意两个值时，自动计算第三个值
- */
 
 /**
  * 根据生产日期和保修期计算保修截止日期
@@ -450,38 +418,6 @@ const handleSubmit = async () => {
           userId: form.userId
         };
 
-        // 根据实体类型添加特有字段
-        if (form.type === "药品") {
-          // 添加药品特有字段
-          Object.assign(formData, {
-            activeIngredient: form.activeIngredient,
-            dosageForm: form.dosageForm,
-            batchNumber: form.batchNumber,
-            usageDosage: form.usageDosage,
-            approvalNumber: form.approvalNumber,
-            instructionText: form.instructionText,
-            instructionImages: form.instructionImages
-          });
-
-          // 处理说明书图片上传，处理成字符串格式的URL列表
-          if (instructionImageList.value && instructionImageList.value.length > 0) {
-            const urls = instructionImageList.value
-              .filter(img => img.url || img.fileUrl)
-              .map(img => img.url || img.fileUrl)
-              .join(',');
-            formData.instructionImages = urls;
-          }
-        } else if (form.type === "耗材") {
-          // 添加耗材特有字段
-          Object.assign(formData, {
-            consumptionRate: form.consumptionRate,
-            remainingQuantity: form.remainingQuantity,
-            unit: form.unit,
-            replacementCycle: form.replacementCycle,
-            lastReplacementDate: form.lastReplacementDate
-          });
-        }
-
         console.log("提交的表单数据:", formData);
         // 添加标签信息的日志输出，帮助调试
         console.log("提交的标签数据:", formData.tags);
@@ -494,44 +430,6 @@ const handleSubmit = async () => {
       }
     }
   });
-};
-
-// 说明书图片相关
-const instructionDialogVisible = ref(false);
-const instructionDialogImageUrl = ref('');
-const instructionImageList = ref<any[]>([]);
-
-// 处理说明书图片预览
-const handleInstructionPreview = (file: any) => {
-  instructionDialogImageUrl.value = file.url;
-  instructionDialogVisible.value = true;
-};
-
-// 处理删除说明书图片
-const handleInstructionRemove = (file: any, fileList: any[]) => {
-  // 如果有ID，添加到待删除列表
-  if (file.id) {
-    deletedImageIds.value.push(file.id);
-  }
-};
-
-// 处理说明书图片变化
-const handleInstructionChange = (file: any, fileList: any[]) => {
-  instructionImageList.value = fileList;
-};
-
-// 设置说明书图片列表
-const setInstructionImageList = (images: any[]) => {
-  instructionImageList.value = images.map(img => ({
-    ...img,
-    name: img.fileName || '说明书图片',
-    url: img.url || img.imageUrl
-  }));
-};
-
-// 重置说明书图片列表
-const resetInstructionImageList = () => {
-  instructionImageList.value = [];
 };
 
 // 监听实体变化
@@ -596,32 +494,6 @@ watch(
       currentNodeKey.value = newEntity.parentId || "";
       updateSelectedLocationName();
 
-      // 设置药品特有字段
-      if (newEntity.type === '药品' && newEntity.activeIngredient !== undefined) {
-        form.activeIngredient = newEntity.activeIngredient || '';
-        form.dosageForm = newEntity.dosageForm || '';
-        form.batchNumber = newEntity.batchNumber || '';
-        form.usageDosage = newEntity.usageDosage || '';
-        form.approvalNumber = newEntity.approvalNumber || '';
-        form.instructionText = newEntity.instructionText || '';
-        form.instructionImages = newEntity.instructionImages || '';
-        
-        // 如果有说明书图片，设置图片列表
-        if (newEntity.instructionImagesList) {
-          setInstructionImageList(newEntity.instructionImagesList);
-        } else {
-          resetInstructionImageList();
-        }
-      }
-      
-      // 设置耗材特有字段
-      if (newEntity.type === '耗材' && newEntity.consumptionRate !== undefined) {
-        form.consumptionRate = newEntity.consumptionRate || '';
-        form.remainingQuantity = newEntity.remainingQuantity || 0;
-        form.unit = newEntity.unit || '';
-        form.replacementCycle = newEntity.replacementCycle || 0;
-        form.lastReplacementDate = newEntity.lastReplacementDate || '';
-      }
     } else {
       // 重置表单
       form.name = "";
@@ -642,23 +514,6 @@ watch(
       resetImageList();
       currentNodeKey.value = "0";
       selectedLocationName.value = "根空间";
-      
-      // 重置药品特有字段
-      form.activeIngredient = '';
-      form.dosageForm = '';
-      form.batchNumber = '';
-      form.usageDosage = '';
-      form.approvalNumber = '';
-      form.instructionText = '';
-      form.instructionImages = '';
-      resetInstructionImageList();
-      
-      // 重置耗材特有字段
-      form.consumptionRate = '';
-      form.remainingQuantity = 0;
-      form.unit = '';
-      form.replacementCycle = 0;
-      form.lastReplacementDate = '';
     }
   },
   { immediate: true }
