@@ -3,7 +3,9 @@ export default {
   redirect: "/reminder/index",
   meta: {
     title: "提醒管理",
-    icon: "ep:clock"
+    icon: "ep:clock",
+    rank: 4
+
   },
   children: [
     {

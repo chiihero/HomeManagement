@@ -3,7 +3,8 @@ export default {
   redirect: "/entitySearch/index",
   meta: {
     title: "物品搜索",
-    icon: "ep:search"
+    icon: "ep:search",
+    rank: 3
   },
   children: [
     {

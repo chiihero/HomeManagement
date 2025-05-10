@@ -4,7 +4,9 @@ export default {
   meta: {
     title: "仪表盘",
     // showLink: false,
-    icon: "ep:odometer"
+    icon: "ep:odometer",
+    rank: 1
+
   },
   children: [
     {

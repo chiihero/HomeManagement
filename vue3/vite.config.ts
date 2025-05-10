@@ -8,6 +8,7 @@ import {
   pathResolve,
   __APP_INFO__
 } from "./build/utils";
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export default ({ mode }: ConfigEnv): UserConfigExport => {
   const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_PUBLIC_PATH } =
@@ -20,6 +21,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     },
     // 服务端渲染
     server: {
+      // https: true ,
       // 端口号
       port: VITE_PORT,
       host: "0.0.0.0",

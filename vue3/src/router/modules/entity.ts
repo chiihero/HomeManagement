@@ -3,8 +3,9 @@ export default {
   redirect: "/entity/index",
   meta: {
     icon: "ep:folder",
+    title: "物品管理",
+    rank: 2
 
-    title: "物品管理"
   },
   children: [
     {

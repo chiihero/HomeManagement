@@ -3,7 +3,8 @@ export default {
   redirect: "/tag/index",
   meta: {
     icon: "ep:price-tag",
-    title: "标签管理"
+    title: "标签管理",
+    rank: 5
   },
   children: [
     {

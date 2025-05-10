@@ -3,7 +3,12 @@ defineOptions({
   name: "Welcome"
 });
 
-const updateNotes = [{
+const updateNotes = [
+{
+  version: "v0.4.0",
+  date: "2025年5月11日",
+  notes: ["添加手机扫二维码进行拍照上传物品图片"]
+},{
   version: "v0.3.6",
   date: "2025年5月07日",
   notes: ["优化体验"]

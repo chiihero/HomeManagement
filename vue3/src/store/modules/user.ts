@@ -301,7 +301,7 @@ export const useUserStore = defineStore("pure-user", {
           // 记住登录状态
           this.SET_ISREMEMBERED(!!data.remember);
 
-          ElMessage.success("登录成功");
+          // ElMessage.success("登录成功");
           return { success: true, data: response.data };
         }
 

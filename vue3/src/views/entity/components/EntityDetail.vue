@@ -74,94 +74,6 @@
         </div>
       </div>
 
-      <!-- 药品特有信息显示 -->
-      <div v-if="entity.type === '药品' && entity.activeIngredient" class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3
-            class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
-          >
-            药品特有信息
-          </h3>
-        </div>
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="有效成分">{{
-            entity.activeIngredient || '暂无'
-          }}</el-descriptions-item>
-          <el-descriptions-item label="剂型">{{
-            entity.dosageForm || '暂无'
-          }}</el-descriptions-item>
-          <el-descriptions-item label="批号">{{
-            entity.batchNumber || '暂无'
-          }}</el-descriptions-item>
-          <el-descriptions-item label="用法用量">{{
-            entity.usageDosage || '暂无'
-          }}</el-descriptions-item>
-          <el-descriptions-item label="批准文号">{{
-            entity.approvalNumber || '暂无'
-          }}</el-descriptions-item>
-        </el-descriptions>
-
-        <!-- 药品说明书 -->
-        <div class="mt-4">
-          <div class="flex items-center justify-between mb-4">
-            <h4
-              class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
-            >
-              药品说明书
-            </h4>
-          </div>
-          <div v-if="entity.instructionText" class="whitespace-pre-line p-3 bg-gray-50 rounded">
-            {{ entity.instructionText }}
-          </div>
-          <el-empty v-else description="暂无说明书内容" :image-size="60" />
-          
-          <!-- 说明书图片 -->
-          <div v-if="entity.instructionImages" class="mt-4">
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-sm font-medium text-gray-700">说明书图片</h5>
-            </div>
-            <div class="flex flex-wrap gap-4">
-              <el-image
-                v-for="(image, index) in instructionImageList"
-                :key="'instruction-' + index"
-                :src="image"
-                :preview-src-list="instructionImageList"
-                fit="cover"
-                class="w-28 h-28 rounded-md object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 耗材特有信息显示 -->
-      <div v-if="entity.type === '耗材' && entity.consumptionRate" class="mb-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3
-            class="text-base font-medium text-gray-900 pb-2 border-b border-gray-200 w-full"
-          >
-            耗材特有信息
-          </h3>
-        </div>
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="消耗速率">{{
-            entity.consumptionRate || '暂无'
-          }}</el-descriptions-item>
-          <el-descriptions-item label="剩余数量">
-            {{ entity.remainingQuantity || '0' }} {{ entity.unit || '' }}
-          </el-descriptions-item>
-          <el-descriptions-item label="更换周期">
-            {{ entity.replacementCycle || '0' }} 天
-          </el-descriptions-item>
-          <el-descriptions-item label="上次更换日期">{{
-            formatDate(entity.lastReplacementDate) || '暂无'
-          }}</el-descriptions-item>
-          <el-descriptions-item label="下次更换日期">{{
-            calculateNextReplacementDate(entity.lastReplacementDate, entity.replacementCycle)
-          }}</el-descriptions-item>
-        </el-descriptions>
-      </div>
-
       <div class="mb-6">
         <div class="flex items-center justify-between mb-4">
           <h3
@@ -331,7 +243,8 @@ const downloadQrCode = () => {
   }
   
   // 获取二维码内的canvas或svg元素
-  const qrcodeElement = qrcodeComponent.querySelector('canvas, svg') as HTMLElement;
+  // const qrcodeElement = qrcodeComponent.querySelector('.qrcode, canvas, svg') as HTMLElement;
+  const qrcodeElement = qrcodeComponent as HTMLElement;
   if (!qrcodeElement) {
     ElMessage.error('找不到二维码图像元素');
     return;
@@ -365,7 +278,7 @@ const downloadBarCode = () => {
   }
   
   // 获取条形码内的svg元素
-  const barcodeElement = barcodeComponent.querySelector('svg') as SVGElement;
+  const barcodeElement = barcodeComponent.querySelector('canvas, svg') as HTMLElement;
   if (!barcodeElement) {
     ElMessage.error('找不到条形码图像元素');
     return;
