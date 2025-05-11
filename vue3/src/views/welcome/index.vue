@@ -5,6 +5,14 @@ defineOptions({
 
 const updateNotes = [
 {
+  version: "v0.4.1",
+  date: "2025年5月11日",
+  notes: ["更新mybatis—plus版本",
+    "修复分页功能",
+    "优化物品树不同设备长度显示问题"
+  ]
+},
+{
   version: "v0.4.0",
   date: "2025年5月11日",
   notes: ["添加手机扫二维码进行拍照上传物品图片"]

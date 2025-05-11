@@ -68,9 +68,11 @@ dependencies {
 	//数据连接
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.10.1'
-	implementation 'com.baomidou:mybatis-plus-generator:3.5.10.1'
+	implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.12'
+	implementation 'com.baomidou:mybatis-plus-generator:3.5.12'
 	implementation 'com.baomidou:dynamic-datasource-spring-boot3-starter:4.3.1'
+	implementation 'com.baomidou:mybatis-plus-jsqlparser:3.5.12'
+
 	//json
 	implementation 'com.alibaba.fastjson2:fastjson2:2.0.56'
 

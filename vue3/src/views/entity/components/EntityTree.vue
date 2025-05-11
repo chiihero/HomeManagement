@@ -79,7 +79,7 @@ const filterText = ref("");
 // 存储当前选中的节点ID
 const selectedKey = ref<string>("");
 // 虚拟树的高度
-const height = ref(500);
+const height = ref<number>(window.innerWidth > 768 ? window.innerHeight : 400);
 // 存储展开的节点ID
 const expandedKeys = ref<string[]>([]);
 

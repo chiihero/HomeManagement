@@ -220,8 +220,7 @@ onMounted(() => {
 }
 
 .entity-tree {
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
+  max-height: calc(90vh - 200px);
   padding-right: 4px;
 }
 

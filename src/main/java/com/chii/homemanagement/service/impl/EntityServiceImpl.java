@@ -83,8 +83,6 @@ public class EntityServiceImpl extends ServiceImpl<EntityMapper, Entity> impleme
         // 构建查询条件
         LambdaQueryWrapper<Entity> queryWrapper = new LambdaQueryWrapper<Entity>()
                 .eq(Entity::getUserId, userId)
-                // 排除已丢弃的实体
-                .ne(Entity::getStatus, "discarded")
                 .orderByDesc(Entity::getCreateTime);
         
         // 添加查询条件（如果有）
