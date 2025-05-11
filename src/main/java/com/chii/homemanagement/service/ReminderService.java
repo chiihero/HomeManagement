@@ -1,5 +1,8 @@
 package com.chii.homemanagement.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chii.homemanagement.entity.Entity;
 import com.chii.homemanagement.entity.Reminder;
 
 import java.time.LocalDate;
@@ -112,7 +115,18 @@ public interface ReminderService {
      * @return 处理后的提醒对象
      */
     Reminder processReminder(Reminder reminder);
-
+    /**
+     * 获取提醒列表
+     *
+     * @param page 分页参数
+     * @param userId     用户ID
+     * @param entityId   物品ID
+     * @param entityName 物品名称
+     * @param type       提醒类型
+     * @param status     提醒状态
+     * @return 提醒列表
+     */
+    IPage<Reminder> pageReminders(Page<Reminder> page, Long userId, Long entityId, String entityName, String type, String status);
     /**
      * 获取提醒列表
      *
@@ -121,9 +135,7 @@ public interface ReminderService {
      * @param entityName 物品名称
      * @param type       提醒类型
      * @param status     提醒状态
-     * @param page       页码
-     * @param size       每页大小
      * @return 提醒列表
      */
-    List<Reminder> getReminders(Long userId, Long entityId, String entityName, String type, String status, Integer page, Integer size);
+    List<Reminder> getReminders(Long userId, Long entityId, String entityName, String type, String status);
 } 

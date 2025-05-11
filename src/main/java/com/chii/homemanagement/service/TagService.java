@@ -1,6 +1,9 @@
 package com.chii.homemanagement.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.chii.homemanagement.entity.Entity;
 import com.chii.homemanagement.entity.Tag;
 
 import java.util.List;
@@ -9,6 +12,14 @@ import java.util.List;
  * 标签服务接口
  */
 public interface TagService extends IService<Tag> {
+    /**
+     * 分页查询实体
+     *
+     * @param page 分页参数
+     * @param userId 用户ID
+     * @return 分页结果
+     */
+    IPage<Tag> pageTags(Page<Tag> page,  Long userId);
 
     /**
      * 获取物品的标签列表

@@ -1,5 +1,8 @@
 package com.chii.homemanagement.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chii.homemanagement.entity.Entity;
 import com.chii.homemanagement.entity.Reminder;
 import com.chii.homemanagement.common.ApiResponse;
 import com.chii.homemanagement.common.ErrorCode;
@@ -26,7 +29,44 @@ public class ReminderController {
 
     @Autowired
     private ReminderService reminderService;
+    /**
+     * 获取提醒列表
+     */
+    @Operation(summary = "获取提醒列表", description = "获取提醒列表，支持分页和筛选")
+    @GetMapping("/page")
+    public ApiResponse<IPage<Reminder>> pageReminders(
+            @Parameter(description = "用户ID") @RequestParam(required = false) Long userId,
+            @Parameter(description = "物品ID") @RequestParam(required = false) Long entityId,
+            @Parameter(description = "物品名称") @RequestParam(required = false) String entityName,
+            @Parameter(description = "提醒类型") @RequestParam(required = false) String type,
+            @Parameter(description = "提醒状态") @RequestParam(required = false) String status,
+            @Parameter(description = "当前页码") @RequestParam(defaultValue = "1") Integer current,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer size) {
+        logger.info("Fetching reminders with filters: userId={}, entityId={}, entityName={}, type={}, status={}, current={}, size={}",
+                userId, entityId, entityName, type, status, current, size);
+        // 构建分页对象
+        Page<Reminder> page = new Page<>(current, size);
+        IPage<Reminder> result = reminderService.pageReminders(page,userId, entityId,entityName , type, status);
 
+        return ApiResponse.success(result);
+
+    }
+    /**
+     * 获取提醒列表
+     */
+    @Operation(summary = "获取提醒列表", description = "获取提醒列表")
+    @GetMapping
+    public ApiResponse<List<Reminder>> getReminders(
+            @Parameter(description = "用户ID") @RequestParam(required = false) Long userId,
+            @Parameter(description = "物品ID") @RequestParam(required = false) Long entityId,
+            @Parameter(description = "物品名称") @RequestParam(required = false) String entityName,
+            @Parameter(description = "提醒类型") @RequestParam(required = false) String type,
+            @Parameter(description = "提醒状态") @RequestParam(required = false) String status){
+        logger.info("Fetching reminders with filters: userId={}, entityId={}, entityName={}, type={}, status={}, current={}, size={}",
+                userId, entityId, entityName, type, status);
+        return ApiResponse.success( reminderService.getReminders(userId,entityId,entityName , type, status));
+
+    }
     /**
      * 创建提醒
      */
@@ -107,21 +147,5 @@ public class ReminderController {
         return ApiResponse.success(reminderService.processReminder(reminder));
     }
 
-    /**
-     * 获取提醒列表
-     */
-    @Operation(summary = "获取提醒列表", description = "获取提醒列表，支持分页和筛选")
-    @GetMapping
-    public ApiResponse<List<Reminder>> getReminders(
-            @Parameter(description = "用户ID") @RequestParam(required = false) Long userId,
-            @Parameter(description = "物品ID") @RequestParam(required = false) Long entityId,
-            @Parameter(description = "物品名称") @RequestParam(required = false) String entityName,
-            @Parameter(description = "提醒类型") @RequestParam(required = false) String type,
-            @Parameter(description = "提醒状态") @RequestParam(required = false) String status,
-            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer page,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer size) {
-        logger.info("Fetching reminders with filters: userId={}, entityId={}, entityName={}, type={}, status={}, page={}, size={}",
-                userId, entityId, entityName, type, status, page, size);
-        return ApiResponse.success(reminderService.getReminders(userId, entityId,entityName , type, status, page, size));
-    }
+
 }

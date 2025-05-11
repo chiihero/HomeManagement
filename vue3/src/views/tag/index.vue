@@ -16,7 +16,15 @@
     </el-card>
     
     <!-- 标签表格 -->
-    <el-card class="table-card border-0 shadow-sm">
+    <!-- 表格 -->
+    <el-card class="shadow-sm border-0">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-700 font-medium">标签列表</span>
+          <div class="text-sm text-gray-500">共 {{ paginationConfig.total }} 项</div>
+        </div>
+      </template>
+      
       <el-table
         v-loading="loading"
         :data="tagList"
@@ -64,14 +72,14 @@
       </el-table>
       
       <!-- 分页 -->
-      <div class="mt-4 flex justify-end">
+      <div class="flex justify-end mt-4">
         <el-pagination
-          v-model:current-page="pagination.current"
-          v-model:page-size="pagination.size"
-          :page-sizes="[10, 20, 50]"
+          :current-page="paginationConfig.current"
+          :page-size="paginationConfig.size"
+          :page-sizes="[10, 20, 50, 100]"
           background
           layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
+          :total="paginationConfig.total"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -115,10 +123,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { Plus, Edit, Delete, DataAnalysis, Promotion, Refresh } from '@element-plus/icons-vue';
+import { Plus, Edit, Delete, Promotion, Refresh } from '@element-plus/icons-vue';
 import { Tag } from '@/types/entity';
-import { getTags, createTag, updateTag, deleteTag } from '@/api/tag';
-import { getContrastColor,  rgbaToHex  } from "@/utils/color";
+import { pageTags, createTag, updateTag, deleteTag } from '@/api/tag';
+import {  rgbaToHex  } from "@/utils/color";
 import { formatDateTime } from "@/utils/date";
 import { useUserStoreHook } from "@/store/modules/user";
 const userStore = useUserStoreHook();
@@ -130,11 +138,12 @@ const formType = ref<'add' | 'edit'>('add');
 const tagFormRef = ref();
 
 // 分页参数
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0
-});
+const paginationConfig = ref({
+    current: 1,
+    size: 10,
+    total: 0
+  });
+
 
 // 标签表单
 const tagForm = reactive({
@@ -165,18 +174,20 @@ const loadTagList = async () => {
   loading.value = true;
   try {
     const params = {
-      current: pagination.current,
-      size: pagination.size,
+      current: paginationConfig.value.current,
+      size: paginationConfig.value.size,
       userId: userStore.userId
     };
     
     console.log('请求标签列表，参数:', params);
-    const response = await getTags(params);
+    const response = await pageTags(params);
     console.log('标签列表响应:', response);
     
     if (response.code === 200 && response.data) {
-        tagList.value = response.data;
-        pagination.total = response.data.length;
+      // @ts-ignore - 类型断言，忽略data属性不存在的错误
+      tagList.value = response.data.records || response.data.list || [];
+      // @ts-ignore - 类型断言，忽略data属性不存在的错误
+      paginationConfig.value.total = response.data.total;
 
       if (tagList.value.length === 0) {
         ElMessage.info('暂无标签数据，请添加');
@@ -185,13 +196,13 @@ const loadTagList = async () => {
       console.error('加载标签列表失败', response);
       ElMessage.error(response.message || '加载标签列表失败');
       tagList.value = [];
-      pagination.total = 0;
+      paginationConfig.value.total = 0;
     }
   } catch (error) {
     console.error('加载标签列表失败', error);
     ElMessage.error('加载标签列表失败，请检查网络连接');
     tagList.value = [];
-    pagination.total = 0;
+    paginationConfig.value.total = 0;
   } finally {
     loading.value = false;
   }
@@ -285,14 +296,13 @@ const handleDelete = async (tag: Tag) => {
 
 // 处理页码改变
 const handleCurrentChange = (current: number) => {
-  pagination.current = current;
+  paginationConfig.value.current = current;
   loadTagList();
 };
 
 // 处理每页大小改变
 const handleSizeChange = (size: number) => {
-  pagination.size = size;
-  pagination.current = 1;
+  paginationConfig.value.size = size;
   loadTagList();
 };
 
@@ -369,7 +379,7 @@ onMounted(() => {
 
 /* 响应式设计 */
 @media screen and (max-width: 768px) {
-  .el-pagination {
+  .el-paginationConfig {
     justify-content: center;
   }
 }

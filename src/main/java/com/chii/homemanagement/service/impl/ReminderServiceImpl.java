@@ -1,6 +1,7 @@
 package com.chii.homemanagement.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chii.homemanagement.entity.Entity;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -172,11 +174,67 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
         updateById(reminder);
         return reminder;
     }
-    
     @Override
-    public List<Reminder> getReminders(Long userId, Long entityId, String entityName, String type, String status, Integer page, Integer size) {
+    public IPage<Reminder> pageReminders(Page<Reminder> page, Long userId, Long entityId, String entityName, String type, String status){
         LambdaQueryWrapper<Reminder> queryWrapper = new LambdaQueryWrapper<>();
-        
+        // 默认分页参数
+        page = Optional.ofNullable(page).orElse(new Page<>(1, 10));
+        // 添加筛选条件
+        if (userId != null) {
+            queryWrapper.eq(Reminder::getUserId, userId);
+        }
+        if (entityId != null) {
+            queryWrapper.eq(Reminder::getEntityId, entityId);
+        }
+        // 添加按实体名称搜索的功能
+        if (StringUtils.hasText(entityName)) {
+            // 先查询符合名称条件的实体ID列表
+            LambdaQueryWrapper<Entity> entityQueryWrapper = new LambdaQueryWrapper<>();
+            entityQueryWrapper.like(Entity::getName, entityName);
+            List<Entity> entities = entityMapper.selectList(entityQueryWrapper);
+
+            if (!entities.isEmpty()) {
+                // 如果找到了匹配的实体，则按这些实体ID进行过滤
+                List<Long> entityIds = entities.stream().map(Entity::getId).collect(Collectors.toList());
+                queryWrapper.in(Reminder::getEntityId, entityIds);
+            } else {
+                // 如果没有找到匹配的实体，返回空列表
+                return null;
+            }
+        }
+        if (StringUtils.hasText(type)) {
+            queryWrapper.eq(Reminder::getType, type);
+        }
+
+        if (StringUtils.hasText(status)) {
+            queryWrapper.eq(Reminder::getStatus, status);
+        }
+
+        // 按提醒日期和创建时间排序
+        queryWrapper.orderByAsc(Reminder::getRemindDate)
+                .orderByDesc(Reminder::getCreateTime);
+
+        // 执行分页查询
+        Page<Reminder> resultPage = page(page, queryWrapper);
+
+        List<Reminder> reminders = resultPage.getRecords();
+
+        // 为每个提醒设置物品名称
+        for (Reminder reminder : reminders) {
+            if (reminder.getEntityId() != null) {
+                Entity entity = entityMapper.selectById(reminder.getEntityId());
+                if (entity != null) {
+                    reminder.setEntityName(entity.getName());
+                }
+            }
+        }
+
+        return resultPage;
+    }
+    @Override
+    public List<Reminder> getReminders(Long userId, Long entityId, String entityName, String type, String status){
+        LambdaQueryWrapper<Reminder> queryWrapper = new LambdaQueryWrapper<>();
+
         // 添加筛选条件
         if (userId != null) {
             queryWrapper.eq(Reminder::getUserId, userId);
@@ -199,10 +257,9 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
                 queryWrapper.in(Reminder::getEntityId, entityIds);
             } else {
                 // 如果没有找到匹配的实体，返回空列表
-                return new ArrayList<>();
+                return null;
             }
         }
-
         if (StringUtils.hasText(type)) {
             queryWrapper.eq(Reminder::getType, type);
         }
@@ -216,10 +273,7 @@ public class ReminderServiceImpl extends ServiceImpl<ReminderMapper, Reminder> i
                    .orderByDesc(Reminder::getCreateTime);
         
         // 执行分页查询
-        Page<Reminder> reminderPage = new Page<>(page, size);
-        Page<Reminder> resultPage = page(reminderPage, queryWrapper);
-        
-        List<Reminder> reminders = resultPage.getRecords();
+        List<Reminder> reminders = list(queryWrapper);
         
         // 为每个提醒设置物品名称
         for (Reminder reminder : reminders) {

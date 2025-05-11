@@ -411,7 +411,7 @@ const resetScan = () => {
     // 重置物品ID
     itemId.value = null;
     // 重新开始扫描
-    startQrScan();
+    restartQrScan();
 };
 
 onUnmounted(() => {

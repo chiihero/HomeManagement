@@ -27,11 +27,11 @@ export interface Reminder {
   /**
    * 提醒ID
    */
-  id: number;
+  id: string;
   /**
    * 物品ID
    */
-  entityId: number;
+  entityId: string;
   /**
    * 物品名称
    */
@@ -114,14 +114,6 @@ export interface ReminderQueryParams {
    * 用户ID
    */
   userId?: number;
-  /**
-   * 页码
-   */
-  page: number;
-  /**
-   * 每页大小
-   */
-  size: number;
 }
 
 /**

@@ -2,22 +2,32 @@ import { ref, reactive } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import type { Reminder } from "@/types/reminder";
 
+/**
+ * 提醒表单相关逻辑
+ */
 export function useReminderForm() {
+  // 表单引用
   const reminderFormRef = ref<FormInstance>();
 
+  // 表单数据
   const reminderForm = reactive<Reminder>({
     entityId: "",
-    userId: 0,
+    userId: "0",
     type: "warranty",
     remindDate: "",
     status: "pending",
     content: "",
-    notificationMethods: ["system"],
+    notificationMethods: "system",
     daysInAdvance: 1,
     isRecurring: false,
-    recurringCycle: undefined
+    recurringCycle: undefined,
+    id: undefined,
+    createUserId: undefined,
+    createTime: undefined,
+    updateTime: undefined
   });
 
+  // 表单验证规则
   const rules = reactive<FormRules>({
     entityId: [{ required: true, message: "请选择物品", trigger: "change" }],
     type: [{ required: true, message: "请选择提醒类型", trigger: "change" }],
@@ -39,26 +49,10 @@ export function useReminderForm() {
     ]
   });
 
-  // 重置表单
-  const resetForm = () => {
-    if (reminderFormRef.value) {
-      reminderFormRef.value.resetFields();
-    }
-    Object.assign(reminderForm, {
-      entityId: "",
-      userId: 0,
-      type: "warranty",
-      remindDate: "",
-      status: "pending",
-      content: "",
-      notificationMethods: ["system"],
-      daysInAdvance: 1,
-      isRecurring: false,
-      recurringCycle: undefined
-    });
-  };
-
-  // 填充表单数据
+  /**
+   * 填充表单数据
+   * @param reminder 提醒数据
+   */
   const fillFormWithReminder = (reminder: Reminder) => {
     Object.assign(reminderForm, {
       id: reminder.id,
@@ -77,7 +71,31 @@ export function useReminderForm() {
     });
   };
 
-  // 验证表单
+  /**
+   * 重置表单
+   */
+  const resetForm = () => {
+    if (reminderFormRef.value) {
+      reminderFormRef.value.resetFields();
+    }
+    Object.assign(reminderForm, {
+      entityId: "",
+      userId: 0,
+      type: "warranty",
+      remindDate: "",
+      status: "pending",
+      content: "",
+      notificationMethods: ["system"],
+      daysInAdvance: 1,
+      isRecurring: false,
+      recurringCycle: undefined
+    });
+  };
+
+  /**
+   * 验证表单
+   * @returns 验证结果
+   */
   const validateForm = async (): Promise<boolean> => {
     if (!reminderFormRef.value) return false;
     try {

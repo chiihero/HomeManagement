@@ -76,7 +76,7 @@
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-gray-700 font-medium">提醒列表</span>
-          <div class="text-sm text-gray-500">共 {{ total }} 项</div>
+          <div class="text-sm text-gray-500">共 {{ paginationConfig.total }} 项</div>
         </div>
       </template>
       <el-table v-loading="loading" :data="reminderList" border class="w-full">
@@ -126,13 +126,20 @@
           </template>
         </el-table-column>
       </el-table>
-
       <!-- 分页 -->
       <div class="flex justify-end mt-4">
-        <el-pagination v-model:current-page="searchForm.page" v-model:page-size="searchForm.size" :total="total"
-          :page-sizes="[10, 20, 50, 100]" background layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange" @current-change="handlePageChange" />
+        <el-pagination
+          :current-page="paginationConfig.current"
+          :page-size="paginationConfig.size"
+          :page-sizes="[10, 20, 50, 100]"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="paginationConfig.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
+
     </el-card>
 
     <!-- 添加/编辑对话框 -->
@@ -199,7 +206,6 @@
 import { onMounted, ref, computed } from "vue";
 import { useReminderCRUD } from "./composables/useReminderCRUD";
 import { useReminderForm } from "./composables/useReminderForm";
-import { useReminderSearch } from "./composables/useReminderSearch";
 import {
   ReminderType,
   ReminderStatus,
@@ -231,7 +237,6 @@ const {
   loading,
   saving,
   reminderList,
-  total,
   currentReminder,
   isEditing,
   isAdding,
@@ -242,7 +247,13 @@ const {
   cancelEdit,
   saveReminder,
   handleDelete,
-  handleComplete
+  handleComplete,
+  searchForm,
+  paginationConfig,
+  resetSearchForm,
+  handleCurrentChange,
+  handleSizeChange,
+  handleDateRangeChange
 } = useReminderCRUD();
 
 const {
@@ -254,13 +265,6 @@ const {
   validateForm
 } = useReminderForm();
 
-const {
-  searchForm,
-  resetSearchForm,
-  handlePageChange,
-  handleSizeChange,
-  handleDateRangeChange
-} = useReminderSearch();
 
 // 提醒类型选项
 const reminderTypes = [

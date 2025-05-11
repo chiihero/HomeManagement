@@ -1,17 +1,12 @@
 import { http } from "@/utils/http";
 import type { Tag } from "@/types/entity";
 import type { PageResult, ResponseResult } from "@/types/http";
-
 /**
- * 分页查询标签
+ * 分页查询实体
  * @param params 查询参数
- * @returns 分页查询结果
  */
-export const getTags = (
-  params: any
-): Promise<ResponseResult<PageResult<Tag>>> => {
-  console.log('调用getTags API，参数:', params);
-  return http.get("/tags", { params }) as Promise<ResponseResult<PageResult<Tag>>>;
+export const pageTags = (params: any) : Promise<ResponseResult<Tag[]>> => {
+  return http.get("/tags/page", { params });
 };
 
 /**

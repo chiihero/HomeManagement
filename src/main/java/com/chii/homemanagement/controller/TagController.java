@@ -1,5 +1,7 @@
 package com.chii.homemanagement.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chii.homemanagement.entity.Tag;
 import com.chii.homemanagement.service.TagService;
 import com.chii.homemanagement.common.ApiResponse;
@@ -30,6 +32,27 @@ public class TagController {
 
     private final TagService tagService;
 
+    @GetMapping("/page")
+    @Operation(summary = "分页查询实体列表", description = "根据条件分页查询实体列表")
+    public ApiResponse<IPage<Tag>> pageTags(
+            @Parameter(description = "当前页码") @RequestParam(value = "current", defaultValue = "1") Integer current,
+            @Parameter(description = "每页大小") @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @Parameter(description = "使用人ID") @RequestParam(value = "userId") Long userId) {
+
+        try {
+            log.info("分页查询实体列表: userId={}, current={}, size={}", userId, current, size);
+
+            // 构建分页对象
+            Page<Tag> page = new Page<>(current, size);
+            // 调用服务层方法
+            IPage<Tag> result = tagService.pageTags(page, userId);
+
+            return ApiResponse.success(result);
+        } catch (Exception e) {
+            log.error("分页查询实体列表异常: ", e);
+            return ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "查询失败: " + e.getMessage());
+        }
+    }
     /**
      * 获取标签列表
      *
