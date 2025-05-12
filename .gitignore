@@ -116,3 +116,5 @@ wheels/
 *.egg
 log/~syncthing~info.log.tmp
 /uploads
+src/main/resources/application-dev.yml
+src/main/resources/application-prod.yml

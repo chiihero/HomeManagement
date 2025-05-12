@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    dynamic:
+      primary: master # 设置主数据源名称
+      strict: false # 严格匹配数据源，默认false. true未匹配到指定数据源时抛异常，false使用默认数据源
+      datasource:
+        master: # 主数据源
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/home?useUnicode=true&characterEncoding=utf8
+          username: home
+          password: home
+
+
+# mybatis-plus:
+#   mapper-locations: classpath:mapper/*.xml
+
+# JWT 配置
+jwt:
+  secret: aaaaaaaaaaaaaaaaaaaaaa
+  
+
+#######配置#######
+# LibAvif配置
+libavif:
+  path: libavif/avifenc   # libavif可执行文件路径，一般为cavif命令
+  quality: 50  # AVIF压缩质量，范围0-100，越高质量越好，建议值50-80
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    disable-swagger-default-url: true
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  packages-to-scan: com.chii.homemanagement.controller

@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "jsbarcode": "^3.11.6",
-    "qrcodejs2-fixes": "^0.0.2"
-  }
-}
