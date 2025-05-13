@@ -21,22 +21,22 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     },
     // 服务端渲染
     server: {
-      // https: true ,
+      https: true ,
       // 端口号
       port: VITE_PORT,
       host: "0.0.0.0",
       // 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
       proxy: {
         "/api": {
-          // target: "http://192.168.123.4:26000",
-          target: "http://localhost:26000",
+          target: "http://192.168.123.4:26000",
+          // target: "http://localhost:26000",
           changeOrigin: true
           // 不需要重写路径，因为环境变量中的 URL 已包含 /api
           // rewrite: (path) => path.replace(/^\/api/, "")
         },
         "/uploads": {
-          // target: "http://192.168.123.4:26000",
-          target: "http://localhost:26000",
+          target: "http://192.168.123.4:26000",
+          // target: "http://localhost:26000",
           changeOrigin: true
           // 不需要重写路径，因为环境变量中的 URL 已包含 /api
           // rewrite: (path) => path.replace(/^\/api/, "")
