@@ -211,8 +211,7 @@ const downloadQrCode = () => {
   }
   
   // 获取二维码内的canvas或svg元素
-  // const qrcodeElement = qrcodeComponent.querySelector('.qrcode, canvas, svg') as HTMLElement;
-  const qrcodeElement = qrcodeComponent as HTMLElement;
+  const qrcodeElement = qrcodeComponent.querySelector('.qrcode, canvas, svg') as HTMLElement;
   if (!qrcodeElement) {
     ElMessage.error('找不到二维码图像元素');
     return;
