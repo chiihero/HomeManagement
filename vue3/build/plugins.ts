@@ -10,7 +10,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import removeConsole from "vite-plugin-remove-console";
 import { codeInspectorPlugin } from "code-inspector-plugin";
 import ElementPlus from "unplugin-element-plus/vite";
-// import basicSsl from '@vitejs/plugin-basic-ssl'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export function getPluginsList(
   VITE_CDN: boolean,
@@ -19,7 +19,7 @@ export function getPluginsList(
   const lifecycle = process.env.npm_lifecycle_event;
   return [
     vue(),
-    // basicSsl(),
+    basicSsl(),
     // jsx、tsx语法支持
     vueJsx(),
     /**
