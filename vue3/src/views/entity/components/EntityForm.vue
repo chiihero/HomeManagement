@@ -376,6 +376,7 @@ const handleTagsChange = (value: any) => {
 
 // 处理取消
 const handleCancel = () => {
+
   emit("cancel");
 };
 
@@ -440,7 +441,7 @@ watch(
       // 确保表单数据类型正确
       form.name = newEntity.name || "";
       form.type = newEntity.type || "物品";
-      form.parentId = newEntity.parentId || "";
+      form.parentId = newEntity.parentId || "0";
       // @ts-ignore
       form.status =
         (newEntity.status as EntityStatus) || ("normal" as EntityStatus);
@@ -498,7 +499,7 @@ watch(
       // 重置表单
       form.name = "";
       form.type = "物品";
-      form.parentId = "";
+      form.parentId = "0";
       // @ts-ignore
       form.status = "normal" as EntityStatus;
       form.location = "";

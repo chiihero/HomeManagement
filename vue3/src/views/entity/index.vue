@@ -56,7 +56,7 @@
             <span class="text-gray-700 font-bold ">
               {{ getDetailTitle }}
             </span>
-            <div v-if="!isEditing && currentEntity" class="flex gap-2 mt-1">
+            <div v-if="!isAdding &&!isEditing && currentEntity" class="flex gap-2 mt-1">
               <el-button type="primary" @click="openEditEntityForm">
                 <el-icon class="mr-1"><Edit /></el-icon>编辑
               </el-button>

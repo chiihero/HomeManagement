@@ -178,14 +178,19 @@ export function useEntityCRUD(options: EntityCRUDOptions = {}) {
 
   // 取消编辑或添加
   const cancelEditOrAdd = () => {
-    isEditing.value = false;
-    isAdding.value = false;
     if (isSearchMode) {
       formDialogVisible.value = false;
     }
-    if (currentEntity.value) {
-      // 重新加载当前实体详情
-      loadEntityDetail(currentEntity.value.id);
+    
+    if (isEditing.value) {
+      isEditing.value = false;
+      if (currentEntity.value) {
+        // 重新加载当前实体详情
+        loadEntityDetail(currentEntity.value.id);
+      }
+    } else if (isAdding.value) {
+      isAdding.value = false;
+      currentEntity.value = null;
     }
   };
 

@@ -51,6 +51,7 @@ export function useEntityDetail() {
       }
       return null;
     };
+    if (parentId=="0") return "根空间";
     return findParent(treeData) || "未知";
   };
 

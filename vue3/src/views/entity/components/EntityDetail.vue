@@ -61,16 +61,11 @@
         <div class="flex flex-wrap gap-6">
           <div class="flex flex-col items-center">
             <span class="mb-2 text-sm text-gray-600">二维码</span>
-            <ReQrcode v-if="entity" :text="getQrcodeValue()" :size="150" class="qrcode" />
-          </div>
-          <div class="flex flex-col items-center">
-            <span class="mb-2 text-sm text-gray-600">条形码</span>
-            <ReBarcode v-if="entity" :text="getBarcodeValue()" :type="Pharmacode" :options="{height: 80, width: 1.5}" class="barcode" />
+            <ReQrcode v-if="entity" :text="getQrcodeValue()" :size="160" class="qrcode" />
           </div>
         </div>
         <div class="mt-3">
           <el-button type="success" size="small" @click="downloadQrCode">下载二维码</el-button>
-          <el-button type="info" size="small" @click="downloadBarCode">下载条形码</el-button>
         </div>
       </div>
 
@@ -143,7 +138,6 @@ import { useEntityDetail } from "../composables/useEntityDetail";
 import { getContrastColor  } from "@/utils/color";
 import { formatDate } from "@/utils/date";
 import ReQrcode from "@/components/ReQrcode";
-import ReBarcode from "@/components/ReBarcode";
 import { ElMessage } from "element-plus";
 
 interface Props {
@@ -169,26 +163,7 @@ const {
   getPreviewImageUrls
 } = useEntityDetail();
 
-// 计算说明书图片列表
-const instructionImageList = computed(() => {
-  if (props.entity?.instructionImages) {
-    return props.entity.instructionImages.split(',').filter(url => url.trim() !== '');
-  }
-  return [];
-});
 
-// 计算下次更换日期
-const calculateNextReplacementDate = (lastDate: string, cycle: number) => {
-  if (!lastDate || !cycle) return '暂无';
-  
-  try {
-    const date = new Date(lastDate);
-    date.setDate(date.getDate() + cycle);
-    return formatDate(date.toISOString().split('T')[0]);
-  } catch (e) {
-    return '暂无';
-  }
-};
 
 // 预览图片URL列表
 const previewImageUrls = computed(() => {
@@ -213,7 +188,6 @@ onMounted(() => {
   }
 });
 
-// 二维码和条形码相关函数
 // 生成二维码内容
 const getQrcodeValue = () => {
   if (!props.entity) return "";
@@ -224,12 +198,6 @@ const getQrcodeValue = () => {
   });
 };
 
-// 生成条形码内容
-const getBarcodeValue = () => {
-  if (!props.entity) return "";
-  // 使用ID作为条形码内容，确保长度合适
-  return props.entity.id ? props.entity.id.toString().padStart(12, '0') : "000000000000";
-};
 
 
 // 下载二维码
@@ -264,57 +232,6 @@ const downloadQrCode = () => {
   } catch (error) {
     console.error('下载二维码失败:', error);
     ElMessage.error('下载二维码失败');
-  }
-};
-
-// 下载条形码
-const downloadBarCode = () => {
-  if (!props.entity) return;
-  
-  const barcodeComponent = document.querySelector('.barcode');
-  if (!barcodeComponent) {
-    ElMessage.error('找不到条形码元素');
-    return;
-  }
-  
-  // 获取条形码内的svg元素
-  const barcodeElement = barcodeComponent.querySelector('canvas, svg') as HTMLElement;
-  if (!barcodeElement) {
-    ElMessage.error('找不到条形码图像元素');
-    return;
-  }
-  
-  try {
-    // 将SVG转换为字符串
-    const serializer = new XMLSerializer();
-    const svgStr = serializer.serializeToString(barcodeElement);
-    
-    // 创建一个Canvas元素
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('无法获取canvas上下文');
-    
-    // 创建图像
-    const img = new Image();
-    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
-    
-    img.onload = function() {
-      // 设置Canvas尺寸
-      canvas.width = img.width;
-      canvas.height = img.height;
-      
-      // 绘制图像
-      ctx.drawImage(img, 0, 0);
-      
-      // 下载图像
-      const link = document.createElement('a');
-      link.download = `${props.entity.name}_条形码.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    };
-  } catch (error) {
-    console.error('下载条形码失败:', error);
-    ElMessage.error('下载条形码失败');
   }
 };
 

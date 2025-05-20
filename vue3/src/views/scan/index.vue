@@ -1,6 +1,6 @@
 <template>
-    <div class="p-4 scan-upload-page">
-        <el-card class="scan-card" :body-style="{ padding: '20px' }">
+    <div class="scan-upload-page">
+        <el-card class="scan-card" :body-style="{ padding: '5px' }">
             <template #header>
                 <div class="card-header">
                     <span class="header-title">扫码拍照上传</span>
@@ -139,7 +139,7 @@ onMounted(() => {
 
 const startQrScan = async () => {
     console.log('startQrScan called'); // Debugging line
-    if (!qrVideoRef.value) {
+    if (!qrVideoRef) {
         console.error('qrVideoRef is not available'); // Debugging line
         return;
     }
@@ -389,8 +389,6 @@ const submitUpload = async () => {
             ElMessage.success('所有图片上传成功');
             // 清空文件列表
             fileList.value = [];
-            // 可以选择是否重置扫描
-            // resetScan();
         } else {
             ElMessage.warning(
                 `部分图片上传失败，成功 ${successCount}/${fileList.value.length}`
@@ -411,7 +409,8 @@ const resetScan = () => {
     // 重置物品ID
     itemId.value = null;
     // 重新开始扫描
-    restartQrScan();
+    startQrScan();
+
 };
 
 onUnmounted(() => {

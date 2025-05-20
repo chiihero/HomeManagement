@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS=--max-old-space-size=4096 vite",
     "serve": "pnpm dev",
-    "build": "rimraf dist/* && NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "build": "rimraf dist/ && NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "build:staging": "rimraf dist/* && vite build --mode staging",
     "report": "rimraf dist/* && vite build",
     "preview": "vite preview",
@@ -60,7 +60,6 @@
     "echarts": "^5.6.0",
     "element-plus": "^2.9.7",
     "js-cookie": "^3.0.5",
-    "jsbarcode": "^3.11.6",
     "localforage": "^1.10.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
